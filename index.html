@@ -343,9 +343,9 @@
                     if (result.success) {
                         showNotification(result.message, 'success');
                         
-                        // Redirection DIRECTE vers index.html après 2 secondes
+                        // Redirection DIRECTE vers dashboard.html après 2 secondes
                         setTimeout(() => {
-                            console.log('Redirection vers index.html');
+                            console.log('Redirection vers dashboard.html');
                             window.location.href = 'index.html?welcome=true';
                         }, 2000);
                         

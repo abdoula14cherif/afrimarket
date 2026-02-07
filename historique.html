@@ -2,325 +2,486 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Historique - AFRIMARKET</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - AFRIMARKET</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
+    <!-- SUPABASE OBLIGATOIRE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <style>
+        /* Styles de débogage */
+        .debug-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            font-size: 12px;
+            font-family: monospace;
+            z-index: 9999;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            max-width: 300px;
+            display: none;
+        }
+        
+        .error-message {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 5px;
+            padding: 8px;
+            background: #ffeeee;
+            border-radius: 5px;
+            border-left: 4px solid #ff4444;
+        }
+        
+        .success-message {
+            color: #00aa00;
+            font-size: 14px;
+            margin-top: 5px;
+            padding: 8px;
+            background: #eeffee;
+            border-radius: 5px;
+            border-left: 4px solid #00aa00;
+        }
+        
+        .loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body class="light-mode">
-    <!-- En-tête fixe -->
+    <!-- Panneau de débogage -->
+    <div class="debug-panel" id="debugPanel">
+        <div><strong>AFRIMARKET DEBUG</strong></div>
+        <div id="debugStatus">Chargement...</div>
+        <button onclick="toggleDebug()" style="margin-top: 5px; padding: 3px 8px; font-size: 10px;">Debug On/Off</button>
+    </div>
+
     <header class="header">
         <div class="header-container">
-            <a href="index.html" class="logo" style="text-decoration: none; color: inherit;">
+            <a href="index.html" class="logo">
                 <i class="fas fa-arrow-left"></i>
-                <h1 style="margin-left: 8px; font-family: 'Montserrat', sans-serif;">Historique</h1>
+                <h1 style="font-family: 'Montserrat', sans-serif;">AFRI<span style="color: var(--primary-red);">MARKET</span></h1>
             </a>
-            
             <div class="header-actions">
-                <button class="theme-btn" id="theme-btn" aria-label="Changer de thème">
+                <button class="theme-btn" id="theme-btn">
                     <i class="fas fa-moon"></i>
-                </button>
-                
-                <button class="btn clear-btn" id="clear-btn">
-                    <i class="fas fa-trash"></i>
-                    Tout effacer
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Contenu principal -->
-    <main class="main-content">
-        <div class="history-container">
-            <div class="history-header">
-                <h2>Vos annonces sur AFRIMARKET</h2>
-                <p class="history-subtitle">Historique complet de toutes vos publications</p>
+    <main class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2><i class="fas fa-user-plus"></i> Créer un compte</h2>
+                <p>Rejoignez AFRIMARKET pour publier vos annonces</p>
+                <div id="form-messages"></div>
             </div>
-            
-            <!-- Statistiques -->
-            <div class="stats-cards">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(37, 99, 235, 0.1); color: var(--primary-blue);">
-                        <i class="fas fa-bullhorn"></i>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-number" id="total-annonces">0</span>
-                        <span class="stat-label">Total annonces</span>
-                    </div>
+
+            <form id="inscription-form" class="auth-form">
+                <!-- Nom complet -->
+                <div class="form-group">
+                    <label for="nom-complet" class="form-label required">
+                        <i class="fas fa-user"></i> Nom complet
+                    </label>
+                    <input type="text" id="nom-complet" name="nom_complet" 
+                           placeholder="Ex: Jean Dupont" required>
+                    <div class="error-container" id="error-nom"></div>
                 </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(220, 38, 38, 0.1); color: var(--primary-red);">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-number" id="ventes-count">0</span>
-                        <span class="stat-label">À vendre</span>
-                    </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email" class="form-label required">
+                        <i class="fas fa-envelope"></i> Adresse email
+                    </label>
+                    <input type="email" id="email" name="email" 
+                           placeholder="exemple@email.com" required>
+                    <div class="error-container" id="error-email"></div>
                 </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(249, 115, 22, 0.1); color: var(--primary-orange);">
-                        <i class="fas fa-newspaper"></i>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-number" id="actualites-count">0</span>
-                        <span class="stat-label">Actualités</span>
-                    </div>
+
+                <!-- Téléphone -->
+                <div class="form-group">
+                    <label for="telephone" class="form-label">
+                        <i class="fas fa-phone"></i> Numéro de téléphone
+                    </label>
+                    <input type="tel" id="telephone" name="telephone" 
+                           placeholder="+33 6 12 34 56 78">
                 </div>
-            </div>
-            
-            <!-- Liste d'historique -->
-            <div class="history-list" id="history-list">
-                <!-- L'historique sera chargé ici -->
-            </div>
-            
-            <!-- Pas d'historique -->
-            <div class="no-history" id="no-history">
-                <i class="fas fa-history"></i>
-                <h3>Historique vide</h3>
-                <p>Vous n'avez pas encore publié d'annonces sur AFRIMARKET</p>
-                <a href="publier.html" class="btn">Publier une annonce</a>
-            </div>
+
+                <!-- Mot de passe -->
+                <div class="form-group">
+                    <label for="password" class="form-label required">
+                        <i class="fas fa-lock"></i> Mot de passe
+                    </label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" 
+                               placeholder="Minimum 6 caractères" required minlength="6">
+                        <button type="button" class="toggle-password" id="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength" id="password-strength">
+                        <div class="strength-bar"></div>
+                        <span class="strength-text">Non défini</span>
+                    </div>
+                    <div class="error-container" id="error-password"></div>
+                </div>
+
+                <!-- Confirmation mot de passe -->
+                <div class="form-group">
+                    <label for="confirm-password" class="form-label required">
+                        <i class="fas fa-lock"></i> Confirmer le mot de passe
+                    </label>
+                    <input type="password" id="confirm-password" 
+                           placeholder="Retapez votre mot de passe" required>
+                    <div id="password-match" class="form-hint"></div>
+                </div>
+
+                <!-- Ville -->
+                <div class="form-group">
+                    <label for="ville" class="form-label">
+                        <i class="fas fa-map-marker-alt"></i> Ville
+                    </label>
+                    <input type="text" id="ville" name="ville" 
+                           placeholder="Ex: Paris, Abidjan, Dakar">
+                </div>
+
+                <!-- Conditions -->
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="conditions" name="conditions" required>
+                    <label for="conditions">
+                        J'accepte les <a href="#" class="link">conditions d'utilisation</a> 
+                        et la <a href="#" class="link">politique de confidentialité</a>
+                    </label>
+                    <div class="error-container" id="error-conditions"></div>
+                </div>
+
+                <!-- Bouton d'inscription -->
+                <button type="submit" class="btn auth-btn" id="submit-btn">
+                    <i class="fas fa-user-plus"></i> S'inscrire
+                </button>
+
+                <!-- Séparateur -->
+                <div class="separator">
+                    <span>ou</span>
+                </div>
+
+                <!-- Connexion sociale -->
+                <div class="social-auth">
+                    <button type="button" class="btn social-btn google-btn" id="google-auth">
+                        <i class="fab fa-google"></i> Continuer avec Google
+                    </button>
+                    <button type="button" class="btn social-btn facebook-btn" id="facebook-auth">
+                        <i class="fab fa-facebook-f"></i> Continuer avec Facebook
+                    </button>
+                </div>
+
+                <!-- Lien vers connexion -->
+                <div class="auth-footer">
+                    <p>Déjà un compte ? <a href="connexion.html" class="link">Se connecter</a></p>
+                </div>
+            </form>
         </div>
     </main>
 
-    <!-- Barre de navigation en bas -->
-    <nav class="bottom-nav">
-        <a href="index.html" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Accueil</span>
-        </a>
-        <a href="publier.html" class="nav-item">
-            <i class="fas fa-plus-square"></i>
-            <span>Publier</span>
-        </a>
-        <a href="historique.html" class="nav-item active">
-            <i class="fas fa-history"></i>
-            <span>Historique</span>
-        </a>
-    </nav>
-
-    <!-- Scripts -->
-    <script src="script.js"></script>
+    <!-- SCRIPT AUTH.JS -->
+    <script src="auth.js"></script>
+    
+    <!-- SCRIPT PRINCIPAL -->
     <script>
-        // Script spécifique à la page historique
-        document.addEventListener('DOMContentLoaded', function() {
-            initHistoryPage();
-        });
+        // Variables globales
+        let isSubmitting = false;
+        let debugMode = localStorage.getItem('afrimarket_debug') === 'true';
         
-        function initHistoryPage() {
-            initTheme();
-            loadHistory();
-            initClearButton();
+        // Fonctions utilitaires
+        function showDebug(message) {
+            if (debugMode) {
+                console.log('🔍 ' + message);
+                document.getElementById('debugStatus').textContent = message;
+                document.getElementById('debugPanel').style.display = 'block';
+            }
         }
         
-        function loadHistory() {
-            const annonces = JSON.parse(localStorage.getItem('afrimarket_annonces')) || [];
-            const historyList = document.getElementById('history-list');
-            const noHistory = document.getElementById('no-history');
+        function toggleDebug() {
+            debugMode = !debugMode;
+            localStorage.setItem('afrimarket_debug', debugMode);
+            document.getElementById('debugPanel').style.display = debugMode ? 'block' : 'none';
+            showDebug('Debug ' + (debugMode ? 'activé' : 'désactivé'));
+        }
+        
+        function showError(elementId, message) {
+            const container = document.getElementById(elementId);
+            if (container) {
+                container.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-circle"></i> ${message}</div>`;
+            }
+        }
+        
+        function clearError(elementId) {
+            const container = document.getElementById(elementId);
+            if (container) container.innerHTML = '';
+        }
+        
+        function showSuccess(message) {
+            const messages = document.getElementById('form-messages');
+            messages.innerHTML = `<div class="success-message"><i class="fas fa-check-circle"></i> ${message}</div>`;
+            setTimeout(() => {
+                messages.innerHTML = '';
+            }, 5000);
+        }
+        
+        function showLoading(show) {
+            const btn = document.getElementById('submit-btn');
+            const form = document.getElementById('inscription-form');
+            if (show) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inscription en cours...';
+                form.classList.add('loading');
+                isSubmitting = true;
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> S\'inscrire';
+                form.classList.remove('loading');
+                isSubmitting = false;
+            }
+        }
+        
+        // Fonction de validation
+        function validateForm() {
+            let isValid = true;
             
-            // Mettre à jour les statistiques
-            updateStats(annonces);
-            
-            if (annonces.length === 0) {
-                historyList.style.display = 'none';
-                noHistory.style.display = 'block';
-                return;
+            // Nom complet
+            const nom = document.getElementById('nom-complet').value.trim();
+            if (nom.length < 2) {
+                showError('error-nom', 'Le nom doit contenir au moins 2 caractères');
+                isValid = false;
+            } else {
+                clearError('error-nom');
             }
             
-            // Afficher l'historique
-            historyList.style.display = 'block';
-            noHistory.style.display = 'none';
-            historyList.innerHTML = '';
+            // Email
+            const email = document.getElementById('email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showError('error-email', 'Adresse email invalide');
+                isValid = false;
+            } else {
+                clearError('error-email');
+            }
             
-            // Trier par date (plus récent en premier)
-            annonces.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // Mot de passe
+            const password = document.getElementById('password').value;
+            if (password.length < 6) {
+                showError('error-password', 'Le mot de passe doit contenir au moins 6 caractères');
+                isValid = false;
+            } else {
+                clearError('error-password');
+            }
             
-            // Afficher chaque annonce
-            annonces.forEach((annonce, index) => {
-                const historyItem = createHistoryItem(annonce, index);
-                historyList.appendChild(historyItem);
-            });
+            // Confirmation mot de passe
+            const confirm = document.getElementById('confirm-password').value;
+            if (password !== confirm) {
+                showError('error-password', 'Les mots de passe ne correspondent pas');
+                isValid = false;
+            }
+            
+            // Conditions
+            const conditions = document.getElementById('conditions').checked;
+            if (!conditions) {
+                showError('error-conditions', 'Vous devez accepter les conditions');
+                isValid = false;
+            } else {
+                clearError('error-conditions');
+            }
+            
+            return isValid;
         }
         
-        function createHistoryItem(annonce, index) {
-            const div = document.createElement('div');
-            div.className = 'history-item';
-            div.dataset.id = annonce.id;
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            showDebug('Page chargée');
             
-            const date = new Date(annonce.date);
-            const formattedDate = date.toLocaleDateString('fr-FR', {
-                weekday: 'short',
-                day: 'numeric',
-                month: 'short',
-                hour: '2-digit',
-                minute: '2-digit'
+            // Activer debug si dans l'URL
+            if (window.location.search.includes('debug=true')) {
+                debugMode = true;
+                localStorage.setItem('afrimarket_debug', 'true');
+                toggleDebug();
+            }
+            
+            // Gestion du thème
+            const themeBtn = document.getElementById('theme-btn');
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            document.body.className = savedTheme;
+            
+            themeBtn.addEventListener('click', function() {
+                const isDark = document.body.classList.contains('dark-mode');
+                document.body.className = isDark ? 'light-mode' : 'dark-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+                showDebug('Thème changé');
             });
             
-            const categoryIcon = annonce.category === 'vente' ? 'fas fa-shopping-cart' : 'fas fa-newspaper';
-            const categoryColor = annonce.category === 'vente' ? 'var(--primary-blue)' : 'var(--primary-orange)';
+            // Toggle mot de passe
+            const toggleBtn = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password');
             
-            div.innerHTML = `
-                <div class="history-item-header">
-                    <div class="item-category" style="color: ${categoryColor};">
-                        <i class="${categoryIcon}"></i>
-                        <span>${annonce.category === 'vente' ? 'À vendre' : 'Actualité'}</span>
-                    </div>
-                    <span class="item-date">${formattedDate}</span>
-                </div>
+            toggleBtn.addEventListener('click', function() {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                toggleBtn.innerHTML = type === 'password' ? 
+                    '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+            
+            // Force du mot de passe
+            passwordInput.addEventListener('input', function() {
+                const strength = checkPasswordStrength(this.value);
+                const bar = document.querySelector('.strength-bar');
+                const text = document.querySelector('.strength-text');
                 
-                <h4 class="item-title">${annonce.title}</h4>
+                bar.style.width = strength.percent + '%';
+                bar.style.background = strength.color;
+                text.textContent = strength.text;
+                text.style.color = strength.color;
+            });
+            
+            // Vérification confirmation mot de passe
+            const confirmInput = document.getElementById('confirm-password');
+            const matchHint = document.getElementById('password-match');
+            
+            confirmInput.addEventListener('input', function() {
+                const match = this.value === passwordInput.value;
+                matchHint.textContent = match ? '✅ Mots de passe identiques' : '❌ Mots de passe différents';
+                matchHint.style.color = match ? 'var(--success)' : 'var(--primary-red)';
+            });
+            
+            // Soumission formulaire
+            const form = document.getElementById('inscription-form');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
                 
-                <div class="item-footer">
-                    ${annonce.price ? `<span class="item-price">${annonce.price} €</span>` : '<span></span>'}
+                if (isSubmitting) {
+                    showDebug('Déjà en cours de soumission');
+                    return;
+                }
+                
+                showDebug('Début validation formulaire');
+                
+                // Validation
+                if (!validateForm()) {
+                    showDebug('Échec validation');
+                    return;
+                }
+                
+                // Données utilisateur
+                const userData = {
+                    nom_complet: document.getElementById('nom-complet').value.trim(),
+                    email: document.getElementById('email').value.trim().toLowerCase(),
+                    telephone: document.getElementById('telephone').value.trim() || null,
+                    ville: document.getElementById('ville').value.trim() || null,
+                    password: document.getElementById('password').value
+                };
+                
+                showDebug(`Données: ${userData.email}`);
+                showLoading(true);
+                
+                try {
+                    // Vérifier que la fonction existe
+                    if (typeof window.inscrireUtilisateur !== 'function') {
+                        throw new Error('Service d\'inscription indisponible. Rechargez la page.');
+                    }
                     
-                    <div class="item-actions">
-                        <button class="item-btn view-btn" onclick="viewAnnonce(${annonce.id})">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="item-btn delete-btn" onclick="deleteAnnonceFromHistory(${annonce.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            return div;
-        }
-        
-        function updateStats(annonces) {
-            document.getElementById('total-annonces').textContent = annonces.length;
-            
-            const ventes = annonces.filter(a => a.category === 'vente').length;
-            const actualites = annonces.filter(a => a.category === 'actualite').length;
-            
-            document.getElementById('ventes-count').textContent = ventes;
-            document.getElementById('actualites-count').textContent = actualites;
-        }
-        
-        function initClearButton() {
-            const clearBtn = document.getElementById('clear-btn');
-            
-            clearBtn.addEventListener('click', function() {
-                if (confirm('⚠️ Voulez-vous vraiment effacer TOUTES vos annonces ? Cette action est irréversible.')) {
-                    localStorage.removeItem('afrimarket_annonces');
-                    loadHistory();
-                    alert('✅ Toutes les annonces ont été supprimées');
+                    showDebug('Appel inscription...');
+                    
+                    // Appeler la fonction d'inscription
+                    const result = await window.inscrireUtilisateur(userData);
+                    
+                    showDebug('Résultat reçu: ' + (result.success ? 'SUCCÈS' : 'ÉCHEC'));
+                    
+                    if (result.success) {
+                        showSuccess(result.message || 'Inscription réussie !');
+                        showDebug('Redirection dans 2 secondes...');
+                        
+                        // Stocker les infos utilisateur
+                        localStorage.setItem('afrimarket_temp_user', JSON.stringify({
+                            email: userData.email,
+                            nom: userData.nom_complet
+                        }));
+                        
+                        // Redirection
+                        setTimeout(() => {
+                            window.location.href = 'connexion.html?inscription=success';
+                        }, 2000);
+                        
+                    } else {
+                        // Messages d'erreur personnalisés
+                        let errorMsg = result.error;
+                        if (result.error.includes('already registered')) {
+                            errorMsg = 'Un compte existe déjà avec cet email. <a href="connexion.html">Se connecter ?</a>';
+                        } else if (result.error.includes('password')) {
+                            errorMsg = 'Le mot de passe est trop faible (min. 6 caractères)';
+                        } else if (result.error.includes('email')) {
+                            errorMsg = 'Adresse email invalide';
+                        }
+                        
+                        showError('form-messages', errorMsg);
+                        showLoading(false);
+                    }
+                    
+                } catch (error) {
+                    console.error('ERREUR CATCH:', error);
+                    showError('form-messages', 'Erreur technique: ' + error.message);
+                    showLoading(false);
+                    showDebug('Erreur: ' + error.message);
                 }
             });
+            
+            // Connexion sociale (placeholder)
+            document.getElementById('google-auth').addEventListener('click', function() {
+                alert('Fonctionnalité Google en développement');
+            });
+            
+            document.getElementById('facebook-auth').addEventListener('click', function() {
+                alert('Fonctionnalité Facebook en développement');
+            });
+            
+            // Vérifier l'état initial
+            setTimeout(() => {
+                showDebug(`Fonctions: ${typeof window.inscrireUtilisateur}`);
+                showDebug(`Supabase: ${typeof window.supabase}`);
+                
+                // Message d'aide si problème
+                if (typeof window.inscrireUtilisateur === 'undefined') {
+                    showError('form-messages', 
+                        'Problème de chargement. <a href="javascript:location.reload()">Rafraîchir la page</a>');
+                }
+            }, 1000);
+        });
+        
+        function checkPasswordStrength(password) {
+            let score = 0;
+            if (password.length >= 6) score++;
+            if (password.length >= 8) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+            const levels = [
+                { percent: 20, color: '#ef4444', text: 'Très faible' },
+                { percent: 40, color: '#f59e0b', text: 'Faible' },
+                { percent: 60, color: '#eab308', text: 'Moyen' },
+                { percent: 80, color: '#10b981', text: 'Bon' },
+                { percent: 100, color: '#3b82f6', text: 'Fort' }
+            ];
+
+            return levels[Math.min(score, 4)];
         }
         
-        // Fonctions globales pour les boutons d'action
-        window.viewAnnonce = function(id) {
-            const annonces = JSON.parse(localStorage.getItem('afrimarket_annonces')) || [];
-            const annonce = annonces.find(a => a.id === id);
-            
-            if (annonce) {
-                // Créer une vue détaillée
-                const modal = document.createElement('div');
-                modal.style.cssText = `
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: rgba(0, 0, 0, 0.8);
-                    z-index: 2000;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 20px;
-                `;
-                
-                const formattedDate = new Date(annonce.date).toLocaleDateString('fr-FR', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                modal.innerHTML = `
-                    <div style="
-                        background: var(--light-card);
-                        border-radius: var(--radius-lg);
-                        max-width: 500px;
-                        width: 100%;
-                        max-height: 90vh;
-                        overflow-y: auto;
-                        position: relative;
-                    ">
-                        <button onclick="this.parentElement.parentElement.remove()" style="
-                            position: absolute;
-                            top: 15px;
-                            right: 15px;
-                            background: var(--primary-red);
-                            color: white;
-                            border: none;
-                            width: 36px;
-                            height: 36px;
-                            border-radius: 50%;
-                            cursor: pointer;
-                            z-index: 2;
-                        ">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        
-                        <div style="height: 300px; overflow: hidden; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
-                            <img src="${annonce.image || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'}" 
-                                 alt="${annonce.title}" 
-                                 style="width: 100%; height: 100%; object-fit: cover;">
-                        </div>
-                        
-                        <div style="padding: var(--space-lg);">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-md);">
-                                <h3 style="font-size: 1.5rem; font-weight: 700; flex: 1;">${annonce.title}</h3>
-                                ${annonce.price ? `<span style="font-size: 1.5rem; font-weight: 700; color: var(--primary-red); margin-left: var(--space-md);">${annonce.price} €</span>` : ''}
-                            </div>
-                            
-                            <div style="margin-bottom: var(--space-lg);">
-                                <p style="color: var(--light-text-secondary); line-height: 1.6;">${annonce.description}</p>
-                            </div>
-                            
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: var(--space-md); border-top: 1px solid var(--light-border);">
-                                <div>
-                                    <div style="display: inline-flex; align-items: center; gap: var(--space-xs); padding: 6px 12px; border-radius: var(--radius-full); background: ${annonce.category === 'vente' ? 'rgba(37, 99, 235, 0.1)' : 'rgba(249, 115, 22, 0.1)'}; color: ${annonce.category === 'vente' ? 'var(--primary-blue)' : 'var(--primary-orange)'}; font-size: 0.875rem; font-weight: 600;">
-                                        <i class="${annonce.category === 'vente' ? 'fas fa-shopping-cart' : 'fas fa-newspaper'}"></i>
-                                        ${annonce.category === 'vente' ? 'À vendre' : 'Actualité'}
-                                    </div>
-                                    <div style="font-size: 0.875rem; color: var(--light-text-secondary); margin-top: var(--space-sm);">
-                                        <i class="far fa-calendar"></i> ${formattedDate}
-                                    </div>
-                                </div>
-                                
-                                ${annonce.whatsapp ? `
-                                    <a href="https://wa.me/${annonce.whatsapp.replace(/\D/g, '')}" 
-                                       target="_blank" 
-                                       style="display: inline-flex; align-items: center; gap: var(--space-xs); padding: 10px 20px; background: #25D366; color: white; border-radius: var(--radius-full); text-decoration: none; font-weight: 500;">
-                                        <i class="fab fa-whatsapp"></i>
-                                        Contacter
-                                    </a>
-                                ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                document.body.appendChild(modal);
-            }
-        };
-        
-        window.deleteAnnonceFromHistory = function(id) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) {
-                const updatedAnnonces = deleteAnnonce(id);
-                loadHistory();
-                alert('✅ Annonce supprimée avec succès');
-            }
-        };
+        // Exposer les fonctions de debug
+        window.toggleDebug = toggleDebug;
     </script>
 </body>
 </html>

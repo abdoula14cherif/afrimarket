@@ -10,63 +10,63 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
-        .debug-panel {
+        .notification {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            background: #000;
-            color: #0f0;
-            padding: 10px;
-            font-size: 12px;
-            font-family: monospace;
-            z-index: 9999;
-            border: 2px solid #0f0;
-            border-radius: 5px;
-            max-width: 300px;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+        }
+        
+        .notification.success {
+            background: #10b981;
+        }
+        
+        .notification.error {
+            background: #ef4444;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
             display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
         }
         
-        .error-message {
-            color: #ff4444;
-            font-size: 14px;
-            margin-top: 5px;
-            padding: 8px;
-            background: #ffeeee;
-            border-radius: 5px;
-            border-left: 4px solid #ff4444;
-        }
-        
-        .success-message {
-            color: #00aa00;
-            font-size: 14px;
-            margin-top: 5px;
-            padding: 8px;
-            background: #eeffee;
-            border-radius: 5px;
-            border-left: 4px solid #00aa00;
-        }
-        
-        .loading {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-        
-        .welcome-message {
-            background: #e8f5e9;
-            border: 2px solid #4caf50;
+        .loading-spinner {
+            background: white;
+            padding: 30px;
             border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
             text-align: center;
         }
     </style>
 </head>
 <body class="light-mode">
-    <!-- Panneau de débogage -->
-    <div class="debug-panel" id="debugPanel">
-        <div><strong>AFRIMARKET DEBUG</strong></div>
-        <div id="debugStatus">Chargement...</div>
-        <button onclick="toggleDebug()" style="margin-top: 5px; padding: 3px 8px; font-size: 10px;">Debug On/Off</button>
+    <!-- Overlay de chargement -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 15px;">Connexion en cours...</p>
+        </div>
     </div>
 
     <header class="header">
@@ -88,14 +88,6 @@
             <div class="auth-header">
                 <h2><i class="fas fa-sign-in-alt"></i> Connexion</h2>
                 <p>Connectez-vous à votre compte AFRIMARKET</p>
-                <div id="form-messages"></div>
-                
-                <!-- Message de bienvenue après inscription -->
-                <div id="welcome-message" style="display: none;" class="welcome-message">
-                    <i class="fas fa-check-circle" style="color: #4caf50; font-size: 24px; margin-bottom: 10px;"></i>
-                    <h3 style="margin: 10px 0; color: #2e7d32;">Inscription réussie !</h3>
-                    <p>Vous pouvez maintenant vous connecter avec vos identifiants.</p>
-                </div>
             </div>
 
             <form id="connexion-form" class="auth-form">
@@ -106,7 +98,6 @@
                     </label>
                     <input type="email" id="login-email" name="email" 
                            placeholder="exemple@email.com" required>
-                    <div class="error-container" id="error-email"></div>
                 </div>
 
                 <!-- Mot de passe -->
@@ -129,28 +120,12 @@
                             Mot de passe oublié ?
                         </a>
                     </div>
-                    <div class="error-container" id="error-password"></div>
                 </div>
 
                 <!-- Bouton de connexion -->
                 <button type="submit" class="btn auth-btn" id="login-btn">
                     <i class="fas fa-sign-in-alt"></i> Se connecter
                 </button>
-
-                <!-- Séparateur -->
-                <div class="separator">
-                    <span>ou</span>
-                </div>
-
-                <!-- Connexion sociale -->
-                <div class="social-auth">
-                    <button type="button" class="btn social-btn google-btn" id="login-google">
-                        <i class="fab fa-google"></i> Continuer avec Google
-                    </button>
-                    <button type="button" class="btn social-btn facebook-btn" id="login-facebook">
-                        <i class="fab fa-facebook-f"></i> Continuer avec Facebook
-                    </button>
-                </div>
 
                 <!-- Liens -->
                 <div class="auth-footer">
@@ -161,134 +136,164 @@
         </div>
     </main>
 
-    <!-- SCRIPT AUTH.JS -->
-    <script src="auth.js"></script>
-    
-    <!-- SCRIPT PRINCIPAL -->
     <script>
-        // Variables globales
-        let isSubmitting = false;
-        let debugMode = localStorage.getItem('afrimarket_debug') === 'true';
+        // Configuration Supabase
+        const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
-        // Fonctions utilitaires
-        function showDebug(message) {
-            if (debugMode) {
-                console.log('🔍 ' + message);
-                document.getElementById('debugStatus').textContent = message;
-                document.getElementById('debugPanel').style.display = 'block';
-            }
+        let supabaseClient = null;
+        
+        // Fonction pour afficher les notifications
+        function showNotification(message, type = 'info') {
+            // Supprimer les anciennes notifications
+            const oldNotif = document.querySelector('.notification');
+            if (oldNotif) oldNotif.remove();
+            
+            // Créer la nouvelle notification
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                               type === 'error' ? 'fa-exclamation-circle' : 
+                               'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notif);
+            
+            // Supprimer après 5 secondes
+            setTimeout(() => notif.remove(), 5000);
         }
         
-        function toggleDebug() {
-            debugMode = !debugMode;
-            localStorage.setItem('afrimarket_debug', debugMode);
-            document.getElementById('debugPanel').style.display = debugMode ? 'block' : 'none';
-            showDebug('Debug ' + (debugMode ? 'activé' : 'désactivé'));
-        }
-        
-        function showError(elementId, message) {
-            const container = document.getElementById(elementId);
-            if (container) {
-                container.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-circle"></i> ${message}</div>`;
-            }
-        }
-        
-        function clearError(elementId) {
-            const container = document.getElementById(elementId);
-            if (container) container.innerHTML = '';
-        }
-        
-        function showMessage(type, message) {
-            const messages = document.getElementById('form-messages');
-            const className = type === 'error' ? 'error-message' : 'success-message';
-            const icon = type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle';
-            messages.innerHTML = `<div class="${className}"><i class="fas ${icon}"></i> ${message}</div>`;
-            setTimeout(() => {
-                messages.innerHTML = '';
-            }, 5000);
-        }
-        
+        // Fonction pour montrer/cacher le loading
         function showLoading(show) {
-            const btn = document.getElementById('login-btn');
-            const form = document.getElementById('connexion-form');
+            const overlay = document.getElementById('loadingOverlay');
+            const loginBtn = document.getElementById('login-btn');
+            
             if (show) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
-                form.classList.add('loading');
-                isSubmitting = true;
+                overlay.style.display = 'flex';
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
             } else {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Se connecter';
-                form.classList.remove('loading');
-                isSubmitting = false;
+                overlay.style.display = 'none';
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Se connecter';
             }
         }
         
-        // Fonction de validation
-        function validateForm() {
-            let isValid = true;
-            
-            // Email
-            const email = document.getElementById('login-email').value.trim();
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showError('error-email', 'Adresse email invalide');
-                isValid = false;
-            } else {
-                clearError('error-email');
+        // Fonction de connexion
+        async function connecterUtilisateur(email, password, rememberMe = false) {
+            try {
+                console.log('Connexion pour:', email);
+                
+                // Connexion avec Supabase
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    console.error('Erreur connexion:', error);
+                    
+                    let errorMsg = error.message;
+                    if (error.message.includes('Invalid login credentials')) {
+                        errorMsg = 'Email ou mot de passe incorrect';
+                    } else if (error.message.includes('Email not confirmed')) {
+                        errorMsg = 'Veuillez confirmer votre email avant de vous connecter';
+                    }
+                    
+                    return { success: false, error: errorMsg };
+                }
+                
+                console.log('✅ Connexion réussie:', data);
+                
+                // Stocker les informations utilisateur
+                localStorage.setItem('afrimarket_user_id', data.user.id);
+                localStorage.setItem('afrimarket_user_email', data.user.email);
+                localStorage.setItem('afrimarket_user_name', data.user.user_metadata?.nom_complet || '');
+                localStorage.setItem('afrimarket_logged_in', 'true');
+                
+                if (rememberMe) {
+                    localStorage.setItem('afrimarket_remember_me', 'true');
+                }
+                
+                return {
+                    success: true,
+                    message: 'Connexion réussie !',
+                    user: data.user
+                };
+                
+            } catch (error) {
+                console.error('Erreur générale:', error);
+                return {
+                    success: false,
+                    error: 'Erreur de connexion. Veuillez réessayer.'
+                };
             }
-            
-            // Mot de passe
-            const password = document.getElementById('login-password').value;
-            if (password.length < 6) {
-                showError('error-password', 'Le mot de passe doit contenir au moins 6 caractères');
-                isValid = false;
-            } else {
-                clearError('error-password');
+        }
+        
+        // Vérifier si déjà connecté
+        async function verifierSession() {
+            try {
+                const userId = localStorage.getItem('afrimarket_user_id');
+                const loggedIn = localStorage.getItem('afrimarket_logged_in') === 'true';
+                
+                if (userId && loggedIn) {
+                    // Vérifier avec Supabase si client existe
+                    if (supabaseClient) {
+                        const { data } = await supabaseClient.auth.getSession();
+                        if (!data.session) {
+                            return { loggedIn: false };
+                        }
+                    }
+                    
+                    return {
+                        loggedIn: true,
+                        user: {
+                            id: userId,
+                            email: localStorage.getItem('afrimarket_user_email'),
+                            user_metadata: {
+                                nom_complet: localStorage.getItem('afrimarket_user_name')
+                            }
+                        }
+                    };
+                }
+                
+                return { loggedIn: false };
+                
+            } catch (error) {
+                console.error('Erreur vérification session:', error);
+                return { loggedIn: false };
             }
-            
-            return isValid;
         }
         
         // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            showDebug('Page connexion chargée');
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Page connexion chargée');
             
-            // Activer debug si dans l'URL
-            if (window.location.search.includes('debug=true')) {
-                debugMode = true;
-                localStorage.setItem('afrimarket_debug', 'true');
-                toggleDebug();
-            }
-            
-            // Afficher message de bienvenue après inscription
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('inscription') === 'success') {
-                document.getElementById('welcome-message').style.display = 'block';
-                
-                // Remplir automatiquement l'email si stocké
-                const tempUser = localStorage.getItem('afrimarket_temp_user');
-                if (tempUser) {
-                    try {
-                        const user = JSON.parse(tempUser);
-                        document.getElementById('login-email').value = user.email;
-                        localStorage.removeItem('afrimarket_temp_user');
-                    } catch (e) {
-                        // Ignorer les erreurs
+            // Initialiser Supabase
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true
                     }
-                }
+                });
+                console.log('✅ Supabase initialisé');
+            } else {
+                showNotification('Erreur: Supabase non chargé', 'error');
             }
             
             // Vérifier si déjà connecté
-            setTimeout(async () => {
-                if (typeof window.verifierSession === 'function') {
-                    const session = await window.verifierSession();
-                    if (session.loggedIn) {
-                        showDebug('Déjà connecté, redirection...');
-                        window.location.href = 'index.html';
-                    }
-                }
-            }, 1000);
+            const session = await verifierSession();
+            if (session.loggedIn) {
+                console.log('✅ Utilisateur déjà connecté, redirection...');
+                showNotification('Vous êtes déjà connecté', 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+                return;
+            }
             
             // Gestion du thème
             const themeBtn = document.getElementById('theme-btn');
@@ -299,7 +304,6 @@
                 const isDark = document.body.classList.contains('dark-mode');
                 document.body.className = isDark ? 'light-mode' : 'dark-mode';
                 localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
-                showDebug('Thème changé');
             });
             
             // Toggle mot de passe
@@ -318,100 +322,65 @@
             
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                console.log('Formulaire soumis');
                 
-                if (isSubmitting) {
-                    showDebug('Déjà en cours de connexion');
-                    return;
-                }
-                
-                showDebug('Début connexion');
-                
-                // Validation
-                if (!validateForm()) {
-                    showDebug('Échec validation');
-                    return;
-                }
-                
-                // Données de connexion
                 const email = document.getElementById('login-email').value.trim().toLowerCase();
                 const password = document.getElementById('login-password').value;
                 const rememberMe = document.getElementById('remember-me').checked;
                 
-                showDebug(`Connexion: ${email}`);
+                // Validation basique
+                if (!email.includes('@')) {
+                    showNotification('Email invalide', 'error');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showNotification('Mot de passe trop court (minimum 6 caractères)', 'error');
+                    return;
+                }
+                
+                // Afficher le loading
                 showLoading(true);
                 
                 try {
-                    // Vérifier que la fonction existe
-                    if (typeof window.connecterUtilisateur !== 'function') {
-                        throw new Error('Service de connexion indisponible. Rechargez la page.');
-                    }
-                    
-                    showDebug('Appel connexion...');
-                    
                     // Appeler la fonction de connexion
-                    const result = await window.connecterUtilisateur(email, password, rememberMe);
-                    
-                    showDebug('Résultat: ' + (result.success ? 'SUCCÈS' : 'ÉCHEC'));
+                    const result = await connecterUtilisateur(email, password, rememberMe);
                     
                     if (result.success) {
-                        showMessage('success', result.message || 'Connexion réussie !');
-                        showDebug('Redirection dans 1 seconde...');
+                        showNotification(result.message, 'success');
                         
-                        // Redirection
+                        // Redirection DIRECTE vers index.html après 2 secondes
                         setTimeout(() => {
-                            // Vérifier s'il y a une URL de retour
-                            const redirectUrl = urlParams.get('redirect') || 'index.html';
-                            window.location.href = redirectUrl;
-                        }, 1000);
+                            console.log('Redirection vers index.html');
+                            window.location.href = 'index.html?welcome=true';
+                        }, 2000);
                         
                     } else {
-                        // Messages d'erreur personnalisés
-                        let errorMsg = result.error;
-                        if (result.error.includes('Invalid login credentials')) {
-                            errorMsg = 'Email ou mot de passe incorrect';
-                        } else if (result.error.includes('Email not confirmed')) {
-                            errorMsg = 'Veuillez confirmer votre email avant de vous connecter';
-                        } else if (result.error.includes('too many requests')) {
-                            errorMsg = 'Trop de tentatives. Veuillez réessayer plus tard';
-                        }
-                        
-                        showMessage('error', errorMsg);
+                        showNotification('Erreur: ' + result.error, 'error');
                         showLoading(false);
                     }
                     
                 } catch (error) {
-                    console.error('ERREUR CATCH:', error);
-                    showMessage('error', 'Erreur technique: ' + error.message);
+                    console.error('Erreur catch:', error);
+                    showNotification('Erreur technique: ' + error.message, 'error');
                     showLoading(false);
-                    showDebug('Erreur: ' + error.message);
                 }
             });
             
-            // Connexion sociale (placeholder)
-            document.getElementById('login-google').addEventListener('click', function() {
-                alert('Fonctionnalité Google en développement');
-            });
+            // Pré-remplir l'email si stocké
+            const savedEmail = localStorage.getItem('afrimarket_user_email');
+            if (savedEmail) {
+                document.getElementById('login-email').value = savedEmail;
+                document.getElementById('remember-me').checked = true;
+            }
             
-            document.getElementById('login-facebook').addEventListener('click', function() {
-                alert('Fonctionnalité Facebook en développement');
-            });
-            
-            // Vérifier l'état initial
+            // Vérifier que tout est prêt
             setTimeout(() => {
-                showDebug(`Fonctions: ${typeof window.connecterUtilisateur}`);
-                showDebug(`Supabase: ${typeof window.supabase}`);
-                
-                // Pré-remplir l'email depuis localStorage
-                const savedEmail = localStorage.getItem('afrimarket_user_email');
-                if (savedEmail && document.getElementById('login-email').value === '') {
-                    document.getElementById('login-email').value = savedEmail;
-                    document.getElementById('remember-me').checked = true;
+                if (!supabaseClient) {
+                    showNotification('⚠️ Supabase non initialisé. Rechargez la page.', 'error');
                 }
             }, 1000);
         });
-        
-        // Exposer les fonctions de debug
-        window.toggleDebug = toggleDebug;
     </script>
 </body>
 </html>

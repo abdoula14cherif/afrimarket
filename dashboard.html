@@ -13,118 +13,65 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
-        /* Styles pour l'authentification */
-        .auth-status {
+        .notification {
             position: fixed;
-            top: 80px;
+            top: 20px;
             right: 20px;
-            background: #10b981;
+            padding: 15px 20px;
+            border-radius: 8px;
             color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            z-index: 1000;
-            display: none;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
         }
         
-        .auth-status.error {
+        .notification.success {
+            background: #10b981;
+        }
+        
+        .notification.error {
             background: #ef4444;
         }
         
-        .user-menu {
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .loading-overlay {
             position: fixed;
-            top: 20px;
-            right: 80px;
-            z-index: 1000;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: #1d3557;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .user-dropdown {
-            position: absolute;
-            top: 50px;
+            top: 0;
+            left: 0;
             right: 0;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            min-width: 200px;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
             display: none;
-            z-index: 1001;
-        }
-        
-        .dark-mode .user-dropdown {
-            background: #343a40;
-        }
-        
-        .user-dropdown.show {
-            display: block;
-        }
-        
-        .dropdown-header {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .dark-mode .dropdown-header {
-            border-bottom: 1px solid #495057;
-        }
-        
-        .dropdown-item {
-            padding: 12px 15px;
-            display: block;
-            text-decoration: none;
-            color: inherit;
-            border-bottom: 1px solid #f8f9fa;
-        }
-        
-        .dark-mode .dropdown-item {
-            border-bottom: 1px solid #495057;
-        }
-        
-        .dropdown-item:hover {
-            background: #f8f9fa;
-        }
-        
-        .dark-mode .dropdown-item:hover {
-            background: #495057;
-        }
-        
-        .dropdown-item.logout {
-            color: #ef4444;
-        }
-        
-        .login-btn {
-            position: fixed;
-            top: 20px;
-            right: 80px;
-            background: #1d3557;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            text-decoration: none;
-            display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 8px;
-            z-index: 1000;
+            z-index: 10001;
         }
         
-        .login-btn:hover {
-            background: #0f2647;
+        .loading-spinner {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
         }
     </style>
 </head>
 <body class="light-mode">
+    <!-- Overlay de chargement -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 15px;">Chargement des annonces...</p>
+        </div>
+    </div>
+
     <!-- En-tête fixe -->
     <header class="header">
         <div class="header-container">
@@ -140,39 +87,6 @@
             </div>
         </div>
     </header>
-
-    <!-- Menu utilisateur -->
-    <div id="auth-status" class="auth-status"></div>
-    
-    <!-- Menu utilisateur connecté -->
-    <div id="user-menu" class="user-menu" style="display: none;">
-        <div class="user-avatar" id="user-avatar">
-            <i class="fas fa-user"></i>
-        </div>
-        <div class="user-dropdown" id="user-dropdown">
-            <div class="dropdown-header">
-                <strong id="dropdown-nom">Utilisateur</strong>
-                <div id="dropdown-email" style="font-size: 12px; color: #666; margin-top: 5px;"></div>
-            </div>
-            <a href="profil.html" class="dropdown-item">
-                <i class="fas fa-user-circle"></i> Mon profil
-            </a>
-            <a href="mes-annonces.html" class="dropdown-item">
-                <i class="fas fa-list"></i> Mes annonces
-            </a>
-            <a href="historique.html" class="dropdown-item">
-                <i class="fas fa-history"></i> Historique
-            </a>
-            <div class="dropdown-item logout" id="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Se déconnecter
-            </div>
-        </div>
-    </div>
-    
-    <!-- Bouton connexion (si non connecté) -->
-    <a href="connexion.html" id="login-btn" class="login-btn" style="display: none;">
-        <i class="fas fa-sign-in-alt"></i> Connexion
-    </a>
 
     <!-- Contenu principal -->
     <main class="main-content">
@@ -235,7 +149,7 @@
 
     <!-- Barre de navigation en bas -->
     <nav class="bottom-nav">
-        <a href="index.html" class="nav-item active">
+        <a href="dashboard.html" class="nav-item active">
             <i class="fas fa-home"></i>
             <span>Accueil</span>
         </a>
@@ -249,7 +163,6 @@
         </a>
     </nav>
 
-    <!-- Scripts -->
     <script>
         // Configuration Supabase
         const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
@@ -257,69 +170,54 @@
         
         let supabaseClient = null;
         
-        // Fonction pour afficher le statut d'authentification
-        function showAuthStatus(message, type = 'success') {
-            const statusDiv = document.getElementById('auth-status');
-            statusDiv.textContent = message;
-            statusDiv.className = `auth-status ${type}`;
-            statusDiv.style.display = 'block';
+        // Fonction pour afficher les notifications
+        function showNotification(message, type = 'info') {
+            // Supprimer les anciennes notifications
+            const oldNotif = document.querySelector('.notification');
+            if (oldNotif) oldNotif.remove();
             
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 3000);
+            // Créer la nouvelle notification
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                               type === 'error' ? 'fa-exclamation-circle' : 
+                               'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notif);
+            
+            // Supprimer après 5 secondes
+            setTimeout(() => notif.remove(), 5000);
+        }
+        
+        // Fonction pour montrer/cacher le loading
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            
+            if (show) {
+                overlay.style.display = 'flex';
+            } else {
+                overlay.style.display = 'none';
+            }
         }
         
         // Fonction pour vérifier la session
         async function verifierSession() {
             try {
-                // Vérifier d'abord le localStorage
                 const userId = localStorage.getItem('afrimarket_user_id');
-                const userEmail = localStorage.getItem('afrimarket_user_email');
-                const userName = localStorage.getItem('afrimarket_user_name');
-                const loggedIn = localStorage.getItem('afrimarket_logged_in');
+                const loggedIn = localStorage.getItem('afrimarket_logged_in') === 'true';
                 
-                if (userId && loggedIn === 'true') {
+                if (userId && loggedIn) {
                     return {
                         loggedIn: true,
                         user: {
                             id: userId,
-                            email: userEmail,
-                            profile: {
-                                nom_complet: userName
-                            }
+                            email: localStorage.getItem('afrimarket_user_email'),
+                            nom_complet: localStorage.getItem('afrimarket_user_name')
                         }
                     };
-                }
-                
-                // Si Supabase est initialisé, vérifier la session
-                if (supabaseClient) {
-                    const { data, error } = await supabaseClient.auth.getSession();
-                    
-                    if (error) {
-                        console.error('Erreur session:', error);
-                        return { loggedIn: false };
-                    }
-                    
-                    if (data.session) {
-                        const user = data.session.user;
-                        
-                        // Mettre à jour le localStorage
-                        localStorage.setItem('afrimarket_user_id', user.id);
-                        localStorage.setItem('afrimarket_user_email', user.email);
-                        localStorage.setItem('afrimarket_user_name', user.user_metadata?.nom_complet || '');
-                        localStorage.setItem('afrimarket_logged_in', 'true');
-                        
-                        return {
-                            loggedIn: true,
-                            user: {
-                                id: user.id,
-                                email: user.email,
-                                profile: {
-                                    nom_complet: user.user_metadata?.nom_complet
-                                }
-                            }
-                        };
-                    }
                 }
                 
                 return { loggedIn: false };
@@ -330,28 +228,149 @@
             }
         }
         
-        // Fonction de déconnexion
-        async function deconnecterUtilisateur() {
+        // Fonction pour charger TOUTES les annonces depuis Supabase
+        async function loadAllAnnoncesFromSupabase() {
             try {
-                // Nettoyer le localStorage
-                localStorage.removeItem('afrimarket_user_id');
-                localStorage.removeItem('afrimarket_user_email');
-                localStorage.removeItem('afrimarket_user_name');
-                localStorage.removeItem('afrimarket_logged_in');
-                
-                // Se déconnecter de Supabase si client existe
-                if (supabaseClient) {
-                    await supabaseClient.auth.signOut();
+                if (!supabaseClient) {
+                    throw new Error('Supabase non initialisé');
                 }
                 
-                showAuthStatus('Déconnexion réussie', 'success');
-                return { success: true };
+                // Charger TOUTES les annonces depuis Supabase (pas seulement celles de l'utilisateur)
+                const { data, error } = await supabaseClient
+                    .from('annonces')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    throw new Error('Erreur Supabase: ' + error.message);
+                }
+                
+                console.log('✅ Toutes les annonces chargées:', data?.length || 0);
+                return data || [];
                 
             } catch (error) {
-                console.error('Erreur déconnexion:', error);
-                showAuthStatus('Erreur lors de la déconnexion', 'error');
-                return { success: false, error: error.message };
+                console.error('Erreur chargement annonces:', error);
+                showNotification('Erreur chargement annonces: ' + error.message, 'error');
+                return [];
             }
+        }
+        
+        // Fonction pour afficher les annonces
+        function displayAnnonces(annonces) {
+            const annoncesList = document.getElementById('annonces-list');
+            const annoncesCount = document.getElementById('annonces-count');
+            
+            // Mettre à jour le compteur
+            annoncesCount.textContent = `${annonces.length} annonce${annonces.length !== 1 ? 's' : ''}`;
+            
+            if (annonces.length === 0) {
+                annoncesList.innerHTML = `
+                    <div class="no-annonces">
+                        <i class="fas fa-inbox"></i>
+                        <h4>Aucune annonce pour le moment</h4>
+                        <p>Soyez le premier à publier une annonce sur AFRIMARKET</p>
+                        <a href="publier.html" class="btn">Publier maintenant</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Afficher les annonces
+            annoncesList.innerHTML = '';
+            
+            annonces.forEach((annonce, index) => {
+                const annonceCard = createAnnonceCard(annonce, index);
+                annoncesList.appendChild(annonceCard);
+            });
+        }
+        
+        // Fonction pour créer une carte d'annonce
+        function createAnnonceCard(annonce, index) {
+            const div = document.createElement('div');
+            div.className = 'annonce-card';
+            div.dataset.filter = annonce.type;
+            
+            // Formater la date
+            const date = new Date(annonce.created_at);
+            const formattedDate = date.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+            
+            // Image par défaut si aucune image
+            const imageUrl = annonce.image_url || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80';
+            
+            // Icône selon le type
+            const typeIcon = annonce.type === 'vente' ? 'fas fa-shopping-cart' : 'fas fa-newspaper';
+            const typeText = annonce.type === 'vente' ? 'À VENDRE' : 'ACTUALITÉ';
+            const typeColor = annonce.type === 'vente' ? '#1d3557' : '#f97316';
+            
+            div.innerHTML = `
+                <div class="annonce-image">
+                    <div class="annonce-category" style="background: ${typeColor};">
+                        <i class="${typeIcon}"></i>
+                        <span>${typeText}</span>
+                    </div>
+                    <img src="${imageUrl}" alt="${annonce.titre}" loading="lazy">
+                </div>
+                
+                <div class="annonce-content">
+                    <div class="annonce-header">
+                        <h3 class="annonce-title">${annonce.titre}</h3>
+                        ${annonce.prix ? `<span class="annonce-price">${annonce.prix} €</span>` : ''}
+                    </div>
+                    
+                    <p class="annonce-description">${annonce.description.substring(0, 100)}${annonce.description.length > 100 ? '...' : ''}</p>
+                    
+                    <div class="annonce-footer">
+                        <span class="annonce-date">
+                            <i class="far fa-calendar"></i>
+                            ${formattedDate}
+                        </span>
+                        ${annonce.whatsapp ? `
+                            <a href="https://wa.me/${annonce.whatsapp.replace(/\D/g, '')}" 
+                               target="_blank" 
+                               class="whatsapp-btn">
+                                <i class="fab fa-whatsapp"></i>
+                                Contacter
+                            </a>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        // Initialisation des filtres
+        function initFilters() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Retirer la classe active de tous les boutons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Ajouter la classe active au bouton cliqué
+                    this.classList.add('active');
+                    
+                    const filter = this.dataset.filter;
+                    filterAnnonces(filter);
+                });
+            });
+        }
+        
+        // Fonction pour filtrer les annonces
+        function filterAnnonces(filterType) {
+            const annonceCards = document.querySelectorAll('.annonce-card');
+            
+            annonceCards.forEach(card => {
+                if (filterType === 'all' || card.dataset.filter === filterType) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         }
         
         // Initialisation
@@ -367,87 +386,8 @@
                     }
                 });
                 console.log('✅ Supabase initialisé');
-            }
-            
-            // Vérifier la connexion
-            const user = await verifierSession();
-            const userMenu = document.getElementById('user-menu');
-            const loginBtn = document.getElementById('login-btn');
-            const publishBtn = document.getElementById('publish-btn');
-            const publishNav = document.getElementById('publish-nav');
-            
-            if (user.loggedIn) {
-                console.log('✅ Utilisateur connecté:', user.user.email);
-                
-                // Afficher menu utilisateur
-                userMenu.style.display = 'block';
-                loginBtn.style.display = 'none';
-                
-                // Initiales pour l'avatar
-                const initials = user.user.profile?.nom_complet
-                    ? user.user.profile.nom_complet.split(' ').map(n => n[0]).join('').toUpperCase()
-                    : user.user.email[0].toUpperCase();
-                
-                document.getElementById('user-avatar').textContent = initials;
-                document.getElementById('dropdown-nom').textContent = user.user.profile?.nom_complet || user.user.email;
-                document.getElementById('dropdown-email').textContent = user.user.email;
-                
-                // Gestion du dropdown
-                const avatar = document.getElementById('user-avatar');
-                const dropdown = document.getElementById('user-dropdown');
-                
-                avatar.addEventListener('click', function() {
-                    dropdown.classList.toggle('show');
-                });
-                
-                // Déconnexion
-                document.getElementById('logout-btn').addEventListener('click', async function() {
-                    await deconnecterUtilisateur();
-                    window.location.reload();
-                });
-                
-                // Fermer dropdown en cliquant ailleurs
-                document.addEventListener('click', function(event) {
-                    if (!userMenu.contains(event.target)) {
-                        dropdown.classList.remove('show');
-                    }
-                });
-                
-                // Activer les boutons de publication
-                if (publishBtn) publishBtn.style.pointerEvents = 'auto';
-                if (publishNav) publishNav.style.pointerEvents = 'auto';
-                
             } else {
-                console.log('❌ Utilisateur non connecté');
-                
-                // Afficher bouton connexion
-                userMenu.style.display = 'none';
-                loginBtn.style.display = 'flex';
-                
-                // Désactiver les boutons de publication
-                if (publishBtn) {
-                    publishBtn.style.pointerEvents = 'none';
-                    publishBtn.style.opacity = '0.6';
-                    publishBtn.onclick = function(e) {
-                        e.preventDefault();
-                        showAuthStatus('Veuillez vous connecter pour publier', 'error');
-                        setTimeout(() => {
-                            window.location.href = 'connexion.html';
-                        }, 1500);
-                    };
-                }
-                
-                if (publishNav) {
-                    publishNav.style.pointerEvents = 'none';
-                    publishNav.style.opacity = '0.6';
-                    publishNav.onclick = function(e) {
-                        e.preventDefault();
-                        showAuthStatus('Veuillez vous connecter pour publier', 'error');
-                        setTimeout(() => {
-                            window.location.href = 'connexion.html';
-                        }, 1500);
-                    };
-                }
+                showNotification('Erreur: Supabase non chargé', 'error');
             }
             
             // Gestion du thème
@@ -461,13 +401,32 @@
                 localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
             });
             
-            // Vérifier si c'est une nouvelle connexion
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('welcome') === 'true') {
-                showAuthStatus('Connexion réussie ! Bienvenue', 'success');
+            // Afficher le loading
+            showLoading(true);
+            
+            try {
+                // Charger TOUTES les annonces depuis Supabase
+                const annonces = await loadAllAnnoncesFromSupabase();
                 
-                // Nettoyer l'URL
-                window.history.replaceState({}, document.title, window.location.pathname);
+                // Afficher les annonces
+                displayAnnonces(annonces);
+                
+                // Initialiser les filtres
+                initFilters();
+                
+                // Vérifier si c'est une nouvelle connexion
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('welcome') === 'true') {
+                    showNotification('Connexion réussie ! Bienvenue', 'success');
+                    // Nettoyer l'URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+                
+            } catch (error) {
+                console.error('Erreur initialisation dashboard:', error);
+                showNotification('Erreur: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
             }
         });
     </script>

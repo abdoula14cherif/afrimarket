@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Publier une annonce - AFRIMARKET</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
+</head>
+<body class="light-mode">
+    <!-- En-tête fixe -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo" style="text-decoration: none; color: inherit;">
+                <i class="fas fa-arrow-left"></i>
+                <h1 style="margin-left: 8px; font-family: 'Montserrat', sans-serif;">AFRI<span style="color: var(--primary-red);">MARKET</span></h1>
+            </a>
+            
+            <div class="header-actions">
+                <button class="theme-btn" id="theme-btn" aria-label="Changer de thème">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="publish-container">
+            <h2 class="publish-title">Publier une annonce</h2>
+            <p class="publish-subtitle">Remplissez le formulaire ci-dessous. Votre annonce sera visible immédiatement sur AFRIMARKET.</p>
+            
+            <form id="publish-form" class="publish-form">
+                <!-- Type d'annonce -->
+                <div class="form-section">
+                    <label class="form-label required">Type d'annonce</label>
+                    <div class="type-selector">
+                        <div class="type-option active" data-type="vente">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>À vendre</span>
+                        </div>
+                        <div class="type-option" data-type="actualite">
+                            <i class="fas fa-newspaper"></i>
+                            <span>Actualité</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="annonce-type" name="type" value="vente" required>
+                </div>
+                
+                <!-- Photo -->
+                <div class="form-section">
+                    <label class="form-label required">Photo de l'annonce</label>
+                    <div class="image-upload" id="image-upload">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Cliquez pour ajouter une photo</p>
+                        <span>JPG, PNG - Max 5MB</span>
+                        <input type="file" id="image-input" accept="image/*" style="display: none;">
+                    </div>
+                    <div id="image-preview">
+                        <!-- L'aperçu de l'image sera affiché ici -->
+                    </div>
+                </div>
+                
+                <!-- Titre -->
+                <div class="form-section">
+                    <label for="annonce-titre" class="form-label required">Titre de l'annonce</label>
+                    <input type="text" 
+                           id="annonce-titre" 
+                           name="titre" 
+                           placeholder="Ex: Smartphone iPhone 12 en excellent état"
+                           required
+                           maxlength="60">
+                    <div class="char-count" id="titre-count">0/60</div>
+                </div>
+                
+                <!-- Description -->
+                <div class="form-section">
+                    <label for="annonce-description" class="form-label required">Description</label>
+                    <textarea id="annonce-description" 
+                              name="description" 
+                              rows="4"
+                              placeholder="Décrivez votre produit ou votre actualité en détail..."
+                              required
+                              maxlength="500"></textarea>
+                    <div class="char-count" id="description-count">0/500</div>
+                </div>
+                
+                <!-- Prix (seulement pour "À vendre") -->
+                <div class="form-section" id="price-section">
+                    <label for="annonce-prix" class="form-label">Prix (€)</label>
+                    <input type="number" 
+                           id="annonce-prix" 
+                           name="prix" 
+                           placeholder="Ex: 250"
+                           min="0"
+                           step="0.01">
+                    <small class="form-hint">Laissez vide si gratuit ou pour une actualité</small>
+                </div>
+                
+                <!-- WhatsApp -->
+                <div class="form-section">
+                    <label for="annonce-whatsapp" class="form-label">Numéro WhatsApp</label>
+                    <input type="tel" 
+                           id="annonce-whatsapp" 
+                           name="whatsapp" 
+                           placeholder="Ex: 0612345678">
+                    <small class="form-hint">Les personnes pourront vous contacter directement via WhatsApp</small>
+                </div>
+                
+                <!-- Boutons -->
+                <div class="form-actions">
+                    <button type="submit" class="btn publish-submit-btn" id="submit-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Publier maintenant
+                    </button>
+                    <button type="button" id="preview-btn" class="btn preview-btn">
+                        <i class="fas fa-eye"></i>
+                        Aperçu
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Aperçu -->
+        <div class="preview-container" id="preview-container" style="display: none;">
+            <h3>Aperçu de votre annonce</h3>
+            <div id="annonce-preview" class="annonce-card">
+                <!-- L'aperçu sera généré ici -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Barre de navigation en bas -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </a>
+        <a href="publier.html" class="nav-item active">
+            <i class="fas fa-plus-square"></i>
+            <span>Publier</span>
+        </a>
+        <a href="historique.html" class="nav-item">
+            <i class="fas fa-history"></i>
+            <span>Historique</span>
+        </a>
+    </nav>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script>
+        // Script spécifique à la page de publication
+        document.addEventListener('DOMContentLoaded', function() {
+            initPublishPage();
+        });
+        
+        function initPublishPage() {
+            initTheme();
+            initForm();
+            initImageUpload();
+            initPreview();
+        }
+        
+        function initForm() {
+            const form = document.getElementById('publish-form');
+            const typeOptions = document.querySelectorAll('.type-option');
+            const priceSection = document.getElementById('price-section');
+            const titreInput = document.getElementById('annonce-titre');
+            const titreCount = document.getElementById('titre-count');
+            const descInput = document.getElementById('annonce-description');
+            const descCount = document.getElementById('description-count');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // Gestion du type d'annonce
+            typeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    typeOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const type = this.dataset.type;
+                    document.getElementById('annonce-type').value = type;
+                    
+                    // Afficher/masquer la section prix
+                    if (type === 'vente') {
+                        priceSection.style.display = 'flex';
+                        priceSection.style.flexDirection = 'column';
+                    } else {
+                        priceSection.style.display = 'none';
+                        document.getElementById('annonce-prix').value = '';
+                    }
+                    
+                    // Mettre à jour l'aperçu
+                    updatePreview();
+                });
+            });
+            
+            // Compteurs de caractères
+            titreInput.addEventListener('input', function() {
+                titreCount.textContent = `${this.value.length}/60`;
+                updatePreview();
+            });
+            
+            descInput.addEventListener('input', function() {
+                descCount.textContent = `${this.value.length}/500`;
+                updatePreview();
+            });
+            
+            // Prix
+            const prixInput = document.getElementById('annonce-prix');
+            prixInput.addEventListener('input', updatePreview);
+            
+            // WhatsApp
+            const whatsappInput = document.getElementById('annonce-whatsapp');
+            whatsappInput.addEventListener('input', updatePreview);
+            
+            // Soumission du formulaire
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Désactiver le bouton pendant le traitement
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publication...';
+                
+                try {
+                    const formData = {
+                        title: titreInput.value.trim(),
+                        description: descInput.value.trim(),
+                        category: document.getElementById('annonce-type').value,
+                        price: prixInput.value ? parseFloat(prixInput.value) : null,
+                        whatsapp: whatsappInput.value.trim() || null,
+                        image: null
+                    };
+                    
+                    // Validation
+                    if (!formData.title || !formData.description) {
+                        throw new Error('Veuillez remplir tous les champs obligatoires');
+                    }
+                    
+                    // Gérer l'image
+                    const imageInput = document.getElementById('image-input');
+                    if (imageInput.files && imageInput.files[0]) {
+                        const imageFile = imageInput.files[0];
+                        
+                        // Vérifier la taille (max 5MB)
+                        if (imageFile.size > 5 * 1024 * 1024) {
+                            throw new Error('L\'image ne doit pas dépasser 5MB');
+                        }
+                        
+                        // Convertir en base64
+                        formData.image = await convertImageToBase64(imageFile);
+                    }
+                    
+                    // Sauvegarder l'annonce
+                    addAnnonce(formData);
+                    
+                    // Confirmation
+                    alert('✅ Annonce publiée avec succès sur AFRIMARKET !');
+                    
+                } catch (error) {
+                    alert('❌ Erreur: ' + error.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publier maintenant';
+                }
+            });
+        }
+        
+        function initImageUpload() {
+            const imageUpload = document.getElementById('image-upload');
+            const imageInput = document.getElementById('image-input');
+            const imagePreview = document.getElementById('image-preview');
+            
+            // Ouvrir le sélecteur de fichiers au clic
+            imageUpload.addEventListener('click', () => imageInput.click());
+            
+            // Afficher l'aperçu de l'image
+            imageInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        imagePreview.innerHTML = `
+                            <div style="margin-top: var(--space-md);">
+                                <img src="${e.target.result}" alt="Aperçu" style="max-width: 100%; max-height: 300px; border-radius: var(--radius-md); object-fit: cover;">
+                                <button type="button" class="remove-image" onclick="removeImage()">
+                                    <i class="fas fa-times"></i> Supprimer l'image
+                                </button>
+                            </div>
+                        `;
+                        imagePreview.style.display = 'block';
+                        
+                        // Mettre à jour l'aperçu
+                        updatePreview(e.target.result);
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
+            // Drag & drop
+            imageUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                imageUpload.style.borderColor = 'var(--primary-blue)';
+                imageUpload.style.background = 'rgba(37, 99, 235, 0.1)';
+            });
+            
+            imageUpload.addEventListener('dragleave', () => {
+                imageUpload.style.borderColor = '';
+                imageUpload.style.background = '';
+            });
+            
+            imageUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                imageUpload.style.borderColor = '';
+                imageUpload.style.background = '';
+                
+                if (e.dataTransfer.files.length) {
+                    imageInput.files = e.dataTransfer.files;
+                    imageInput.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+        
+        function removeImage() {
+            const imageInput = document.getElementById('image-input');
+            const imagePreview = document.getElementById('image-preview');
+            
+            imageInput.value = '';
+            imagePreview.innerHTML = '';
+            imagePreview.style.display = 'none';
+            
+            updatePreview();
+        }
+        
+        function initPreview() {
+            const previewBtn = document.getElementById('preview-btn');
+            const previewContainer = document.getElementById('preview-container');
+            
+            previewBtn.addEventListener('click', function() {
+                const titre = document.getElementById('annonce-titre').value;
+                const description = document.getElementById('annonce-description').value;
+                
+                if (!titre || !description) {
+                    alert('Veuillez d\'abord remplir le titre et la description');
+                    return;
+                }
+                
+                previewContainer.style.display = 'block';
+                previewContainer.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+        
+        function updatePreview(imageUrl = null) {
+            const previewElement = document.getElementById('annonce-preview');
+            if (!previewElement) return;
+            
+            const titre = document.getElementById('annonce-titre').value || 'Titre de l\'annonce';
+            const description = document.getElementById('annonce-description').value || 'Description de l\'annonce...';
+            const type = document.getElementById('annonce-type').value;
+            const prix = document.getElementById('annonce-prix').value;
+            const whatsapp = document.getElementById('annonce-whatsapp').value;
+            
+            // Utiliser l'image uploadée ou une image par défaut
+            const previewImage = imageUrl || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80';
+            
+            const categoryIcon = type === 'vente' ? 'fas fa-shopping-cart' : 'fas fa-newspaper';
+            const categoryText = type === 'vente' ? 'À VENDRE' : 'ACTUALITÉ';
+            const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+            
+            previewElement.innerHTML = `
+                <div class="annonce-image">
+                    <div class="annonce-category category-${type}">
+                        <i class="${categoryIcon}"></i>
+                        ${categoryText}
+                    </div>
+                    <img src="${previewImage}" alt="${titre}" loading="lazy">
+                </div>
+                
+                <div class="annonce-content">
+                    <div class="annonce-header">
+                        <h3 class="annonce-title">${titre}</h3>
+                        ${prix ? `<span class="annonce-price">${prix} €</span>` : ''}
+                    </div>
+                    
+                    <p class="annonce-description">${description}</p>
+                    
+                    <div class="annonce-footer">
+                        <span class="annonce-date">
+                            <i class="far fa-calendar"></i>
+                            ${date}
+                        </span>
+                        ${whatsapp ? `
+                            <a href="#" class="whatsapp-btn">
+                                <i class="fab fa-whatsapp"></i>
+                                WhatsApp
+                            </a>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

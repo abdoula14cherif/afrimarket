@@ -71,7 +71,7 @@
 
     <header class="header">
         <div class="header-container">
-            <a href="index.html" class="logo">
+            <a href="dashboard.html" class="logo">
                 <i class="fas fa-arrow-left"></i>
                 <h1 style="font-family: 'Montserrat', sans-serif;">AFRI<span style="color: var(--primary-red);">MARKET</span></h1>
             </a>
@@ -130,7 +130,7 @@
                 <!-- Liens -->
                 <div class="auth-footer">
                     <p>Pas encore de compte ? <a href="inscription.html" class="link">S'inscrire</a></p>
-                    <p><a href="index.html" class="link">Continuer sans compte</a></p>
+                    <p><a href="dashboard.html" class="link">Continuer sans compte</a></p>
                 </div>
             </form>
         </div>
@@ -284,13 +284,12 @@
                 showNotification('Erreur: Supabase non chargé', 'error');
             }
             
-            // Vérifier si déjà connecté - REDIRECTION ICI
+            // Vérifier si déjà connecté - REDIRECTION VERS DASHBOARD
             const session = await verifierSession();
             if (session.loggedIn) {
-                console.log('✅ Utilisateur déjà connecté, redirection vers index.html');
-                // REDIRECTION DIRECTE vers index.html
-                window.location.href = 'index.html';
-                return; // Arrêter l'exécution du reste du code
+                console.log('✅ Utilisateur déjà connecté, redirection vers dashboard.html');
+                window.location.href = 'dashboard.html';
+                return;
             }
             
             // Gestion du thème
@@ -347,10 +346,10 @@
                     if (result.success) {
                         showNotification(result.message, 'success');
                         
-                        // REDIRECTION DIRECTE et FORCÉE vers index.html après 2 seconde
+                        // REDIRECTION VERS DASHBOARD
                         console.log('✅ Connexion réussie, redirection vers dashboard.html...');
                         setTimeout(() => {
-                            window.location.href = 'index.html';
+                            window.location.href = 'dashboard.html';
                         }, 1000);
                         
                     } else {

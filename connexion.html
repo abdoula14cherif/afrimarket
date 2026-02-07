@@ -284,15 +284,13 @@
                 showNotification('Erreur: Supabase non chargé', 'error');
             }
             
-            // Vérifier si déjà connecté
+            // Vérifier si déjà connecté - REDIRECTION ICI
             const session = await verifierSession();
             if (session.loggedIn) {
-                console.log('✅ Utilisateur déjà connecté, redirection...');
-                showNotification('Vous êtes déjà connecté', 'success');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1500);
-                return;
+                console.log('✅ Utilisateur déjà connecté, redirection vers index.html');
+                // REDIRECTION DIRECTE vers index.html
+                window.location.href = 'index.html';
+                return; // Arrêter l'exécution du reste du code
             }
             
             // Gestion du thème
@@ -349,11 +347,11 @@
                     if (result.success) {
                         showNotification(result.message, 'success');
                         
-                        // Redirection DIRECTE vers index.html après 2 secondes
+                        // REDIRECTION DIRECTE et FORCÉE vers index.html après 2 seconde
+                        console.log('✅ Connexion réussie, redirection vers dashboard.html...');
                         setTimeout(() => {
-                            console.log('Redirection vers index.html');
-                            window.location.href = 'index.html?welcome=true';
-                        }, 2000);
+                            window.location.href = 'index.html';
+                        }, 1000);
                         
                     } else {
                         showNotification('Erreur: ' + result.error, 'error');

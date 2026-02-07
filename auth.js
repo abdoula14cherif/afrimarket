@@ -1,642 +1,538 @@
-// ============================================
-// auth.js - AUTHENTIFICATION COMPLÈTE AFRIMARKET
-// ============================================
+// =============================================
+// CONFIGURATION SUPABASE
+// =============================================
+const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
 
-class AuthManager {
-    constructor() {
-        this.supabaseClient = null;
-        this.currentUser = null;
-        this.isInitialized = false;
-        this.authListeners = [];
-        
-        // États d'authentification
-        this.AUTH_STATES = {
-            LOADING: 'loading',
-            AUTHENTICATED: 'authenticated',
-            UNAUTHENTICATED: 'unauthenticated',
-            ERROR: 'error'
-        };
-        
-        this.currentState = this.AUTH_STATES.LOADING;
-    }
-    
-    // ===== INITIALISATION =====
-    
-    async initialize() {
-        if (this.isInitialized) return this.supabaseClient;
-        
-        try {
-            // Vérifier la configuration
-            if (!window.supabase || !window.SUPABASE_CONFIG) {
-                throw new Error('Configuration Supabase manquante');
-            }
-            
-            // Créer le client Supabase
-            const { createClient } = window.supabase;
-            this.supabaseClient = createClient(
-                window.SUPABASE_CONFIG.URL,
-                window.SUPABASE_CONFIG.ANON_KEY,
-                window.SUPABASE_CONFIG.OPTIONS
-            );
-            
-            // Écouter les changements d'authentification
-            this.setupAuthListener();
-            
-            // Vérifier la session existante
-            await this.checkExistingSession();
-            
-            this.isInitialized = true;
-            console.log('🔐 AuthManager initialisé');
-            
-            return this.supabaseClient;
-            
-        } catch (error) {
-            console.error('❌ Erreur initialisation AuthManager:', error);
-            this.currentState = this.AUTH_STATES.ERROR;
-            this.notifyListeners();
-            return null;
-        }
-    }
-    
-    // ===== ÉCOUTEUR D'AUTH =====
-    
-    setupAuthListener() {
-        if (!this.supabaseClient) return;
-        
-        // Écouter les changements d'authentification
-        this.supabaseClient.auth.onAuthStateChange((event, session) => {
-            console.log('🔐 Événement auth:', event, session?.user?.email);
-            
-            switch (event) {
-                case 'SIGNED_IN':
-                    this.handleSignedIn(session);
-                    break;
-                    
-                case 'SIGNED_OUT':
-                    this.handleSignedOut();
-                    break;
-                    
-                case 'USER_UPDATED':
-                    this.handleUserUpdated(session);
-                    break;
-                    
-                case 'TOKEN_REFRESHED':
-                    this.handleTokenRefreshed(session);
-                    break;
-            }
-            
-            this.notifyListeners();
-        });
-    }
-    
-    // ===== GESTION DES SESSIONS =====
-    
-    async checkExistingSession() {
-        try {
-            const { data: { session }, error } = await this.supabaseClient.auth.getSession();
-            
-            if (error) throw error;
-            
-            if (session) {
-                await this.handleSignedIn(session);
-            } else {
-                this.currentState = this.AUTH_STATES.UNAUTHENTICATED;
-                this.currentUser = null;
-            }
-            
-        } catch (error) {
-            console.error('❌ Erreur vérification session:', error);
-            this.currentState = this.AUTH_STATES.ERROR;
-        }
-    }
-    
-    // ===== HANDLERS D'ÉVÉNEMENTS =====
-    
-    async handleSignedIn(session) {
-        try {
-            // Récupérer l'utilisateur complet avec profil
-            const { data: { user }, error: userError } = await this.supabaseClient.auth.getUser();
-            
-            if (userError) throw userError;
-            
-            // Récupérer le profil depuis la table profiles
-            let profile = null;
-            if (user) {
-                const { data: profileData, error: profileError } = await this.supabaseClient
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
-                
-                if (!profileError) {
-                    profile = profileData;
-                }
-            }
-            
-            this.currentUser = {
-                ...user,
-                profile: profile
+// Initialiser Supabase
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// =============================================
+// FONCTIONS D'AUTHENTIFICATION
+// =============================================
+
+/**
+ * Inscrire un nouvel utilisateur
+ * @param {Object} userData - Données utilisateur
+ * @returns {Promise<Object>} Résultat de l'inscription
+ */
+async function inscrireUtilisateur(userData) {
+    try {
+        console.log('🔄 Tentative d\'inscription pour:', userData.email);
+
+        // Valider les données
+        if (!userData.email || !userData.password || !userData.nom_complet) {
+            return {
+                success: false,
+                error: 'Email, mot de passe et nom complet sont obligatoires'
             };
-            
-            this.currentState = this.AUTH_STATES.AUTHENTICATED;
-            
-            // Sauvegarder dans localStorage pour persistance
-            this.saveToLocalStorage();
-            
-            console.log('✅ Utilisateur connecté:', this.currentUser.email);
-            
-        } catch (error) {
-            console.error('❌ Erreur connexion:', error);
-            this.currentState = this.AUTH_STATES.ERROR;
         }
-    }
-    
-    handleSignedOut() {
-        this.currentUser = null;
-        this.currentState = this.AUTH_STATES.UNAUTHENTICATED;
-        this.clearLocalStorage();
-        console.log('👋 Utilisateur déconnecté');
-    }
-    
-    handleUserUpdated(session) {
-        if (this.currentUser && session?.user) {
-            this.currentUser = { ...this.currentUser, ...session.user };
-            this.saveToLocalStorage();
+
+        // 1. Inscription avec Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: userData.email,
+            password: userData.password,
+            options: {
+                data: {
+                    nom_complet: userData.nom_complet,
+                    telephone: userData.telephone || '',
+                    ville: userData.ville || ''
+                },
+                emailRedirectTo: window.location.origin // Pour la confirmation d'email
+            }
+        });
+
+        // Gestion des erreurs Auth
+        if (authError) {
+            console.error('❌ Erreur Auth:', authError);
+            
+            // Messages d'erreur plus conviviaux
+            let errorMessage = authError.message;
+            if (authError.message.includes('already registered')) {
+                errorMessage = 'Un compte existe déjà avec cet email';
+            } else if (authError.message.includes('password')) {
+                errorMessage = 'Le mot de passe doit contenir au moins 6 caractères';
+            } else if (authError.message.includes('email')) {
+                errorMessage = 'Email invalide';
+            }
+            
+            return { success: false, error: errorMessage };
         }
-    }
-    
-    handleTokenRefreshed(session) {
-        console.log('🔄 Token rafraîchi');
-    }
-    
-    // ===== OPÉRATIONS D'AUTHENTIFICATION =====
-    
-    async signUp(userData) {
+
+        console.log('✅ Utilisateur auth créé:', authData.user.id);
+
+        // 2. Créer l'utilisateur dans la table 'utilisateurs'
         try {
-            await this.ensureInitialized();
-            
-            const { data, error } = await this.supabaseClient.auth.signUp({
-                email: userData.email,
-                password: userData.password,
-                options: {
-                    data: {
+            const { error: dbError } = await supabase
+                .from('utilisateurs')
+                .insert([
+                    {
+                        id: authData.user.id,
+                        email: userData.email,
                         nom_complet: userData.nom_complet,
                         telephone: userData.telephone || null,
-                        ville: userData.ville || null
+                        ville: userData.ville || null,
+                        created_at: new Date().toISOString(),
+                        statut: 'actif'
+                    }
+                ]);
+
+            if (dbError) {
+                console.warn('⚠️ Erreur création profil:', dbError);
+                
+                // Si la table n'existe pas, on la crée
+                if (dbError.message.includes('does not exist')) {
+                    console.log('📋 Table utilisateurs non trouvée, création en cours...');
+                    await creerTableUtilisateurs();
+                    
+                    // Réessayer l'insertion
+                    const { error: retryError } = await supabase
+                        .from('utilisateurs')
+                        .insert([
+                            {
+                                id: authData.user.id,
+                                email: userData.email,
+                                nom_complet: userData.nom_complet,
+                                telephone: userData.telephone || null,
+                                ville: userData.ville || null,
+                                created_at: new Date().toISOString()
+                            }
+                        ]);
+                    
+                    if (retryError) {
+                        console.error('❌ Erreur insertion après création table:', retryError);
                     }
                 }
-            });
-            
-            if (error) throw error;
-            
-            // Créer le profil dans la table profiles
-            if (data.user) {
-                await this.createUserProfile(data.user.id, {
-                    nom_complet: userData.nom_complet,
-                    email: userData.email,
-                    telephone: userData.telephone,
-                    ville: userData.ville
-                });
+            } else {
+                console.log('✅ Profil utilisateur créé avec succès');
             }
-            
-            return {
-                success: true,
-                user: data.user,
-                message: window.MESSAGES.SUCCESS.SIGNED_UP
-            };
-            
-        } catch (error) {
-            console.error('❌ Erreur inscription:', error);
-            return {
-                success: false,
-                error: error.message
-            };
+        } catch (dbError) {
+            console.warn('⚠️ Erreur base de données:', dbError);
+            // On continue même avec l'erreur DB, l'utilisateur est créé dans Auth
         }
-    }
-    
-    async signIn(email, password) {
-        try {
-            await this.ensureInitialized();
+
+        // 3. Connecter automatiquement l'utilisateur après inscription
+        if (authData.user) {
+            // Stocker les informations de session
+            localStorage.setItem('afrimarket_user_id', authData.user.id);
+            localStorage.setItem('afrimarket_user_email', authData.user.email);
+            localStorage.setItem('afrimarket_user_name', userData.nom_complet);
             
-            const { data, error } = await this.supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
-            
-            if (error) throw error;
-            
-            return {
-                success: true,
-                user: data.user,
-                message: window.MESSAGES.SUCCESS.LOGGED_IN
-            };
-            
-        } catch (error) {
-            console.error('❌ Erreur connexion:', error);
-            return {
-                success: false,
-                error: 'Email ou mot de passe incorrect'
-            };
-        }
-    }
-    
-    async signOut() {
-        try {
-            await this.ensureInitialized();
-            
-            const { error } = await this.supabaseClient.auth.signOut();
-            if (error) throw error;
-            
-            return { success: true };
-            
-        } catch (error) {
-            console.error('❌ Erreur déconnexion:', error);
-            return { success: false, error: error.message };
-        }
-    }
-    
-    async resetPassword(email) {
-        try {
-            await this.ensureInitialized();
-            
-            const { error } = await this.supabaseClient.auth.resetPasswordForEmail(email, {
-                redirectTo: window.ConfigUtils.getFullUrl('/reset-password')
-            });
-            
-            if (error) throw error;
-            
-            return {
-                success: true,
-                message: 'Email de réinitialisation envoyé'
-            };
-            
-        } catch (error) {
-            return {
-                success: false,
-                error: error.message
-            };
-        }
-    }
-    
-    // ===== GESTION DES PROFILS =====
-    
-    async createUserProfile(userId, profileData) {
-        try {
-            const { error } = await this.supabaseClient
-                .from('profiles')
-                .insert([{
-                    id: userId,
-                    nom_complet: profileData.nom_complet,
-                    email: profileData.email,
-                    telephone: profileData.telephone || null,
-                    ville: profileData.ville || null,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
-                }]);
-            
-            if (error) throw error;
-            
-            return { success: true };
-            
-        } catch (error) {
-            console.error('❌ Erreur création profil:', error);
-            return { success: false, error: error.message };
-        }
-    }
-    
-    async updateProfile(profileData) {
-        try {
-            await this.ensureInitialized();
-            
-            if (!this.currentUser) {
-                throw new Error('Utilisateur non connecté');
-            }
-            
-            const { error } = await this.supabaseClient
-                .from('profiles')
-                .update({
-                    ...profileData,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', this.currentUser.id);
-            
-            if (error) throw error;
-            
-            // Mettre à jour l'utilisateur local
-            if (this.currentUser.profile) {
-                this.currentUser.profile = { ...this.currentUser.profile, ...profileData };
-                this.saveToLocalStorage();
-            }
-            
-            return {
-                success: true,
-                message: window.MESSAGES.SUCCESS.UPDATED
-            };
-            
-        } catch (error) {
-            return {
-                success: false,
-                error: error.message
-            };
-        }
-    }
-    
-    async getUserProfile(userId = null) {
-        try {
-            await this.ensureInitialized();
-            
-            const targetUserId = userId || this.currentUser?.id;
-            if (!targetUserId) return null;
-            
-            const { data, error } = await this.supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('id', targetUserId)
-                .single();
-            
-            if (error) throw error;
-            
-            return data;
-            
-        } catch (error) {
-            console.error('❌ Erreur récupération profil:', error);
-            return null;
-        }
-    }
-    
-    // ===== UTILITAIRE =====
-    
-    async ensureInitialized() {
-        if (!this.isInitialized) {
-            await this.initialize();
-        }
-        
-        if (!this.supabaseClient) {
-            throw new Error('Supabase non initialisé');
-        }
-    }
-    
-    saveToLocalStorage() {
-        if (!this.currentUser) return;
-        
-        try {
-            localStorage.setItem('afrimarket_user', JSON.stringify({
-                id: this.currentUser.id,
-                email: this.currentUser.email,
-                profile: this.currentUser.profile,
-                timestamp: Date.now()
+            // Mettre à jour l'état de connexion
+            window.dispatchEvent(new CustomEvent('auth-change', { 
+                detail: { loggedIn: true, user: authData.user } 
             }));
-        } catch (error) {
-            console.error('❌ Erreur sauvegarde localStorage:', error);
         }
-    }
-    
-    clearLocalStorage() {
-        try {
-            localStorage.removeItem('afrimarket_user');
-            localStorage.removeItem('supabase.auth.token');
-        } catch (error) {
-            console.error('❌ Erreur nettoyage localStorage:', error);
-        }
-    }
-    
-    // ===== OBSERVATEURS =====
-    
-    addAuthListener(callback) {
-        this.authListeners.push(callback);
-        
-        // Notifier immédiatement
-        if (this.currentState !== this.AUTH_STATES.LOADING) {
-            callback(this.currentState, this.currentUser);
-        }
-        
-        // Retourner une fonction pour supprimer l'écouteur
-        return () => {
-            this.authListeners = this.authListeners.filter(cb => cb !== callback);
+
+        return { 
+            success: true, 
+            message: authData.user.identities && authData.user.identities.length === 0 
+                ? 'Un email de confirmation a été envoyé. Veuillez vérifier votre boîte mail.' 
+                : 'Inscription réussie ! Vous êtes maintenant connecté.',
+            user: authData.user,
+            requiresConfirmation: authData.user.identities && authData.user.identities.length === 0
+        };
+
+    } catch (error) {
+        console.error('❌ Erreur générale inscription:', error);
+        return { 
+            success: false, 
+            error: error.message || 'Une erreur inattendue est survenue. Veuillez réessayer.' 
         };
     }
+}
+
+/**
+ * Créer la table utilisateurs si elle n'existe pas
+ */
+async function creerTableUtilisateurs() {
+    // Cette fonction nécessiterait des privilèges admin
+    // Pour l'instant, on affiche juste des instructions
+    console.log(`
+    ⚠️ IMPORTANT: Créez la table 'utilisateurs' dans Supabase:
     
-    notifyListeners() {
-        this.authListeners.forEach(callback => {
-            try {
-                callback(this.currentState, this.currentUser);
-            } catch (error) {
-                console.error('❌ Erreur listener auth:', error);
+    1. Allez sur https://supabase.com/dashboard/project/mpxlbzsyilvzmgbfopkm
+    2. Cliquez sur "Table Editor"
+    3. Cliquez sur "Create a new table"
+    4. Nom: "utilisateurs"
+    5. Colonnes:
+       - id: UUID (Primary Key, references auth.users(id))
+       - email: TEXT
+       - nom_complet: TEXT
+       - telephone: TEXT (nullable)
+       - ville: TEXT (nullable)
+       - created_at: TIMESTAMP
+       - statut: TEXT (default: 'actif')
+    
+    6. Sauvegarder
+    `);
+    
+    return { success: false, message: 'Table à créer manuellement' };
+}
+
+/**
+ * Connecter un utilisateur existant
+ * @param {string} email - Email de l'utilisateur
+ * @param {string} password - Mot de passe
+ * @returns {Promise<Object>} Résultat de la connexion
+ */
+async function connecterUtilisateur(email, password) {
+    try {
+        console.log('🔄 Tentative de connexion pour:', email);
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+        if (error) {
+            console.error('❌ Erreur connexion:', error);
+            
+            let errorMessage = error.message;
+            if (error.message.includes('Invalid login credentials')) {
+                errorMessage = 'Email ou mot de passe incorrect';
+            } else if (error.message.includes('Email not confirmed')) {
+                errorMessage = 'Veuillez confirmer votre email avant de vous connecter';
             }
-        });
-    }
-    
-    // ===== GETTERS =====
-    
-    getCurrentUser() {
-        return this.currentUser;
-    }
-    
-    getAuthState() {
-        return this.currentState;
-    }
-    
-    isAuthenticated() {
-        return this.currentState === this.AUTH_STATES.AUTHENTICATED;
-    }
-    
-    isLoading() {
-        return this.currentState === this.AUTH_STATES.LOADING;
-    }
-    
-    // ===== AUTH SOCIALE =====
-    
-    async signInWithGoogle() {
-        try {
-            await this.ensureInitialized();
             
-            const { data, error } = await this.supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: window.ConfigUtils.getFullUrl()
-                }
-            });
-            
-            if (error) throw error;
-            
-            return { success: true, data };
-            
-        } catch (error) {
-            return {
-                success: false,
-                error: error.message
-            };
+            return { success: false, error: errorMessage };
         }
-    }
-    
-    async signInWithFacebook() {
-        try {
-            await this.ensureInitialized();
-            
-            const { data, error } = await this.supabaseClient.auth.signInWithOAuth({
-                provider: 'facebook',
-                options: {
-                    redirectTo: window.ConfigUtils.getFullUrl()
-                }
-            });
-            
-            if (error) throw error;
-            
-            return { success: true, data };
-            
-        } catch (error) {
-            return {
-                success: false,
-                error: error.message
-            };
-        }
+
+        console.log('✅ Connexion réussie:', data.user.id);
+        
+        // Stocker les informations utilisateur
+        localStorage.setItem('afrimarket_user_id', data.user.id);
+        localStorage.setItem('afrimarket_user_email', data.user.email);
+        localStorage.setItem('afrimarket_user_name', data.user.user_metadata?.nom_complet || '');
+        
+        // Mettre à jour l'état de connexion
+        window.dispatchEvent(new CustomEvent('auth-change', { 
+            detail: { loggedIn: true, user: data.user } 
+        }));
+
+        return { 
+            success: true, 
+            user: data.user,
+            message: 'Connexion réussie !'
+        };
+    } catch (error) {
+        console.error('❌ Erreur générale connexion:', error);
+        return { 
+            success: false, 
+            error: error.message || 'Erreur de connexion' 
+        };
     }
 }
 
-// ===== INSTANCE GLOBALE =====
-
-// Créer l'instance unique
-const authManager = new AuthManager();
-
-// Exposer au global scope
-window.AuthManager = authManager;
-
-// Initialiser automatiquement
-if (typeof window !== 'undefined') {
-    document.addEventListener('DOMContentLoaded', async function() {
-        await authManager.initialize();
+/**
+ * Déconnecter l'utilisateur
+ * @returns {Promise<Object>} Résultat de la déconnexion
+ */
+async function deconnecterUtilisateur() {
+    try {
+        const { error } = await supabase.auth.signOut();
         
-        // Mettre à jour l'interface UI
-        updateAuthUI();
+        if (error) {
+            return { success: false, error: error.message };
+        }
         
-        // Écouter les changements d'auth
-        authManager.addAuthListener((state, user) => {
-            updateAuthUI();
+        // Supprimer les informations du localStorage
+        localStorage.removeItem('afrimarket_user_id');
+        localStorage.removeItem('afrimarket_user_email');
+        localStorage.removeItem('afrimarket_user_name');
+        
+        // Mettre à jour l'état de connexion
+        window.dispatchEvent(new CustomEvent('auth-change', { 
+            detail: { loggedIn: false, user: null } 
+        }));
+        
+        return { success: true, message: 'Déconnexion réussie' };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Vérifier la session active
+ * @returns {Promise<Object>} État de la session
+ */
+async function verifierSession() {
+    try {
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error) {
+            return { loggedIn: false, user: null, error: error.message };
+        }
+        
+        const loggedIn = !!data.session;
+        
+        if (loggedIn && data.session.user) {
+            // Mettre à jour le localStorage
+            localStorage.setItem('afrimarket_user_id', data.session.user.id);
+            localStorage.setItem('afrimarket_user_email', data.session.user.email);
+            localStorage.setItem('afrimarket_user_name', data.session.user.user_metadata?.nom_complet || '');
+        }
+        
+        return { 
+            loggedIn: loggedIn, 
+            user: data.session?.user || null,
+            session: data.session
+        };
+    } catch (error) {
+        console.error('❌ Erreur vérification session:', error);
+        return { loggedIn: false, user: null, error: error.message };
+    }
+}
+
+/**
+ * Vérifier si l'utilisateur est connecté (version simplifiée)
+ * @returns {boolean} True si connecté
+ */
+function estConnecte() {
+    return !!localStorage.getItem('afrimarket_user_id');
+}
+
+/**
+ * Obtenir les informations de l'utilisateur connecté
+ * @returns {Object|null} Informations utilisateur
+ */
+function obtenirUtilisateur() {
+    if (!estConnecte()) return null;
+    
+    return {
+        id: localStorage.getItem('afrimarket_user_id'),
+        email: localStorage.getItem('afrimarket_user_email'),
+        nom_complet: localStorage.getItem('afrimarket_user_name')
+    };
+}
+
+/**
+ * Réinitialiser le mot de passe
+ * @param {string} email - Email de l'utilisateur
+ * @returns {Promise<Object>} Résultat
+ */
+async function reinitialiserMotDePasse(email) {
+    try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/reset-password.html`
         });
+
+        if (error) {
+            return { success: false, error: error.message };
+        }
+
+        return { 
+            success: true, 
+            message: 'Un email de réinitialisation a été envoyé' 
+        };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Mettre à jour le profil utilisateur
+ * @param {Object} updates - Données à mettre à jour
+ * @returns {Promise<Object>} Résultat
+ */
+async function mettreAJourProfil(updates) {
+    try {
+        // Mettre à jour dans Auth
+        const { data: authData, error: authError } = await supabase.auth.updateUser({
+            data: updates
+        });
+
+        if (authError) {
+            return { success: false, error: authError.message };
+        }
+
+        // Mettre à jour dans la table utilisateurs
+        const { error: dbError } = await supabase
+            .from('utilisateurs')
+            .update(updates)
+            .eq('id', authData.user.id);
+
+        if (dbError) {
+            console.warn('⚠️ Erreur mise à jour DB:', dbError);
+            // On retourne quand même le succès car Auth est mis à jour
+        }
+
+        // Mettre à jour le localStorage si le nom change
+        if (updates.nom_complet) {
+            localStorage.setItem('afrimarket_user_name', updates.nom_complet);
+        }
+
+        return { 
+            success: true, 
+            message: 'Profil mis à jour avec succès',
+            user: authData.user 
+        };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+// =============================================
+// UTILITAIRES
+// =============================================
+
+/**
+ * Afficher une notification
+ * @param {string} message - Message à afficher
+ * @param {string} type - Type de notification (success, error, warning, info)
+ */
+function afficherNotification(message, type = 'info') {
+    // Supprimer les notifications existantes
+    const existingNotif = document.querySelector('.custom-notification');
+    if (existingNotif) existingNotif.remove();
+
+    // Créer la notification
+    const notif = document.createElement('div');
+    notif.className = `custom-notification ${type}`;
+    notif.innerHTML = `
+        <div class="notification-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                           type === 'error' ? 'fa-exclamation-circle' : 
+                           type === 'warning' ? 'fa-exclamation-triangle' : 
+                           'fa-info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+        <button class="notification-close"><i class="fas fa-times"></i></button>
+    `;
+
+    // Styles CSS
+    notif.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background: ${type === 'success' ? '#10b981' : 
+                     type === 'error' ? '#ef4444' : 
+                     type === 'warning' ? '#f59e0b' : 
+                     '#3b82f6'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 300px;
+        max-width: 400px;
+        animation: slideIn 0.3s ease;
+    `;
+
+    // Style pour le contenu
+    const contentStyle = `
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin-left: 15px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .notification-close:hover {
+            opacity: 1;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    `;
+
+    // Ajouter les styles
+    const style = document.createElement('style');
+    style.textContent = contentStyle;
+    document.head.appendChild(style);
+
+    // Ajouter au DOM
+    document.body.appendChild(notif);
+
+    // Fermer au clic
+    notif.querySelector('.notification-close').addEventListener('click', () => {
+        notif.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notif.remove(), 300);
     });
-}
 
-// ===== FONCTIONS UI =====
-
-function updateAuthUI() {
-    const authButtons = document.getElementById('auth-buttons');
-    const userMenu = document.getElementById('user-menu');
-    
-    if (!authButtons && !userMenu) return;
-    
-    const state = authManager.getAuthState();
-    const user = authManager.getCurrentUser();
-    
-    // Cacher tous les éléments d'auth d'abord
-    const allAuthElements = document.querySelectorAll('.auth-element');
-    allAuthElements.forEach(el => el.style.display = 'none');
-    
-    if (state === authManager.AUTH_STATES.LOADING) {
-        // État de chargement
-        showLoadingAuth();
-        
-    } else if (state === authManager.AUTH_STATES.AUTHENTICATED && user) {
-        // Utilisateur connecté
-        showAuthenticatedUI(user);
-        
-    } else {
-        // Non connecté
-        showUnauthenticatedUI();
-    }
-}
-
-function showLoadingAuth() {
-    const authButtons = document.getElementById('auth-buttons');
-    if (authButtons) {
-        authButtons.innerHTML = `
-            <div class="auth-loading">
-                <i class="fas fa-spinner fa-spin"></i>
-                <span>Chargement...</span>
-            </div>
-        `;
-    }
-}
-
-function showAuthenticatedUI(user) {
-    const authButtons = document.getElementById('auth-buttons');
-    if (authButtons) {
-        const displayName = user.profile?.nom_complet || user.email.split('@')[0];
-        const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-        
-        authButtons.innerHTML = `
-            <div class="user-menu">
-                <div class="user-avatar" onclick="toggleUserMenu()">
-                    ${initials}
-                </div>
-                <div class="user-dropdown" id="user-dropdown">
-                    <div class="user-info">
-                        <strong>${displayName}</strong>
-                        <small>${user.email}</small>
-                    </div>
-                    <a href="historique.html" class="dropdown-item">
-                        <i class="fas fa-history"></i> Mes annonces
-                    </a>
-                    <a href="publier.html" class="dropdown-item">
-                        <i class="fas fa-plus-circle"></i> Publier
-                    </a>
-                    <a href="profile.html" class="dropdown-item">
-                        <i class="fas fa-user-cog"></i> Mon profil
-                    </a>
-                    <hr>
-                    <button onclick="logout()" class="dropdown-item logout">
-                        <i class="fas fa-sign-out-alt"></i> Déconnexion
-                    </button>
-                </div>
-            </div>
-        `;
-    }
-}
-
-function showUnauthenticatedUI() {
-    const authButtons = document.getElementById('auth-buttons');
-    if (authButtons) {
-        authButtons.innerHTML = `
-            <a href="connexion.html" class="btn btn-login">
-                <i class="fas fa-sign-in-alt"></i> Connexion
-            </a>
-            <a href="inscription.html" class="btn btn-secondary" style="margin-left: 8px;">
-                <i class="fas fa-user-plus"></i> Inscription
-            </a>
-        `;
-    }
-}
-
-// ===== FONCTIONS GLOBALES =====
-
-window.toggleUserMenu = function() {
-    const dropdown = document.getElementById('user-dropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('show');
-    }
-};
-
-window.logout = async function() {
-    if (confirm(window.MESSAGES.CONFIRM.LOGOUT)) {
-        const result = await authManager.signOut();
-        if (result.success) {
-            window.location.href = 'index.html';
+    // Fermer automatiquement après 5 secondes
+    setTimeout(() => {
+        if (notif.parentNode) {
+            notif.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notif.remove(), 300);
         }
-    }
-};
+    }, 5000);
+}
 
-// Fermer le dropdown en cliquant ailleurs
-document.addEventListener('click', function(event) {
-    const dropdown = document.getElementById('user-dropdown');
-    const avatar = document.querySelector('.user-avatar');
+/**
+ * Gérer les erreurs de formulaire
+ * @param {string} fieldId - ID du champ
+ * @param {string} message - Message d'erreur
+ * @param {boolean} isValid - Si le champ est valide
+ */
+function gererErreurChamp(fieldId, message, isValid) {
+    const field = document.getElementById(fieldId);
+    const formGroup = field.closest('.form-group');
     
-    if (dropdown && dropdown.classList.contains('show') && 
-        !dropdown.contains(event.target) && 
-        !avatar.contains(event.target)) {
-        dropdown.classList.remove('show');
+    if (!formGroup) return;
+    
+    // Supprimer les erreurs existantes
+    const existingError = formGroup.querySelector('.error-message');
+    if (existingError) existingError.remove();
+    
+    // Retirer les classes d'erreur précédentes
+    field.classList.remove('error');
+    formGroup.classList.remove('has-error');
+    
+    if (!isValid) {
+        // Ajouter la classe d'erreur
+        field.classList.add('error');
+        formGroup.classList.add('has-error');
+        
+        // Créer le message d'erreur
+        const errorElement = document.createElement('div');
+        errorElement.className = 'error-message';
+        errorElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+        errorElement.style.cssText = `
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        `;
+        
+        formGroup.appendChild(errorElement);
+    }
+}
+
+// =============================================
+// EXPORTATION DES FONCTIONS
+// =============================================
+window.inscrireUtilisateur = inscrireUtilisateur;
+window.connecterUtilisateur = connecterUtilisateur;
+window.deconnecterUtilisateur = deconnecterUtilisateur;
+window.verifierSession = verifierSession;
+window.estConnecte = estConnecte;
+window.obtenirUtilisateur = obtenirUtilisateur;
+window.reinitialiserMotDePasse = reinitialiserMotDePasse;
+window.mettreAJourProfil = mettreAJourProfil;
+window.afficherNotification = afficherNotification;
+window.gererErreurChamp = gererErreurChamp;
+
+console.log('✅ auth.js chargé avec succès');
+
+// Vérifier la session au chargement
+document.addEventListener('DOMContentLoaded', async function() {
+    const session = await verifierSession();
+    if (session.loggedIn) {
+        console.log('👤 Utilisateur connecté:', session.user.email);
     }
 });
-
-// Export pour modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { AuthManager, authManager };
-}

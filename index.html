@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - AFRIMARKET</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <!-- IMPORTANT: Inclure Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+        }
+        
+        .notification.success {
+            background: #10b981;
+        }
+        
+        .notification.error {
+            background: #ef4444;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+        
+        .loading-spinner {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <!-- Overlay de chargement -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 15px;">Inscription en cours...</p>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-arrow-left"></i>
+                <h1 style="font-family: 'Montserrat', sans-serif;">AFRI<span style="color: var(--primary-red);">MARKET</span></h1>
+            </a>
+            <div class="header-actions">
+                <button class="theme-btn" id="theme-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2><i class="fas fa-user-plus"></i> Créer un compte</h2>
+                <p>Rejoignez AFRIMARKET pour publier vos annonces</p>
+            </div>
+
+            <form id="inscription-form" class="auth-form">
+                <!-- Nom complet -->
+                <div class="form-group">
+                    <label for="nom-complet" class="form-label required">
+                        <i class="fas fa-user"></i> Nom complet
+                    </label>
+                    <input type="text" id="nom-complet" name="nom_complet" 
+                           placeholder="Ex: Jean Dupont" required>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email" class="form-label required">
+                        <i class="fas fa-envelope"></i> Adresse email
+                    </label>
+                    <input type="email" id="email" name="email" 
+                           placeholder="exemple@email.com" required>
+                </div>
+
+                <!-- Mot de passe -->
+                <div class="form-group">
+                    <label for="password" class="form-label required">
+                        <i class="fas fa-lock"></i> Mot de passe
+                    </label>
+                    <div class="password-input">
+                        <input type="password" id="password" name="password" 
+                               placeholder="Minimum 6 caractères" required minlength="6">
+                        <button type="button" class="toggle-password" id="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Confirmation mot de passe -->
+                <div class="form-group">
+                    <label for="confirm-password" class="form-label required">
+                        <i class="fas fa-lock"></i> Confirmer le mot de passe
+                    </label>
+                    <input type="password" id="confirm-password" 
+                           placeholder="Retapez votre mot de passe" required>
+                    <div id="password-match" class="form-hint"></div>
+                </div>
+
+                <!-- Conditions -->
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="conditions" name="conditions" required>
+                    <label for="conditions">
+                        J'accepte les conditions d'utilisation
+                    </label>
+                </div>
+
+                <!-- Bouton d'inscription -->
+                <button type="submit" class="btn auth-btn" id="submit-btn">
+                    <i class="fas fa-user-plus"></i> S'inscrire
+                </button>
+
+                <div class="auth-footer">
+                    <p>Déjà un compte ? <a href="connexion.html" class="link">Se connecter</a></p>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Configuration Supabase
+        const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
+        
+        let supabaseClient = null;
+        
+        // Fonction pour afficher les notifications
+        function showNotification(message, type = 'info') {
+            // Supprimer les anciennes notifications
+            const oldNotif = document.querySelector('.notification');
+            if (oldNotif) oldNotif.remove();
+            
+            // Créer la nouvelle notification
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                               type === 'error' ? 'fa-exclamation-circle' : 
+                               'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notif);
+            
+            // Supprimer après 5 secondes
+            setTimeout(() => notif.remove(), 5000);
+        }
+        
+        // Fonction pour montrer/cacher le loading
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            if (show) {
+                overlay.style.display = 'flex';
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inscription...';
+            } else {
+                overlay.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> S\'inscrire';
+            }
+        }
+        
+        // Fonction d'inscription
+        async function inscrireUtilisateur(userData) {
+            try {
+                console.log('Inscription pour:', userData.email);
+                
+                // Inscription avec Supabase
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: userData.email,
+                    password: userData.password,
+                    options: {
+                        data: {
+                            nom_complet: userData.nom_complet
+                        }
+                    }
+                });
+                
+                if (error) {
+                    console.error('Erreur Supabase:', error);
+                    
+                    let errorMsg = error.message;
+                    if (error.message.includes('already registered')) {
+                        errorMsg = 'Un compte existe déjà avec cet email';
+                    } else if (error.message.includes('password')) {
+                        errorMsg = 'Le mot de passe doit contenir au moins 6 caractères';
+                    }
+                    
+                    return { success: false, error: errorMsg };
+                }
+                
+                console.log('✅ Inscription réussie:', data);
+                
+                // Stocker les infos utilisateur
+                if (data.user) {
+                    localStorage.setItem('afrimarket_user_id', data.user.id);
+                    localStorage.setItem('afrimarket_user_email', data.user.email);
+                    localStorage.setItem('afrimarket_user_name', userData.nom_complet);
+                    localStorage.setItem('afrimarket_logged_in', 'true');
+                }
+                
+                return { 
+                    success: true, 
+                    message: 'Inscription réussie !',
+                    user: data.user,
+                    requiresEmailConfirmation: data.user?.identities?.length === 0
+                };
+                
+            } catch (error) {
+                console.error('Erreur générale:', error);
+                return { 
+                    success: false, 
+                    error: 'Erreur technique. Veuillez réessayer.' 
+                };
+            }
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page inscription chargée');
+            
+            // Initialiser Supabase
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true
+                    }
+                });
+                console.log('✅ Supabase initialisé');
+            } else {
+                showNotification('Erreur: Supabase non chargé', 'error');
+            }
+            
+            // Gestion du thème
+            const themeBtn = document.getElementById('theme-btn');
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            document.body.className = savedTheme;
+            
+            themeBtn.addEventListener('click', function() {
+                const isDark = document.body.classList.contains('dark-mode');
+                document.body.className = isDark ? 'light-mode' : 'dark-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+            });
+            
+            // Toggle mot de passe
+            const toggleBtn = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password');
+            
+            toggleBtn.addEventListener('click', function() {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                toggleBtn.innerHTML = type === 'password' ? 
+                    '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+            
+            // Vérification confirmation mot de passe
+            const confirmInput = document.getElementById('confirm-password');
+            const matchHint = document.getElementById('password-match');
+            
+            confirmInput.addEventListener('input', function() {
+                const match = this.value === passwordInput.value;
+                matchHint.textContent = match ? '✅ Mots de passe identiques' : '❌ Mots de passe différents';
+                matchHint.style.color = match ? '#10b981' : '#ef4444';
+            });
+            
+            // Soumission formulaire
+            const form = document.getElementById('inscription-form');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                console.log('Formulaire soumis');
+                
+                // Validation
+                if (passwordInput.value !== confirmInput.value) {
+                    showNotification('Les mots de passe ne correspondent pas', 'error');
+                    return;
+                }
+                
+                if (passwordInput.value.length < 6) {
+                    showNotification('Le mot de passe doit contenir au moins 6 caractères', 'error');
+                    return;
+                }
+                
+                // Données utilisateur
+                const userData = {
+                    nom_complet: document.getElementById('nom-complet').value.trim(),
+                    email: document.getElementById('email').value.trim().toLowerCase(),
+                    password: passwordInput.value
+                };
+                
+                // Validation email
+                if (!userData.email.includes('@')) {
+                    showNotification('Email invalide', 'error');
+                    return;
+                }
+                
+                // Afficher le loading
+                showLoading(true);
+                
+                try {
+                    // Appeler la fonction d'inscription
+                    const result = await inscrireUtilisateur(userData);
+                    
+                    if (result.success) {
+                        showNotification(result.message, 'success');
+                        
+                        // Redirection DIRECTE vers index.html après 2 secondes
+                        setTimeout(() => {
+                            console.log('Redirection vers index.html');
+                            window.location.href = 'index.html?welcome=true';
+                        }, 2000);
+                        
+                    } else {
+                        showNotification('Erreur: ' + result.error, 'error');
+                        showLoading(false);
+                    }
+                    
+                } catch (error) {
+                    console.error('Erreur catch:', error);
+                    showNotification('Erreur technique: ' + error.message, 'error');
+                    showLoading(false);
+                }
+            });
+            
+            // Vérifier que tout est prêt
+            setTimeout(() => {
+                if (!supabaseClient) {
+                    showNotification('⚠️ Supabase non initialisé. Rechargez la page.', 'error');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

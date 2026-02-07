@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <!-- IMPORTANT: Inclure Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 </head>
 <body class="light-mode">
     <header class="header">
@@ -91,7 +93,69 @@
         </div>
     </main>
 
+    <!-- Script de vérification pour Supabase -->
+    <script>
+        // Vérifier que Supabase est chargé
+        function verifierSupabase() {
+            if (typeof supabase === 'undefined') {
+                console.error('❌ Supabase non chargé !');
+                console.log('Tentative de rechargement...');
+                
+                // Charger Supabase dynamiquement
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js';
+                script.onload = function() {
+                    console.log('✅ Supabase chargé dynamiquement');
+                    // Recharger auth.js après Supabase
+                    chargerAuthJS();
+                };
+                document.head.appendChild(script);
+                return false;
+            }
+            console.log('✅ Supabase est prêt');
+            return true;
+        }
+        
+        // Charger auth.js après Supabase
+        function chargerAuthJS() {
+            // Supprimer l'ancien script s'il existe
+            const oldScript = document.querySelector('script[src="auth.js"]');
+            if (oldScript) oldScript.remove();
+            
+            // Créer un nouveau script
+            const script = document.createElement('script');
+            script.src = 'auth.js';
+            script.onload = function() {
+                console.log('✅ auth.js chargé avec succès');
+            };
+            script.onerror = function() {
+                console.error('❌ Erreur chargement auth.js');
+            };
+            document.body.appendChild(script);
+        }
+        
+        // Vérifier au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔄 Vérification des dépendances...');
+            verifierSupabase();
+            
+            // Vérifier si l'utilisateur est déjà connecté
+            setTimeout(async () => {
+                if (typeof verifierSession !== 'undefined') {
+                    const session = await verifierSession();
+                    if (session.loggedIn) {
+                        console.log('👤 Utilisateur déjà connecté, redirection...');
+                        window.location.href = 'index.html';
+                    }
+                }
+            }, 500);
+        });
+    </script>
+    
+    <!-- Charger auth.js -->
     <script src="auth.js"></script>
+    
+    <!-- Votre script principal -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Gestion du thème
@@ -116,39 +180,94 @@
                     '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
             });
 
-            // Soumission formulaire
+            // Soumission formulaire - VERSION CORRIGÉE
             const form = document.getElementById('connexion-form');
             const loginBtn = document.getElementById('login-btn');
             
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                const email = document.getElementById('login-email').value;
+                console.log('🔄 Début de la connexion...');
+                
+                const email = document.getElementById('login-email').value.trim().toLowerCase();
                 const password = document.getElementById('login-password').value;
                 const rememberMe = document.getElementById('remember-me').checked;
 
+                // Validation basique
+                if (!email || !password) {
+                    alert('❌ Veuillez remplir tous les champs');
+                    return;
+                }
+                
+                if (!email.includes('@') || !email.includes('.')) {
+                    alert('❌ Veuillez entrer une adresse email valide');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    alert('❌ Le mot de passe doit contenir au moins 6 caractères');
+                    return;
+                }
+
+                console.log('📝 Tentative de connexion pour:', email);
+
+                // Vérifier que la fonction existe
+                if (typeof connecterUtilisateur === 'undefined') {
+                    alert('❌ Erreur: Service de connexion non disponible. Veuillez rafraîchir la page.');
+                    return;
+                }
+
                 // Désactiver bouton
                 loginBtn.disabled = true;
-                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion en cours...';
 
                 try {
-                    // Appeler la fonction de connexion depuis auth.js
+                    // Appeler la fonction de connexion
+                    console.log('📤 Appel de connecterUtilisateur...');
                     const result = await connecterUtilisateur(email, password, rememberMe);
+                    console.log('📥 Résultat:', result);
                     
                     if (result.success) {
-                        // Redirection vers l'accueil
-                        window.location.href = 'index.html';
+                        alert('✅ ' + (result.message || 'Connexion réussie !'));
+                        
+                        // Petite pause avant redirection
+                        setTimeout(() => {
+                            // Vérifier s'il y a une URL de retour dans l'URL
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const redirectUrl = urlParams.get('redirect') || 'index.html';
+                            window.location.href = redirectUrl;
+                        }, 1000);
+                        
                     } else {
-                        alert('Erreur: ' + result.error);
+                        alert('❌ Erreur: ' + result.error);
                         loginBtn.disabled = false;
                         loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Se connecter';
                     }
                 } catch (error) {
-                    alert('Erreur lors de la connexion: ' + error.message);
+                    console.error('💥 Erreur catch:', error);
+                    alert('❌ Erreur technique: ' + (error.message || 'Veuillez réessayer'));
                     loginBtn.disabled = false;
                     loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Se connecter';
                 }
             });
+            
+            // Connexion Google (placeholder)
+            document.getElementById('login-google').addEventListener('click', function() {
+                alert('🚧 Connexion Google - Fonctionnalité en développement');
+            });
+            
+            // Connexion Facebook (placeholder)
+            document.getElementById('login-facebook').addEventListener('click', function() {
+                alert('🚧 Connexion Facebook - Fonctionnalité en développement');
+            });
+            
+            // Test: Vérifier que tout fonctionne
+            setTimeout(() => {
+                console.log('🧪 Test de disponibilité des fonctions:');
+                console.log('- connecterUtilisateur:', typeof connecterUtilisateur);
+                console.log('- verifierSession:', typeof verifierSession);
+                console.log('- supabase:', typeof supabase);
+            }, 1000);
         });
     </script>
 </body>

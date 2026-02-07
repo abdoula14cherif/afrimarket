@@ -7,10 +7,68 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
-    <!-- IMPORTANT: Inclure Supabase JS -->
+    <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <style>
+        .debug-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            font-size: 12px;
+            font-family: monospace;
+            z-index: 9999;
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            max-width: 300px;
+            display: none;
+        }
+        
+        .error-message {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 5px;
+            padding: 8px;
+            background: #ffeeee;
+            border-radius: 5px;
+            border-left: 4px solid #ff4444;
+        }
+        
+        .success-message {
+            color: #00aa00;
+            font-size: 14px;
+            margin-top: 5px;
+            padding: 8px;
+            background: #eeffee;
+            border-radius: 5px;
+            border-left: 4px solid #00aa00;
+        }
+        
+        .loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .welcome-message {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+    </style>
 </head>
 <body class="light-mode">
+    <!-- Panneau de débogage -->
+    <div class="debug-panel" id="debugPanel">
+        <div><strong>AFRIMARKET DEBUG</strong></div>
+        <div id="debugStatus">Chargement...</div>
+        <button onclick="toggleDebug()" style="margin-top: 5px; padding: 3px 8px; font-size: 10px;">Debug On/Off</button>
+    </div>
+
     <header class="header">
         <div class="header-container">
             <a href="index.html" class="logo">
@@ -30,6 +88,14 @@
             <div class="auth-header">
                 <h2><i class="fas fa-sign-in-alt"></i> Connexion</h2>
                 <p>Connectez-vous à votre compte AFRIMARKET</p>
+                <div id="form-messages"></div>
+                
+                <!-- Message de bienvenue après inscription -->
+                <div id="welcome-message" style="display: none;" class="welcome-message">
+                    <i class="fas fa-check-circle" style="color: #4caf50; font-size: 24px; margin-bottom: 10px;"></i>
+                    <h3 style="margin: 10px 0; color: #2e7d32;">Inscription réussie !</h3>
+                    <p>Vous pouvez maintenant vous connecter avec vos identifiants.</p>
+                </div>
             </div>
 
             <form id="connexion-form" class="auth-form">
@@ -40,6 +106,7 @@
                     </label>
                     <input type="email" id="login-email" name="email" 
                            placeholder="exemple@email.com" required>
+                    <div class="error-container" id="error-email"></div>
                 </div>
 
                 <!-- Mot de passe -->
@@ -62,6 +129,7 @@
                             Mot de passe oublié ?
                         </a>
                     </div>
+                    <div class="error-container" id="error-password"></div>
                 </div>
 
                 <!-- Bouton de connexion -->
@@ -93,71 +161,135 @@
         </div>
     </main>
 
-    <!-- Script de vérification pour Supabase -->
+    <!-- SCRIPT AUTH.JS -->
+    <script src="auth.js"></script>
+    
+    <!-- SCRIPT PRINCIPAL -->
     <script>
-        // Vérifier que Supabase est chargé
-        function verifierSupabase() {
-            if (typeof supabase === 'undefined') {
-                console.error('❌ Supabase non chargé !');
-                console.log('Tentative de rechargement...');
-                
-                // Charger Supabase dynamiquement
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js';
-                script.onload = function() {
-                    console.log('✅ Supabase chargé dynamiquement');
-                    // Recharger auth.js après Supabase
-                    chargerAuthJS();
-                };
-                document.head.appendChild(script);
-                return false;
+        // Variables globales
+        let isSubmitting = false;
+        let debugMode = localStorage.getItem('afrimarket_debug') === 'true';
+        
+        // Fonctions utilitaires
+        function showDebug(message) {
+            if (debugMode) {
+                console.log('🔍 ' + message);
+                document.getElementById('debugStatus').textContent = message;
+                document.getElementById('debugPanel').style.display = 'block';
             }
-            console.log('✅ Supabase est prêt');
-            return true;
         }
         
-        // Charger auth.js après Supabase
-        function chargerAuthJS() {
-            // Supprimer l'ancien script s'il existe
-            const oldScript = document.querySelector('script[src="auth.js"]');
-            if (oldScript) oldScript.remove();
+        function toggleDebug() {
+            debugMode = !debugMode;
+            localStorage.setItem('afrimarket_debug', debugMode);
+            document.getElementById('debugPanel').style.display = debugMode ? 'block' : 'none';
+            showDebug('Debug ' + (debugMode ? 'activé' : 'désactivé'));
+        }
+        
+        function showError(elementId, message) {
+            const container = document.getElementById(elementId);
+            if (container) {
+                container.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-circle"></i> ${message}</div>`;
+            }
+        }
+        
+        function clearError(elementId) {
+            const container = document.getElementById(elementId);
+            if (container) container.innerHTML = '';
+        }
+        
+        function showMessage(type, message) {
+            const messages = document.getElementById('form-messages');
+            const className = type === 'error' ? 'error-message' : 'success-message';
+            const icon = type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle';
+            messages.innerHTML = `<div class="${className}"><i class="fas ${icon}"></i> ${message}</div>`;
+            setTimeout(() => {
+                messages.innerHTML = '';
+            }, 5000);
+        }
+        
+        function showLoading(show) {
+            const btn = document.getElementById('login-btn');
+            const form = document.getElementById('connexion-form');
+            if (show) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+                form.classList.add('loading');
+                isSubmitting = true;
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Se connecter';
+                form.classList.remove('loading');
+                isSubmitting = false;
+            }
+        }
+        
+        // Fonction de validation
+        function validateForm() {
+            let isValid = true;
             
-            // Créer un nouveau script
-            const script = document.createElement('script');
-            script.src = 'auth.js';
-            script.onload = function() {
-                console.log('✅ auth.js chargé avec succès');
-            };
-            script.onerror = function() {
-                console.error('❌ Erreur chargement auth.js');
-            };
-            document.body.appendChild(script);
+            // Email
+            const email = document.getElementById('login-email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showError('error-email', 'Adresse email invalide');
+                isValid = false;
+            } else {
+                clearError('error-email');
+            }
+            
+            // Mot de passe
+            const password = document.getElementById('login-password').value;
+            if (password.length < 6) {
+                showError('error-password', 'Le mot de passe doit contenir au moins 6 caractères');
+                isValid = false;
+            } else {
+                clearError('error-password');
+            }
+            
+            return isValid;
         }
         
-        // Vérifier au chargement
+        // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔄 Vérification des dépendances...');
-            verifierSupabase();
+            showDebug('Page connexion chargée');
             
-            // Vérifier si l'utilisateur est déjà connecté
+            // Activer debug si dans l'URL
+            if (window.location.search.includes('debug=true')) {
+                debugMode = true;
+                localStorage.setItem('afrimarket_debug', 'true');
+                toggleDebug();
+            }
+            
+            // Afficher message de bienvenue après inscription
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('inscription') === 'success') {
+                document.getElementById('welcome-message').style.display = 'block';
+                
+                // Remplir automatiquement l'email si stocké
+                const tempUser = localStorage.getItem('afrimarket_temp_user');
+                if (tempUser) {
+                    try {
+                        const user = JSON.parse(tempUser);
+                        document.getElementById('login-email').value = user.email;
+                        localStorage.removeItem('afrimarket_temp_user');
+                    } catch (e) {
+                        // Ignorer les erreurs
+                    }
+                }
+            }
+            
+            // Vérifier si déjà connecté
             setTimeout(async () => {
-                if (typeof verifierSession !== 'undefined') {
-                    const session = await verifierSession();
+                if (typeof window.verifierSession === 'function') {
+                    const session = await window.verifierSession();
                     if (session.loggedIn) {
-                        console.log('👤 Utilisateur déjà connecté, redirection...');
+                        showDebug('Déjà connecté, redirection...');
                         window.location.href = 'index.html';
                     }
                 }
-            }, 500);
-        });
-    </script>
-    
-    <!-- Charger auth.js -->
-    <script src="auth.js"></script>
-    
-    <!-- Votre script principal -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+            }, 1000);
+            
             // Gestion du thème
             const themeBtn = document.getElementById('theme-btn');
             const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
@@ -167,8 +299,9 @@
                 const isDark = document.body.classList.contains('dark-mode');
                 document.body.className = isDark ? 'light-mode' : 'dark-mode';
                 localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+                showDebug('Thème changé');
             });
-
+            
             // Toggle mot de passe
             const toggleBtn = document.getElementById('login-toggle-password');
             const passwordInput = document.getElementById('login-password');
@@ -179,96 +312,106 @@
                 toggleBtn.innerHTML = type === 'password' ? 
                     '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
             });
-
-            // Soumission formulaire - VERSION CORRIGÉE
+            
+            // Soumission formulaire
             const form = document.getElementById('connexion-form');
-            const loginBtn = document.getElementById('login-btn');
             
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                console.log('🔄 Début de la connexion...');
+                if (isSubmitting) {
+                    showDebug('Déjà en cours de connexion');
+                    return;
+                }
                 
+                showDebug('Début connexion');
+                
+                // Validation
+                if (!validateForm()) {
+                    showDebug('Échec validation');
+                    return;
+                }
+                
+                // Données de connexion
                 const email = document.getElementById('login-email').value.trim().toLowerCase();
                 const password = document.getElementById('login-password').value;
                 const rememberMe = document.getElementById('remember-me').checked;
-
-                // Validation basique
-                if (!email || !password) {
-                    alert('❌ Veuillez remplir tous les champs');
-                    return;
-                }
                 
-                if (!email.includes('@') || !email.includes('.')) {
-                    alert('❌ Veuillez entrer une adresse email valide');
-                    return;
-                }
+                showDebug(`Connexion: ${email}`);
+                showLoading(true);
                 
-                if (password.length < 6) {
-                    alert('❌ Le mot de passe doit contenir au moins 6 caractères');
-                    return;
-                }
-
-                console.log('📝 Tentative de connexion pour:', email);
-
-                // Vérifier que la fonction existe
-                if (typeof connecterUtilisateur === 'undefined') {
-                    alert('❌ Erreur: Service de connexion non disponible. Veuillez rafraîchir la page.');
-                    return;
-                }
-
-                // Désactiver bouton
-                loginBtn.disabled = true;
-                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion en cours...';
-
                 try {
+                    // Vérifier que la fonction existe
+                    if (typeof window.connecterUtilisateur !== 'function') {
+                        throw new Error('Service de connexion indisponible. Rechargez la page.');
+                    }
+                    
+                    showDebug('Appel connexion...');
+                    
                     // Appeler la fonction de connexion
-                    console.log('📤 Appel de connecterUtilisateur...');
-                    const result = await connecterUtilisateur(email, password, rememberMe);
-                    console.log('📥 Résultat:', result);
+                    const result = await window.connecterUtilisateur(email, password, rememberMe);
+                    
+                    showDebug('Résultat: ' + (result.success ? 'SUCCÈS' : 'ÉCHEC'));
                     
                     if (result.success) {
-                        alert('✅ ' + (result.message || 'Connexion réussie !'));
+                        showMessage('success', result.message || 'Connexion réussie !');
+                        showDebug('Redirection dans 1 seconde...');
                         
-                        // Petite pause avant redirection
+                        // Redirection
                         setTimeout(() => {
-                            // Vérifier s'il y a une URL de retour dans l'URL
-                            const urlParams = new URLSearchParams(window.location.search);
+                            // Vérifier s'il y a une URL de retour
                             const redirectUrl = urlParams.get('redirect') || 'index.html';
                             window.location.href = redirectUrl;
                         }, 1000);
                         
                     } else {
-                        alert('❌ Erreur: ' + result.error);
-                        loginBtn.disabled = false;
-                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Se connecter';
+                        // Messages d'erreur personnalisés
+                        let errorMsg = result.error;
+                        if (result.error.includes('Invalid login credentials')) {
+                            errorMsg = 'Email ou mot de passe incorrect';
+                        } else if (result.error.includes('Email not confirmed')) {
+                            errorMsg = 'Veuillez confirmer votre email avant de vous connecter';
+                        } else if (result.error.includes('too many requests')) {
+                            errorMsg = 'Trop de tentatives. Veuillez réessayer plus tard';
+                        }
+                        
+                        showMessage('error', errorMsg);
+                        showLoading(false);
                     }
+                    
                 } catch (error) {
-                    console.error('💥 Erreur catch:', error);
-                    alert('❌ Erreur technique: ' + (error.message || 'Veuillez réessayer'));
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Se connecter';
+                    console.error('ERREUR CATCH:', error);
+                    showMessage('error', 'Erreur technique: ' + error.message);
+                    showLoading(false);
+                    showDebug('Erreur: ' + error.message);
                 }
             });
             
-            // Connexion Google (placeholder)
+            // Connexion sociale (placeholder)
             document.getElementById('login-google').addEventListener('click', function() {
-                alert('🚧 Connexion Google - Fonctionnalité en développement');
+                alert('Fonctionnalité Google en développement');
             });
             
-            // Connexion Facebook (placeholder)
             document.getElementById('login-facebook').addEventListener('click', function() {
-                alert('🚧 Connexion Facebook - Fonctionnalité en développement');
+                alert('Fonctionnalité Facebook en développement');
             });
             
-            // Test: Vérifier que tout fonctionne
+            // Vérifier l'état initial
             setTimeout(() => {
-                console.log('🧪 Test de disponibilité des fonctions:');
-                console.log('- connecterUtilisateur:', typeof connecterUtilisateur);
-                console.log('- verifierSession:', typeof verifierSession);
-                console.log('- supabase:', typeof supabase);
+                showDebug(`Fonctions: ${typeof window.connecterUtilisateur}`);
+                showDebug(`Supabase: ${typeof window.supabase}`);
+                
+                // Pré-remplir l'email depuis localStorage
+                const savedEmail = localStorage.getItem('afrimarket_user_email');
+                if (savedEmail && document.getElementById('login-email').value === '') {
+                    document.getElementById('login-email').value = savedEmail;
+                    document.getElementById('remember-me').checked = true;
+                }
             }, 1000);
         });
+        
+        // Exposer les fonctions de debug
+        window.toggleDebug = toggleDebug;
     </script>
 </body>
 </html>

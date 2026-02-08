@@ -12,6 +12,315 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <style>
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+        
+        .loading-spinner {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        /* Menu burger et overlay */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9998;
+            display: none;
+        }
+        
+        .sidebar-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            z-index: 9999;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-menu.open {
+            left: 0;
+        }
+        
+        .dark-mode .sidebar-menu {
+            background: #1e293b;
+        }
+        
+        .menu-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .dark-mode .menu-header {
+            border-bottom-color: #374151;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #1d3557, #2a5298);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #1d3557;
+            font-size: 18px;
+        }
+        
+        .dark-mode .user-name {
+            color: white;
+        }
+        
+        .user-email {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        
+        .dark-mode .user-email {
+            color: #9ca3af;
+        }
+        
+        .menu-items {
+            padding: 20px 0;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 20px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: background 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .menu-item:hover {
+            background: #f3f4f6;
+        }
+        
+        .dark-mode .menu-item:hover {
+            background: #374151;
+        }
+        
+        .menu-item.active {
+            background: #f3f4f6;
+            border-left-color: #1d3557;
+            color: #1d3557;
+            font-weight: 500;
+        }
+        
+        .dark-mode .menu-item.active {
+            background: #374151;
+            color: white;
+            border-left-color: #3b82f6;
+        }
+        
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+        
+        .theme-toggle-menu {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+        }
+        
+        .theme-toggle-menu span {
+            color: #4b5563;
+        }
+        
+        .dark-mode .theme-toggle-menu span {
+            color: #9ca3af;
+        }
+        
+        .theme-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .theme-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .theme-slider {
+            background-color: #1d3557;
+        }
+        
+        input:checked + .theme-slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Header amélioré */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            height: 70px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: #1d3557;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 900;
+            margin: 0;
+        }
+        
+        .logo span {
+            color: #f97316;
+        }
+        
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #1d3557;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .menu-btn:hover {
+            background: #f3f4f6;
+        }
+        
+        .dark-mode .menu-btn {
+            color: white;
+        }
+        
+        .dark-mode .menu-btn:hover {
+            background: #374151;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        /* Section de bienvenue personnalisée */
+        .welcome-personal {
+            margin-bottom: 25px;
+        }
+        
+        .welcome-text h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+            color: #1d3557;
+        }
+        
+        .dark-mode .welcome-text h2 {
+            color: white;
+        }
+        
+        .welcome-text p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .dark-mode .welcome-text p {
+            color: #9ca3af;
+        }
+        
+        .user-greeting {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .greeting-icon {
+            font-size: 24px;
+            color: #f97316;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar-menu {
+                width: 250px;
+            }
+        }
+    </style>
 </head>
 <body class="light-mode">
     <!-- Overlay de chargement -->
@@ -22,16 +331,76 @@
         </div>
     </div>
 
+    <!-- Menu overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Sidebar menu -->
+    <div class="sidebar-menu" id="sidebarMenu">
+        <div class="menu-header">
+            <div class="user-avatar" id="userAvatar">
+                <!-- Initiale du prénom -->
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="userName">Utilisateur</div>
+                <div class="user-email" id="userEmail">email@example.com</div>
+            </div>
+        </div>
+        
+        <div class="menu-items">
+            <a href="dashboard.html" class="menu-item active">
+                <i class="fas fa-home"></i>
+                <span>Accueil</span>
+            </a>
+            <a href="publier.html" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Publier une annonce</span>
+            </a>
+            <a href="historique.html" class="menu-item">
+                <i class="fas fa-history"></i>
+                <span>Mon historique</span>
+            </a>
+            <a href="gagner.html" class="menu-item">
+                <i class="fas fa-gift"></i>
+                <span>Gagner des récompenses</span>
+            </a>
+            <div class="menu-item">
+                <i class="fas fa-headset"></i>
+                <span>Support & Aide</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Paramètres</span>
+            </div>
+            <a href="connexion.html?logout=true" class="menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </a>
+        </div>
+        
+        <div class="theme-toggle-menu">
+            <span>Mode sombre</span>
+            <label class="theme-switch">
+                <input type="checkbox" id="menuThemeToggle">
+                <span class="theme-slider"></span>
+            </label>
+        </div>
+    </div>
+
     <!-- En-tête fixe -->
     <header class="header">
         <div class="header-container">
-            <div class="logo">
-                <i class="fas fa-store logo-icon"></i>
-                <h1>AFRI<span>MARKET</span></h1>
+            <div class="header-left">
+                <button class="menu-btn" id="menuBtn" aria-label="Ouvrir le menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a href="dashboard.html" class="logo">
+                    <i class="fas fa-store logo-icon"></i>
+                    <h1>AFRI<span>MARKET</span></h1>
+                </a>
             </div>
             
             <div class="header-actions">
-                <button class="theme-btn" id="theme-btn" aria-label="Changer de thème">
+                <button class="theme-btn" id="theme-btn" aria-label="Changer de thème" style="display: none;">
                     <i class="fas fa-moon"></i>
                 </button>
             </div>
@@ -40,12 +409,22 @@
 
     <!-- Contenu principal -->
     <main class="main-content">
-        <!-- Section de bienvenue -->
+        <!-- Section de bienvenue personnalisée -->
         <section class="welcome-section">
+            <div class="welcome-personal">
+                <div class="user-greeting">
+                    <i class="fas fa-hand-sparkles greeting-icon"></i>
+                    <div class="welcome-text">
+                        <h2 id="personalGreeting">Bienvenue sur AFRIMARKET</h2>
+                        <p id="userWelcomeText">La plateforme africaine de petites annonces</p>
+                    </div>
+                </div>
+            </div>
+            
             <div class="welcome-card">
                 <div class="welcome-content">
-                    <h2>Bienvenue sur AFRIMARKET</h2>
-                    <p>La plateforme africaine de petites annonces. Publiez gratuitement vos produits et actualités.</p>
+                    <h3>Publiez gratuitement vos annonces</h3>
+                    <p>Vendez vos produits ou partagez des actualités avec la communauté AFRIMARKET</p>
                     <a href="publier.html" class="btn publish-btn" id="publish-btn">
                         <i class="fas fa-plus-circle"></i>
                         Publier une annonce
@@ -149,12 +528,7 @@
         // Fonction pour montrer/cacher le loading
         function showLoading(show) {
             const overlay = document.getElementById('loadingOverlay');
-            
-            if (show) {
-                overlay.style.display = 'flex';
-            } else {
-                overlay.style.display = 'none';
-            }
+            overlay.style.display = show ? 'flex' : 'none';
         }
         
         // Fonction pour vérifier la session
@@ -175,10 +549,48 @@
                 }
                 
                 return { loggedIn: false };
-                
             } catch (error) {
-                console.error('Erreur vérification session:', error);
                 return { loggedIn: false };
+            }
+        }
+        
+        // Fonction pour personnaliser l'accueil
+        function setupPersonalWelcome() {
+            const userName = localStorage.getItem('afrimarket_user_name');
+            const userEmail = localStorage.getItem('afrimarket_user_email');
+            
+            // Mettre à jour le menu
+            if (userName) {
+                document.getElementById('userName').textContent = userName;
+                // Initiale pour l'avatar
+                const initial = userName.charAt(0).toUpperCase();
+                document.getElementById('userAvatar').textContent = initial;
+            }
+            
+            if (userEmail) {
+                document.getElementById('userEmail').textContent = userEmail;
+            }
+            
+            // Personnaliser le message de bienvenue
+            const greeting = document.getElementById('personalGreeting');
+            const welcomeText = document.getElementById('userWelcomeText');
+            
+            if (userName) {
+                // Extraire le prénom (premier mot)
+                const firstName = userName.split(' ')[0];
+                const hour = new Date().getHours();
+                let greetingText = '';
+                
+                if (hour < 12) {
+                    greetingText = `Bonjour ${firstName},`;
+                } else if (hour < 18) {
+                    greetingText = `Bon après-midi ${firstName},`;
+                } else {
+                    greetingText = `Bonsoir ${firstName},`;
+                }
+                
+                greeting.textContent = greetingText;
+                welcomeText.textContent = 'Bienvenue sur votre tableau de bord AFRIMARKET';
             }
         }
         
@@ -189,19 +601,14 @@
                     throw new Error('Supabase non initialisé');
                 }
                 
-                // Charger TOUTES les annonces depuis Supabase (pas seulement celles de l'utilisateur)
                 const { data, error } = await supabaseClient
                     .from('annonces')
                     .select('*')
                     .order('created_at', { ascending: false });
                 
-                if (error) {
-                    throw new Error('Erreur Supabase: ' + error.message);
-                }
+                if (error) throw new Error('Erreur Supabase: ' + error.message);
                 
-                console.log('✅ Toutes les annonces chargées:', data?.length || 0);
                 return data || [];
-                
             } catch (error) {
                 console.error('Erreur chargement annonces:', error);
                 showNotification('Erreur chargement annonces: ' + error.message, 'error');
@@ -214,7 +621,6 @@
             const annoncesList = document.getElementById('annonces-list');
             const annoncesCount = document.getElementById('annonces-count');
             
-            // Mettre à jour le compteur
             annoncesCount.textContent = `${annonces.length} annonce${annonces.length !== 1 ? 's' : ''}`;
             
             if (annonces.length === 0) {
@@ -229,22 +635,20 @@
                 return;
             }
             
-            // Afficher les annonces
             annoncesList.innerHTML = '';
             
-            annonces.forEach((annonce, index) => {
-                const annonceCard = createAnnonceCard(annonce, index);
+            annonces.forEach((annonce) => {
+                const annonceCard = createAnnonceCard(annonce);
                 annoncesList.appendChild(annonceCard);
             });
         }
         
         // Fonction pour créer une carte d'annonce
-        function createAnnonceCard(annonce, index) {
+        function createAnnonceCard(annonce) {
             const div = document.createElement('div');
             div.className = 'annonce-card';
             div.dataset.filter = annonce.type;
             
-            // Formater la date
             const date = new Date(annonce.created_at);
             const formattedDate = date.toLocaleDateString('fr-FR', {
                 day: 'numeric',
@@ -252,10 +656,7 @@
                 year: 'numeric'
             });
             
-            // Image par défaut si aucune image
             const imageUrl = annonce.image_url || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80';
-            
-            // Icône selon le type
             const typeIcon = annonce.type === 'vente' ? 'fas fa-shopping-cart' : 'fas fa-newspaper';
             const typeText = annonce.type === 'vente' ? 'À VENDRE' : 'ACTUALITÉ';
             const typeColor = annonce.type === 'vente' ? '#1d3557' : '#f97316';
@@ -303,9 +704,7 @@
             
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // Retirer la classe active de tous les boutons
                     filterButtons.forEach(btn => btn.classList.remove('active'));
-                    // Ajouter la classe active au bouton cliqué
                     this.classList.add('active');
                     
                     const filter = this.dataset.filter;
@@ -319,11 +718,36 @@
             const annonceCards = document.querySelectorAll('.annonce-card');
             
             annonceCards.forEach(card => {
-                if (filterType === 'all' || card.dataset.filter === filterType) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+                card.style.display = (filterType === 'all' || card.dataset.filter === filterType) ? 'block' : 'none';
+            });
+        }
+        
+        // Gestion du menu burger
+        function setupMenu() {
+            const menuBtn = document.getElementById('menuBtn');
+            const menuOverlay = document.getElementById('menuOverlay');
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            const menuThemeToggle = document.getElementById('menuThemeToggle');
+            
+            // Ouvrir/fermer le menu
+            menuBtn.addEventListener('click', () => {
+                sidebarMenu.classList.add('open');
+                menuOverlay.style.display = 'block';
+            });
+            
+            menuOverlay.addEventListener('click', () => {
+                sidebarMenu.classList.remove('open');
+                menuOverlay.style.display = 'none';
+            });
+            
+            // Synchroniser le toggle du thème dans le menu
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            menuThemeToggle.checked = savedTheme === 'dark-mode';
+            
+            menuThemeToggle.addEventListener('change', function() {
+                const isDark = this.checked;
+                document.body.className = isDark ? 'dark-mode' : 'light-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'dark-mode' : 'light-mode');
             });
         }
         
@@ -334,17 +758,18 @@
             // Initialiser Supabase
             if (window.supabase) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                    auth: {
-                        persistSession: true,
-                        autoRefreshToken: true
-                    }
+                    auth: { persistSession: true, autoRefreshToken: true }
                 });
                 console.log('✅ Supabase initialisé');
-            } else {
-                showNotification('Erreur: Supabase non chargé', 'error');
             }
             
-            // Gestion du thème
+            // Configurer le menu burger
+            setupMenu();
+            
+            // Personnaliser l'accueil
+            setupPersonalWelcome();
+            
+            // Gestion du thème (bouton caché, géré dans le menu)
             const themeBtn = document.getElementById('theme-btn');
             const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
             document.body.className = savedTheme;
@@ -353,6 +778,8 @@
                 const isDark = document.body.classList.contains('dark-mode');
                 document.body.className = isDark ? 'light-mode' : 'dark-mode';
                 localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+                // Mettre à jour le toggle dans le menu
+                document.getElementById('menuThemeToggle').checked = !isDark;
             });
             
             // Afficher le loading
@@ -371,8 +798,9 @@
                 // Vérifier si c'est une nouvelle connexion
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.get('welcome') === 'true') {
-                    showNotification('Connexion réussie ! Bienvenue', 'success');
-                    // Nettoyer l'URL
+                    const userName = localStorage.getItem('afrimarket_user_name');
+                    const firstName = userName ? userName.split(' ')[0] : '';
+                    showNotification(`Connexion réussie ! Bienvenue ${firstName}`, 'success');
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }
                 

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gagner - AFRIMARKET</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
+    <style>
+        .coming-soon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .coming-soon-icon {
+            font-size: 80px;
+            color: #FFD700;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .coming-soon h1 {
+            font-size: 36px;
+            color: #1d3557;
+            margin-bottom: 20px;
+        }
+        
+        .coming-soon p {
+            font-size: 18px;
+            color: #666;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+        
+        .features-preview {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .features-preview h2 {
+            color: #1d3557;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        
+        .feature-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 30px;
+            color: #1d3557;
+            margin-bottom: 15px;
+        }
+        
+        .feature-item h3 {
+            color: #1d3557;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .feature-item p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 0;
+        }
+        
+        .notify-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #1d3557;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 30px auto;
+            transition: all 0.3s ease;
+        }
+        
+        .notify-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .dark-mode .coming-soon h1 {
+            color: #ffffff;
+        }
+        
+        .dark-mode .features-preview {
+            background: #2d3748;
+        }
+        
+        .dark-mode .feature-item {
+            background: #3a4556;
+        }
+        
+        .dark-mode .feature-item h3 {
+            color: #ffffff;
+        }
+        
+        .dark-mode .feature-item p {
+            color: #cbd5e0;
+        }
+        
+        @media (max-width: 768px) {
+            .coming-soon h1 {
+                font-size: 28px;
+            }
+            
+            .coming-soon p {
+                font-size: 16px;
+            }
+            
+            .features-preview {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <!-- En-tête fixe -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-store logo-icon"></i>
+                <h1>AFRI<span>MARKET</span></h1>
+            </div>
+            
+            <div class="header-actions">
+                <button class="theme-btn" id="theme-btn" aria-label="Changer de thème">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <section class="coming-soon">
+            <i class="fas fa-gift coming-soon-icon"></i>
+            <h1>Fonctionnalité en cours de développement</h1>
+            <p>
+                Nous travaillons actuellement sur une fonctionnalité exceptionnelle qui vous permettra 
+                de <strong>gagner des récompenses</strong> en utilisant AFRIMARKET. 
+                Restez à l'affût pour être parmi les premiers à en bénéficier !
+            </p>
+            
+            <button class="notify-btn" id="notifyBtn">
+                <i class="fas fa-bell"></i>
+                Me notifier à la sortie
+            </button>
+            
+            <div class="features-preview">
+                <h2>Ce que nous préparons pour vous :</h2>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i class="fas fa-trophy feature-icon"></i>
+                        <h3>Concours & Jeux</h3>
+                        <p>Participez à des jeux excitants et gagnez des prix exceptionnels simplement en utilisant la plateforme.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <i class="fas fa-coins feature-icon"></i>
+                        <h3>Points de fidélité</h3>
+                        <p>Gagnez des points à chaque transaction et échangez-les contre des récompenses exclusives.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <i class="fas fa-star feature-icon"></i>
+                        <h3>Programme de parrainage</h3>
+                        <p>Invitez vos amis et gagnez des récompenses pour chaque nouvel utilisateur inscrit.</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <i class="fas fa-gift feature-icon"></i>
+                        <h3>Cadeaux surprises</h3>
+                        <p>Recevez des cadeaux surprises en fonction de votre activité sur la plateforme.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Barre de navigation en bas -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </a>
+        <a href="publier.html" class="nav-item">
+            <i class="fas fa-plus-square"></i>
+            <span>Publier</span>
+        </a>
+        <a href="gagner.html" class="nav-item active">
+            <i class="fas fa-gift"></i>
+            <span>Gagner</span>
+        </a>
+        <a href="historique.html" class="nav-item">
+            <i class="fas fa-history"></i>
+            <span>Historique</span>
+        </a>
+    </nav>
+
+    <script>
+        // Gestion du thème
+        const themeBtn = document.getElementById('theme-btn');
+        const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+        document.body.className = savedTheme;
+        
+        themeBtn.addEventListener('click', function() {
+            const isDark = document.body.classList.contains('dark-mode');
+            document.body.className = isDark ? 'light-mode' : 'dark-mode';
+            localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+        });
+        
+        // Gestion du bouton de notification
+        const notifyBtn = document.getElementById('notifyBtn');
+        
+        notifyBtn.addEventListener('click', function() {
+            // Animation sur le bouton
+            this.innerHTML = '<i class="fas fa-check"></i> Vous serez notifié !';
+            this.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            this.style.color = 'white';
+            
+            // Désactiver le bouton
+            this.disabled = true;
+            
+            // Sauvegarder dans localStorage
+            localStorage.setItem('afrimarket_notify_rewards', 'true');
+            
+            // Notification temporaire
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                font-weight: 500;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.innerHTML = '<i class="fas fa-check-circle"></i> Nous vous notifierons dès le lancement !';
+            document.body.appendChild(notification);
+            
+            // Supprimer après 3 secondes
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        });
+        
+        // Vérifier si l'utilisateur a déjà demandé à être notifié
+        document.addEventListener('DOMContentLoaded', function() {
+            const isNotified = localStorage.getItem('afrimarket_notify_rewards') === 'true';
+            
+            if (isNotified) {
+                notifyBtn.innerHTML = '<i class="fas fa-bell-slash"></i> Notification déjà activée';
+                notifyBtn.style.background = 'linear-gradient(135deg, #6b7280, #4b5563)';
+                notifyBtn.style.color = 'white';
+                notifyBtn.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>

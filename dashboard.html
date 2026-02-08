@@ -12,56 +12,6 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-    <style>
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 10000;
-            animation: slideIn 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            max-width: 400px;
-        }
-        
-        .notification.success {
-            background: #10b981;
-        }
-        
-        .notification.error {
-            background: #ef4444;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 10001;
-        }
-        
-        .loading-spinner {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-        }
-    </style>
 </head>
 <body class="light-mode">
     <!-- Overlay de chargement -->
@@ -156,6 +106,10 @@
         <a href="publier.html" class="nav-item" id="publish-nav">
             <i class="fas fa-plus-square"></i>
             <span>Publier</span>
+        </a>
+        <a href="gagner.html" class="nav-item">
+            <i class="fas fa-gift"></i>
+            <span>Gagner</span>
         </a>
         <a href="historique.html" class="nav-item">
             <i class="fas fa-history"></i>

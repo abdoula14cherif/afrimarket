@@ -4,951 +4,130 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Publier une annonce - AFRIMARKET</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
-        /* Gardez TOUT le CSS précédent exactement comme vous l'aviez */
-        :root {
-            --primary-blue: #1d3557;
-            --primary-red: #ef4444;
-            --primary-orange: #f97316;
-            --primary-green: #10b981;
-            --light-bg: #f8fafc;
-            --light-card: #ffffff;
-            --light-text: #1e293b;
-            --light-border: #e2e8f0;
-            --light-gray: #94a3b8;
-            --dark-bg: #0f172a;
-            --dark-card: #1e293b;
-            --dark-text: #f1f5f9;
-            --dark-border: #334155;
-            --radius-lg: 16px;
-            --radius-md: 12px;
-            --radius-sm: 8px;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
-            --transition: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Poppins', sans-serif;
-            background-color: var(--light-bg);
-            color: var(--light-text);
-            transition: var(--transition);
-            overflow-x: hidden;
-            padding-bottom: 70px;
-            -webkit-text-size-adjust: 100%;
-        }
-
-        body.dark-mode {
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-        }
-
-        .container {
-            width: 100%;
-            max-width: 100%;
-            padding: 0 16px;
-            margin: 0 auto;
-        }
-
-        /* Header */
-        .app-header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background-color: var(--light-card);
-            padding: 12px 0;
-            border-bottom: 1px solid var(--light-border);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .dark-mode .app-header {
-            background-color: var(--dark-card);
-            border-color: var(--dark-border);
-        }
-
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        /* Bouton retour */
-        .back-btn {
-            background: none;
-            border: none;
-            font-size: 22px;
-            color: var(--light-text);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-
-        .dark-mode .back-btn {
-            color: var(--dark-text);
-        }
-
-        .back-btn:hover {
-            background: rgba(37, 99, 235, 0.1);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            margin-left: 10px;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
-        }
-
-        .logo-text {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--light-text);
-            line-height: 1;
-        }
-
-        .dark-mode .logo-text {
-            color: var(--dark-text);
-        }
-
-        .logo-text span {
-            color: var(--primary-orange);
-        }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Bouton thème */
-        .theme-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: var(--light-text);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-
-        .dark-mode .theme-btn {
-            color: var(--dark-text);
-        }
-
-        .theme-btn:hover {
-            background: rgba(37, 99, 235, 0.1);
-        }
-
-        /* Bouton de publication */
-        .publish-header-btn {
-            background: linear-gradient(135deg, var(--primary-green), var(--primary-blue));
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: var(--transition);
-        }
-
-        .publish-header-btn:hover:not(:disabled) {
-            background: linear-gradient(135deg, #0da271, #0f2647);
-            transform: translateY(-2px);
-        }
-
-        .publish-header-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Contenu principal */
-        .main-content {
-            padding-top: 20px;
-        }
-
-        /* Section du formulaire */
-        .form-section {
-            padding-bottom: 80px;
-        }
-
-        .form-header {
-            margin-bottom: 25px;
-        }
-
-        .form-header h1 {
-            font-size: 24px;
-            margin-bottom: 8px;
-            color: var(--light-text);
-        }
-
-        .dark-mode .form-header h1 {
-            color: var(--dark-text);
-        }
-
-        .form-header p {
-            color: var(--light-gray);
-            font-size: 14px;
-        }
-
-        .dark-mode .form-header p {
-            color: #94a3b8;
-        }
-
-        /* Formulaire */
-        .publish-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--light-text);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .dark-mode .form-label {
-            color: var(--dark-text);
-        }
-
-        .form-label i {
-            color: var(--primary-blue);
-        }
-
-        .required {
-            color: var(--primary-red);
-            margin-left: 4px;
-        }
-
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--light-border);
-            border-radius: var(--radius-md);
-            font-size: 15px;
-            background: var(--light-card);
-            color: var(--light-text);
-            transition: var(--transition);
-            font-family: inherit;
-        }
-
-        .dark-mode .form-input,
-        .dark-mode .form-select,
-        .dark-mode .form-textarea {
-            background: var(--dark-card);
-            border-color: var(--dark-border);
-            color: var(--dark-text);
-        }
-
-        .form-input:focus,
-        .form-select:focus,
-        .form-textarea:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .form-textarea {
-            min-height: 120px;
-            resize: vertical;
-            line-height: 1.5;
-        }
-
-        /* Sélecteur de type */
-        .type-selector {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 5px;
-        }
-
-        .type-option {
-            background: var(--light-card);
-            border: 2px solid var(--light-border);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .dark-mode .type-option {
-            background: var(--dark-card);
-            border-color: var(--dark-border);
-        }
-
-        .type-option:hover {
-            border-color: var(--primary-blue);
-            transform: translateY(-2px);
-        }
-
-        .type-option.selected {
-            border-color: var(--primary-blue);
-            background: rgba(37, 99, 235, 0.05);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
-        }
-
-        .dark-mode .type-option.selected {
-            background: rgba(37, 99, 235, 0.15);
-        }
-
-        .type-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: var(--radius-sm);
-            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 22px;
-        }
-
-        .type-icon.actualite {
-            background: linear-gradient(135deg, var(--primary-orange), #f59e0b);
-        }
-
-        .type-text {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--light-text);
-        }
-
-        .dark-mode .type-text {
-            color: var(--dark-text);
-        }
-
-        .type-desc {
-            font-size: 12px;
-            color: var(--light-gray);
-            text-align: center;
-        }
-
-        .dark-mode .type-desc {
-            color: #94a3b8;
-        }
-
-        /* Téléchargement d'image */
-        .image-upload {
-            border: 2px dashed var(--light-border);
-            border-radius: var(--radius-md);
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
-        }
-
-        .dark-mode .image-upload {
-            border-color: var(--dark-border);
-        }
-
-        .image-upload:hover {
-            border-color: var(--primary-blue);
-            background: rgba(37, 99, 235, 0.05);
-        }
-
-        .dark-mode .image-upload:hover {
-            background: rgba(37, 99, 235, 0.08);
-        }
-
-        .upload-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(37, 99, 235, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-blue);
-            font-size: 24px;
-        }
-
-        .upload-text h3 {
-            font-size: 16px;
-            margin-bottom: 5px;
-            color: var(--light-text);
-        }
-
-        .dark-mode .upload-text h3 {
-            color: var(--dark-text);
-        }
-
-        .upload-text p {
-            font-size: 13px;
-            color: var(--light-gray);
-        }
-
-        .dark-mode .upload-text p {
-            color: #94a3b8;
-        }
-
-        .upload-btn {
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition);
-        }
-
-        .upload-btn:hover {
-            background: #0f2647;
-        }
-
-        /* Aperçu de l'image */
-        .image-preview {
-            position: relative;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .image-preview img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: var(--radius-md);
-        }
-
-        .remove-image {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(239, 68, 68, 0.9);
-            color: white;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 14px;
-            transition: var(--transition);
-        }
-
-        .remove-image:hover {
-            background: #dc2626;
-            transform: scale(1.1);
-        }
-
-        /* Prix */
-        .price-container {
-            position: relative;
-        }
-
-        .price-input {
-            padding-left: 40px;
-        }
-
-        .currency {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-weight: 600;
-            color: var(--light-text);
-        }
-
-        .dark-mode .currency {
-            color: var(--dark-text);
-        }
-
-        .gratuit {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .gratuit-checkbox {
-            width: 18px;
-            height: 18px;
-            border-radius: 4px;
-            border: 2px solid var(--light-border);
-            cursor: pointer;
-        }
-
-        .dark-mode .gratuit-checkbox {
-            border-color: var(--dark-border);
-        }
-
-        .gratuit-label {
-            font-size: 13px;
-            color: var(--light-gray);
-            cursor: pointer;
-        }
-
-        .dark-mode .gratuit-label {
-            color: #94a3b8;
-        }
-
-        /* WhatsApp */
-        .whatsapp-note {
-            font-size: 12px;
-            color: var(--light-gray);
-            margin-top: 5px;
-        }
-
-        .dark-mode .whatsapp-note {
-            color: #94a3b8;
-        }
-
-        .whatsapp-note i {
-            color: #25D366;
-        }
-
-        /* Bouton de soumission */
-        .submit-btn {
-            background: linear-gradient(135deg, var(--primary-green), var(--primary-blue));
-            color: white;
-            border: none;
-            padding: 16px 24px;
-            border-radius: var(--radius-md);
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: var(--transition);
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            background: linear-gradient(135deg, #0da271, #0f2647);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.2);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Conseils de publication */
-        .tips-section {
-            background: rgba(37, 99, 235, 0.05);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            margin-top: 30px;
-        }
-
-        .dark-mode .tips-section {
-            background: rgba(37, 99, 235, 0.08);
-        }
-
-        .tips-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .tips-header i {
-            color: var(--primary-blue);
-            font-size: 20px;
-        }
-
-        .tips-header h3 {
-            font-size: 16px;
-            color: var(--light-text);
-        }
-
-        .dark-mode .tips-header h3 {
-            color: var(--dark-text);
-        }
-
-        .tips-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .tip-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: 13px;
-            color: var(--light-gray);
-        }
-
-        .dark-mode .tip-item {
-            color: #94a3b8;
-        }
-
-        .tip-item i {
-            color: var(--primary-green);
-            font-size: 12px;
-            margin-top: 2px;
-        }
-
-        /* Authentification requise */
         .auth-required {
-            display: none;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 60px 20px;
-            min-height: 60vh;
+            padding: 40px 20px;
+            min-height: 400px;
         }
-
+        
         .auth-required i {
             font-size: 64px;
-            color: var(--light-gray);
+            color: #ef4444;
             margin-bottom: 20px;
         }
-
-        .dark-mode .auth-required i {
-            color: #475569;
-        }
-
+        
         .auth-required h2 {
-            color: var(--light-text);
-            margin-bottom: 12px;
-            font-size: 20px;
+            color: #1d3557;
+            margin-bottom: 10px;
         }
-
-        .dark-mode .auth-required h2 {
-            color: var(--dark-text);
-        }
-
+        
         .auth-required p {
-            color: var(--light-gray);
-            margin-bottom: 8px;
-            max-width: 300px;
-            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+            max-width: 400px;
         }
-
-        .dark-mode .auth-required p {
-            color: #94a3b8;
-        }
-
+        
         .auth-buttons {
             display: flex;
-            gap: 12px;
-            margin-top: 25px;
-            flex-wrap: wrap;
-            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
         }
-
-        .btn-login, .btn-signup {
+        
+        .btn-login {
+            background: #1d3557;
+            color: white;
             padding: 12px 24px;
-            border-radius: var(--radius-md);
+            border-radius: 8px;
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: var(--transition);
+            font-weight: 500;
         }
-
-        .btn-login {
-            background: var(--primary-blue);
-            color: white;
-        }
-
+        
         .btn-login:hover {
             background: #0f2647;
-            transform: translateY(-2px);
         }
-
+        
         .btn-signup {
-            background: var(--primary-green);
+            background: #10b981;
             color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
         }
-
+        
         .btn-signup:hover {
             background: #0da271;
-            transform: translateY(-2px);
         }
-
-        /* Loading overlay */
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+        }
+        
+        .notification.success {
+            background: #10b981;
+        }
+        
+        .notification.error {
+            background: #ef4444;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0,0,0,0.5);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 10001;
         }
-
+        
         .loading-spinner {
-            background: var(--light-card);
+            background: white;
             padding: 30px;
-            border-radius: var(--radius-md);
+            border-radius: 10px;
             text-align: center;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .dark-mode .loading-spinner {
-            background: var(--dark-card);
-        }
-
-        /* Notification toast */
-        .toast-container {
-            position: fixed;
-            top: 80px;
-            right: 16px;
-            z-index: 10002;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 350px;
-        }
-
-        .toast-notification {
-            background: var(--light-card);
-            border-radius: var(--radius-md);
-            padding: 15px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            animation: slideInRight 0.3s ease;
-            border-left: 4px solid var(--primary-green);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .dark-mode .toast-notification {
-            background: var(--dark-card);
-        }
-
-        .toast-notification.error {
-            border-left-color: var(--primary-red);
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .toast-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--primary-green), var(--primary-blue));
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .toast-icon.error {
-            background: linear-gradient(135deg, var(--primary-red), #dc2626);
-        }
-
-        .toast-content {
-            flex: 1;
-        }
-
-        .toast-title {
-            font-weight: 600;
-            color: var(--light-text);
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .dark-mode .toast-title {
-            color: var(--dark-text);
-        }
-
-        .toast-message {
-            color: var(--light-gray);
-            font-size: 13px;
-            line-height: 1.4;
-        }
-
-        .dark-mode .toast-message {
-            color: #94a3b8;
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            color: var(--light-gray);
-            cursor: pointer;
-            padding: 4px;
-            font-size: 12px;
-        }
-
-        /* Navigation inférieure */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--light-card);
-            border-top: 1px solid var(--light-border);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            z-index: 1000;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        .dark-mode .bottom-nav {
-            background: var(--dark-card);
-            border-color: var(--dark-border);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            padding: 6px 10px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: var(--transition);
-            flex: 1;
-            max-width: 70px;
-            position: relative;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .nav-item.active, .nav-item:active {
-            background: rgba(37, 99, 235, 0.1);
-        }
-
-        .nav-icon {
-            font-size: 20px;
-            color: var(--light-gray);
-            transition: var(--transition);
-        }
-
-        .dark-mode .nav-icon {
-            color: #94a3b8;
-        }
-
-        .nav-item.active .nav-icon, .nav-item:active .nav-icon {
-            color: var(--primary-blue);
-        }
-
-        .nav-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--light-gray);
-            transition: var(--transition);
-        }
-
-        .dark-mode .nav-label {
-            color: #94a3b8;
-        }
-
-        .nav-item.active .nav-label, .nav-item:active .nav-label {
-            color: var(--primary-blue);
-        }
-
-        /* Responsive */
-        @media (min-width: 375px) {
-            .container {
-                padding: 0 18px;
-            }
-        }
-
-        @media (min-width: 414px) {
-            .type-selector {
-                gap: 15px;
-            }
-            
-            .type-option {
-                padding: 20px;
-            }
-        }
-
-        /* Prévention débordement */
-        html, body {
-            overflow-x: hidden;
-            max-width: 100%;
-        }
-
-        img, svg, video {
-            max-width: 100%;
-            height: auto;
         }
     </style>
 </head>
 <body class="light-mode">
-    <!-- Loading overlay -->
+    <!-- Overlay de chargement -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner">
             <i class="fas fa-spinner fa-spin fa-2x"></i>
@@ -956,239 +135,160 @@
         </div>
     </div>
 
-    <!-- Toast notifications container -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <!-- Header -->
-    <header class="app-header">
-        <div class="container">
-            <div class="header-content">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <button class="back-btn" onclick="window.history.back()">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
-                    <a href="dashboard.html" class="logo-container">
-                        <div class="logo-icon">
-                            <i class="fas fa-plus-circle"></i>
-                        </div>
-                        <div class="logo-text">Publier</div>
-                    </a>
-                </div>
-                
-                <div class="header-controls">
-                    <button class="publish-header-btn" id="publishHeaderBtn" disabled>
-                        <i class="fas fa-paper-plane"></i>
-                        Publier
-                    </button>
-                    <button class="theme-btn" id="themeBtn">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                </div>
+    <!-- En-tête fixe -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo" style="text-decoration: none; color: inherit;">
+                <i class="fas fa-arrow-left"></i>
+                <h1 style="margin-left: 8px; font-family: 'Montserrat', sans-serif;">AFRI<span style="color: var(--primary-red);">MARKET</span></h1>
+            </a>
+            
+            <div class="header-actions">
+                <button class="theme-btn" id="theme-btn" aria-label="Changer de thème">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </div>
     </header>
 
     <!-- Contenu principal -->
     <main class="main-content">
-        <div class="container">
-            <!-- Section authentification requise -->
-            <div id="authRequired" class="auth-required">
-                <i class="fas fa-lock"></i>
-                <h2>Connexion requise</h2>
-                <p>Vous devez être connecté pour publier une annonce.</p>
-                <p>Connectez-vous ou créez un compte gratuitement.</p>
-                <div class="auth-buttons">
-                    <a href="connexion.html" class="btn-login">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Se connecter
-                    </a>
-                    <a href="inscription.html" class="btn-signup">
-                        <i class="fas fa-user-plus"></i>
-                        S'inscrire
-                    </a>
-                </div>
+        <!-- Section d'authentification requise -->
+        <div id="auth-required" class="auth-required" style="display: none;">
+            <i class="fas fa-lock"></i>
+            <h2>Connexion requise</h2>
+            <p>Vous devez être connecté pour publier une annonce sur AFRIMARKET.</p>
+            <p>Connectez-vous ou créez un compte gratuitement.</p>
+            <div class="auth-buttons">
+                <a href="connexion.html" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Se connecter
+                </a>
+                <a href="inscription.html" class="btn-signup">
+                    <i class="fas fa-user-plus"></i>
+                    S'inscrire
+                </a>
             </div>
+        </div>
 
-            <!-- Formulaire de publication -->
-            <div id="publishForm" style="display: none;">
-                <section class="form-section">
-                    <div class="form-header">
-                        <h1>Publier une annonce</h1>
-                        <p>Remplissez les informations ci-dessous pour partager votre annonce avec la communauté</p>
-                    </div>
-
-                    <form class="publish-form" id="annonceForm">
-                        <!-- Type d'annonce -->
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-tag"></i>
-                                Type d'annonce <span class="required">*</span>
-                            </label>
-                            <div class="type-selector">
-                                <div class="type-option" data-type="vente">
-                                    <div class="type-icon">
-                                        <i class="fas fa-shopping-cart"></i>
-                                    </div>
-                                    <span class="type-text">À vendre</span>
-                                    <span class="type-desc">Vendez vos produits</span>
-                                </div>
-                                <div class="type-option" data-type="actualite">
-                                    <div class="type-icon actualite">
-                                        <i class="fas fa-newspaper"></i>
-                                    </div>
-                                    <span class="type-text">Actualité</span>
-                                    <span class="type-desc">Partagez une info</span>
-                                </div>
-                            </div>
-                            <input type="hidden" id="type" name="type" value="vente" required>
+        <!-- Formulaire de publication -->
+        <div id="publish-form-container" class="publish-container" style="display: none;">
+            <h2 class="publish-title">Publier une annonce</h2>
+            <p class="publish-subtitle">Remplissez le formulaire ci-dessous. Votre annonce sera visible immédiatement sur AFRIMARKET.</p>
+            
+            <form id="publish-form" class="publish-form">
+                <!-- Type d'annonce -->
+                <div class="form-section">
+                    <label class="form-label required">Type d'annonce</label>
+                    <div class="type-selector">
+                        <div class="type-option active" data-type="vente">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>À vendre</span>
                         </div>
-
-                        <!-- Titre -->
-                        <div class="form-group">
-                            <label class="form-label" for="titre">
-                                <i class="fas fa-heading"></i>
-                                Titre de l'annonce <span class="required">*</span>
-                            </label>
-                            <input type="text" id="titre" name="titre" class="form-input" 
-                                   placeholder="Ex: iPhone 13 Pro Max 256GB" 
-                                   maxlength="100" required>
-                        </div>
-
-                        <!-- Description -->
-                        <div class="form-group">
-                            <label class="form-label" for="description">
-                                <i class="fas fa-align-left"></i>
-                                Description détaillée <span class="required">*</span>
-                            </label>
-                            <textarea id="description" name="description" class="form-textarea" 
-                                      placeholder="Décrivez votre annonce en détail... (état, caractéristiques, conditions, etc.)"
-                                      rows="4" required></textarea>
-                        </div>
-
-                        <!-- Prix -->
-                        <div class="form-group">
-                            <label class="form-label" for="prix">
-                                <i class="fas fa-euro-sign"></i>
-                                Prix
-                            </label>
-                            <div class="price-container">
-                                <span class="currency">€</span>
-                                <input type="number" id="prix" name="prix" class="form-input price-input" 
-                                       placeholder="0.00" min="0" step="0.01">
-                            </div>
-                            <div class="gratuit">
-                                <input type="checkbox" id="gratuit" class="gratuit-checkbox">
-                                <label for="gratuit" class="gratuit-label">Gratuit / Prix à discuter</label>
-                            </div>
-                        </div>
-
-                        <!-- Image -->
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-image"></i>
-                                Photo de l'annonce
-                            </label>
-                            <div class="image-upload" id="imageUpload">
-                                <div class="upload-icon">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                </div>
-                                <div class="upload-text">
-                                    <h3>Ajouter une photo</h3>
-                                    <p>Cliquez pour télécharger ou glissez-déposez</p>
-                                    <p style="font-size: 12px; margin-top: 5px;">PNG, JPG (max 5MB)</p>
-                                </div>
-                                <button type="button" class="upload-btn" onclick="document.getElementById('imageFile').click()">
-                                    <i class="fas fa-folder-open"></i>
-                                    Parcourir
-                                </button>
-                            </div>
-                            <input type="file" id="imageFile" name="image" accept="image/*" style="display: none;">
-                            <div class="image-preview" id="imagePreview" style="display: none;">
-                                <img id="previewImage" src="" alt="Aperçu">
-                                <button type="button" class="remove-image" onclick="removeImage()">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- WhatsApp -->
-                        <div class="form-group">
-                            <label class="form-label" for="whatsapp">
-                                <i class="fab fa-whatsapp" style="color: #25D366;"></i>
-                                Numéro WhatsApp
-                            </label>
-                            <input type="tel" id="whatsapp" name="whatsapp" class="form-input" 
-                                   placeholder="Ex: +33612345678">
-                            <p class="whatsapp-note">
-                                <i class="fas fa-info-circle"></i> Les acheteurs pourront vous contacter directement sur WhatsApp
-                            </p>
-                        </div>
-
-                        <!-- Bouton de soumission -->
-                        <button type="submit" class="submit-btn" id="submitBtn">
-                            <i class="fas fa-paper-plane"></i>
-                            Publier l'annonce
-                        </button>
-                    </form>
-
-                    <!-- Conseils de publication -->
-                    <div class="tips-section">
-                        <div class="tips-header">
-                            <i class="fas fa-lightbulb"></i>
-                            <h3>Conseils pour une bonne annonce</h3>
-                        </div>
-                        <div class="tips-list">
-                            <div class="tip-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Utilisez un titre clair et descriptif</span>
-                            </div>
-                            <div class="tip-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Ajoutez des photos de bonne qualité</span>
-                            </div>
-                            <div class="tip-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Soyez honnête sur l'état du produit</span>
-                            </div>
-                            <div class="tip-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Répondez rapidement aux messages</span>
-                            </div>
+                        <div class="type-option" data-type="actualite">
+                            <i class="fas fa-newspaper"></i>
+                            <span>Actualité</span>
                         </div>
                     </div>
-                </section>
+                    <input type="hidden" id="annonce-type" name="type" value="vente" required>
+                </div>
+                
+                <!-- Photo -->
+                <div class="form-section">
+                    <label class="form-label required">Photo de l'annonce</label>
+                    <div class="image-upload" id="image-upload">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Cliquez pour ajouter une photo</p>
+                        <span>JPG, PNG - Max 5MB</span>
+                        <input type="file" id="image-input" accept="image/*" style="display: none;">
+                    </div>
+                    <div id="image-preview">
+                        <!-- L'aperçu de l'image sera affiché ici -->
+                    </div>
+                </div>
+                
+                <!-- Titre -->
+                <div class="form-section">
+                    <label for="annonce-titre" class="form-label required">Titre de l'annonce</label>
+                    <input type="text" 
+                           id="annonce-titre" 
+                           name="titre" 
+                           placeholder="Ex: Smartphone iPhone 12 en excellent état"
+                           required
+                           maxlength="60">
+                    <div class="char-count" id="titre-count">0/60</div>
+                </div>
+                
+                <!-- Description -->
+                <div class="form-section">
+                    <label for="annonce-description" class="form-label required">Description</label>
+                    <textarea id="annonce-description" 
+                              name="description" 
+                              rows="4"
+                              placeholder="Décrivez votre produit ou votre actualité en détail..."
+                              required
+                              maxlength="500"></textarea>
+                    <div class="char-count" id="description-count">0/500</div>
+                </div>
+                
+                <!-- Prix (seulement pour "À vendre") -->
+                <div class="form-section" id="price-section">
+                    <label for="annonce-prix" class="form-label">Prix (€)</label>
+                    <input type="number" 
+                           id="annonce-prix" 
+                           name="prix" 
+                           placeholder="Ex: 250"
+                           min="0"
+                           step="0.01">
+                    <small class="form-hint">Laissez vide si gratuit ou pour une actualité</small>
+                </div>
+                
+                <!-- WhatsApp -->
+                <div class="form-section">
+                    <label for="annonce-whatsapp" class="form-label">Numéro WhatsApp</label>
+                    <input type="tel" 
+                           id="annonce-whatsapp" 
+                           name="whatsapp" 
+                           placeholder="Ex: 0612345678">
+                    <small class="form-hint">Les personnes pourront vous contacter directement via WhatsApp</small>
+                </div>
+                
+                <!-- Boutons -->
+                <div class="form-actions">
+                    <button type="submit" class="btn publish-submit-btn" id="submit-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Publier maintenant
+                    </button>
+                    <button type="button" id="preview-btn" class="btn preview-btn">
+                        <i class="fas fa-eye"></i>
+                        Aperçu
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Aperçu -->
+        <div class="preview-container" id="preview-container" style="display: none;">
+            <h3>Aperçu de votre annonce</h3>
+            <div id="annonce-preview" class="annonce-card">
+                <!-- L'aperçu sera généré ici -->
             </div>
         </div>
     </main>
 
-    <!-- Navigation inférieure -->
+    <!-- Barre de navigation en bas -->
     <nav class="bottom-nav">
         <a href="dashboard.html" class="nav-item">
-            <div style="position: relative;">
-                <i class="fas fa-home nav-icon"></i>
-            </div>
-            <span class="nav-label">Accueil</span>
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
         </a>
-        
         <a href="publier.html" class="nav-item active">
-            <div style="position: relative;">
-                <i class="fas fa-plus-circle nav-icon"></i>
-            </div>
-            <span class="nav-label">Publier</span>
+            <i class="fas fa-plus-square"></i>
+            <span>Publier</span>
         </a>
-        
-        <a href="gagner.html" class="nav-item">
-            <div style="position: relative;">
-                <i class="fas fa-gift nav-icon"></i>
-            </div>
-            <span class="nav-label">Gagner</span>
-        </a>
-        
         <a href="historique.html" class="nav-item">
-            <div style="position: relative;">
-                <i class="fas fa-history nav-icon"></i>
-            </div>
-            <span class="nav-label">Historique</span>
+            <i class="fas fa-history"></i>
+            <span>Historique</span>
         </a>
     </nav>
 
@@ -1198,207 +298,41 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
         let supabaseClient = null;
-        let selectedImage = null;
-        let annonceType = 'vente';
         
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('Page publier chargée');
+        // Fonction pour afficher les notifications
+        function showNotification(message, type = 'info') {
+            // Supprimer les anciennes notifications
+            const oldNotif = document.querySelector('.notification');
+            if (oldNotif) oldNotif.remove();
             
-            // Initialiser Supabase
-            if (window.supabase) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                    auth: { persistSession: true, autoRefreshToken: true }
-                });
-                console.log('✅ Supabase initialisé');
-            }
+            // Créer la nouvelle notification
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                               type === 'error' ? 'fa-exclamation-circle' : 
+                               'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
             
-            // Configurer l'interface
-            setupInterface();
+            document.body.appendChild(notif);
             
-            // Vérifier l'authentification
-            await checkAuthentication();
-        });
-        
-        // Configurer l'interface
-        function setupInterface() {
-            // Gestion du thème
-            const themeBtn = document.getElementById('themeBtn');
-            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
-            document.body.className = savedTheme;
-            
-            themeBtn.addEventListener('click', function() {
-                const isDark = document.body.classList.contains('dark-mode');
-                document.body.className = isDark ? 'light-mode' : 'dark-mode';
-                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
-                
-                // Changer l'icône du bouton
-                const icon = themeBtn.querySelector('i');
-                icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
-            });
-            
-            // Mettre à jour l'icône du bouton thème
-            const icon = themeBtn.querySelector('i');
-            icon.className = savedTheme === 'dark-mode' ? 'fas fa-sun' : 'fas fa-moon';
-            
-            // Sélecteur de type
-            const typeOptions = document.querySelectorAll('.type-option');
-            typeOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    typeOptions.forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                    annonceType = this.dataset.type;
-                    document.getElementById('type').value = annonceType;
-                    
-                    // Mettre à jour le bouton de publication
-                    updatePublishButton();
-                });
-            });
-            
-            // Sélectionner "À vendre" par défaut
-            typeOptions[0].classList.add('selected');
-            
-            // Téléchargement d'image
-            const imageUpload = document.getElementById('imageUpload');
-            const imageFile = document.getElementById('imageFile');
-            
-            imageUpload.addEventListener('click', () => imageFile.click());
-            imageUpload.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                imageUpload.style.borderColor = 'var(--primary-blue)';
-                imageUpload.style.background = 'rgba(37, 99, 235, 0.05)';
-            });
-            
-            imageUpload.addEventListener('dragleave', () => {
-                imageUpload.style.borderColor = '';
-                imageUpload.style.background = '';
-            });
-            
-            imageUpload.addEventListener('drop', (e) => {
-                e.preventDefault();
-                imageUpload.style.borderColor = '';
-                imageUpload.style.background = '';
-                
-                if (e.dataTransfer.files.length > 0) {
-                    handleImageUpload(e.dataTransfer.files[0]);
-                }
-            });
-            
-            imageFile.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    handleImageUpload(e.target.files[0]);
-                }
-            });
-            
-            // Case à cocher "Gratuit"
-            const gratuitCheckbox = document.getElementById('gratuit');
-            const prixInput = document.getElementById('prix');
-            
-            gratuitCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    prixInput.value = '';
-                    prixInput.disabled = true;
-                    prixInput.placeholder = 'Gratuit';
-                } else {
-                    prixInput.disabled = false;
-                    prixInput.placeholder = '0.00';
-                }
-            });
-            
-            // Validation du formulaire en temps réel
-            const formInputs = document.querySelectorAll('#annonceForm input, #annonceForm textarea');
-            formInputs.forEach(input => {
-                input.addEventListener('input', updatePublishButton);
-            });
-            
-            // Soumission du formulaire
-            const annonceForm = document.getElementById('annonceForm');
-            annonceForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                await submitAnnonce();
-            });
-            
-            // Gestion du bouton de publication dans le header
-            document.getElementById('publishHeaderBtn').addEventListener('click', async function() {
-                if (!this.disabled) {
-                    await submitAnnonce();
-                }
-            });
+            // Supprimer après 5 secondes
+            setTimeout(() => notif.remove(), 5000);
         }
         
-        // Gérer le téléchargement d'image
-        function handleImageUpload(file) {
-            // Vérifier le type de fichier
-            if (!file.type.match('image.*')) {
-                showToast('Format non supporté', 'Veuillez sélectionner une image (JPG, PNG)', 'error');
-                return;
-            }
+        // Fonction pour montrer/cacher le loading
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
             
-            // Vérifier la taille (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('Fichier trop lourd', 'L\'image ne doit pas dépasser 5MB', 'error');
-                return;
-            }
-            
-            selectedImage = file;
-            
-            // Afficher l'aperçu
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const previewImage = document.getElementById('previewImage');
-                const imagePreview = document.getElementById('imagePreview');
-                
-                previewImage.src = e.target.result;
-                imagePreview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-            
-            // Mettre à jour le bouton de publication
-            updatePublishButton();
-        }
-        
-        // Supprimer l'image sélectionnée
-        function removeImage() {
-            selectedImage = null;
-            document.getElementById('imagePreview').style.display = 'none';
-            document.getElementById('imageFile').value = '';
-            updatePublishButton();
-        }
-        
-        // Mettre à jour le bouton de publication
-        function updatePublishButton() {
-            const titre = document.getElementById('titre').value.trim();
-            const description = document.getElementById('description').value.trim();
-            const submitBtn = document.getElementById('submitBtn');
-            const publishHeaderBtn = document.getElementById('publishHeaderBtn');
-            
-            const isValid = titre && description;
-            
-            submitBtn.disabled = !isValid;
-            publishHeaderBtn.disabled = !isValid;
-            
-            if (isValid) {
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publier l\'annonce';
-                publishHeaderBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publier';
-            }
-        }
-        
-        // Vérifier l'authentification
-        async function checkAuthentication() {
-            const user = await verifierSession();
-            const authRequired = document.getElementById('authRequired');
-            const publishForm = document.getElementById('publishForm');
-            
-            if (user.loggedIn) {
-                authRequired.style.display = 'none';
-                publishForm.style.display = 'block';
+            if (show) {
+                overlay.style.display = 'flex';
             } else {
-                authRequired.style.display = 'flex';
-                publishForm.style.display = 'none';
+                overlay.style.display = 'none';
             }
         }
         
-        // Vérifier la session utilisateur
+        // Fonction pour vérifier la session
         async function verifierSession() {
             try {
                 const userId = localStorage.getItem('afrimarket_user_id');
@@ -1414,94 +348,17 @@
                         }
                     };
                 }
+                
                 return { loggedIn: false };
+                
             } catch (error) {
+                console.error('Erreur vérification session:', error);
                 return { loggedIn: false };
             }
         }
         
-        // Télécharger l'image sur Supabase (SIMPLIFIÉ et FONCTIONNEL)
-        async function uploadImageToSupabase(file) {
-            try {
-                console.log('Début téléchargement image...');
-                const user = await verifierSession();
-                if (!user.loggedIn || !supabaseClient) {
-                    console.error('Utilisateur non connecté');
-                    return null;
-                }
-                
-                // Générer un nom de fichier unique
-                const fileExt = file.name.split('.').pop().toLowerCase();
-                const fileName = `annonce_${user.user.id}_${Date.now()}.${fileExt}`;
-                
-                console.log('Téléchargement vers:', fileName);
-                
-                // Télécharger le fichier dans le bucket 'images'
-                const { data, error } = await supabaseClient.storage
-                    .from('images')
-                    .upload(fileName, file, {
-                        cacheControl: '3600',
-                        upsert: false
-                    });
-                
-                if (error) {
-                    console.error('Erreur upload:', error);
-                    
-                    // Essayer de créer le bucket si nécessaire
-                    if (error.message.includes('bucket') || error.message.includes('not found')) {
-                        console.log('Création du bucket images...');
-                        const { error: createError } = await supabaseClient
-                            .storage
-                            .createBucket('images', {
-                                public: true,
-                                allowedMimeTypes: ['image/*'],
-                                fileSizeLimit: 5242880
-                            });
-                        
-                        if (!createError) {
-                            // Réessayer après création
-                            const { data: retryData, error: retryError } = await supabaseClient.storage
-                                .from('images')
-                                .upload(fileName, file);
-                            
-                            if (retryError) throw retryError;
-                            
-                            const { data: urlData } = supabaseClient.storage
-                                .from('images')
-                                .getPublicUrl(fileName);
-                            
-                            console.log('✅ Image téléchargée:', urlData.publicUrl);
-                            return urlData.publicUrl;
-                        }
-                    }
-                    throw error;
-                }
-                
-                // Récupérer l'URL publique
-                const { data: urlData } = supabaseClient.storage
-                    .from('images')
-                    .getPublicUrl(fileName);
-                
-                console.log('✅ Image téléchargée avec succès:', urlData.publicUrl);
-                return urlData.publicUrl;
-                
-            } catch (error) {
-                console.error('Erreur téléchargement image:', error);
-                
-                // Fallback: sauvegarder en base64
-                try {
-                    const base64Image = await convertFileToBase64(file);
-                    console.log('Image sauvegardée en base64');
-                    return base64Image;
-                } catch (base64Error) {
-                    console.error('Échec conversion base64:', base64Error);
-                    return null;
-                }
-            }
-        }
-        
-        // Convertir un fichier en base64
-        function convertFileToBase64(file) {
+        // Fonction pour convertir une image en base64
+        function convertImageToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
@@ -1510,264 +367,346 @@
             });
         }
         
-        // Soumettre l'annonce (CORRIGÉ)
-        async function submitAnnonce() {
-            showLoading(true);
-            
-            try {
-                // Valider les données
-                const annonceData = validateFormData();
-                
-                // Télécharger l'image si nécessaire
-                let imageUrl = null;
-                if (selectedImage) {
-                    console.log('Téléchargement image...');
-                    imageUrl = await uploadImageToSupabase(selectedImage);
-                    
-                    if (imageUrl) {
-                        if (imageUrl.startsWith('data:')) {
-                            // C'est du base64
-                            annonceData.image_base64 = imageUrl;
-                        } else {
-                            // C'est une URL Supabase
-                            annonceData.image_url = imageUrl;
-                        }
-                        console.log('Image sauvegardée:', imageUrl.substring(0, 50) + '...');
-                    }
-                }
-                
-                // Ajouter les métadonnées utilisateur
-                const user = await verifierSession();
-                annonceData.user_id = user.user.id;
-                annonceData.user_name = user.user.nom_complet || 'Utilisateur';
-                annonceData.user_email = user.user.email || '';
-                annonceData.created_at = new Date().toISOString();
-                annonceData.status = 'active';
-                annonceData.views = 0;
-                
-                console.log('Données à enregistrer:', annonceData);
-                
-                // Enregistrer dans Supabase
-                const saved = await saveAnnonceToSupabase(annonceData);
-                
-                if (saved) {
-                    showToast('Succès !', 'Votre annonce a été publiée avec succès', 'success');
-                    
-                    // Réinitialiser le formulaire
-                    resetForm();
-                    
-                    // Rediriger vers le dashboard
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html?published=true';
-                    }, 1500);
-                } else {
-                    showToast('Erreur', 'Impossible de sauvegarder l\'annonce', 'error');
-                }
-                
-            } catch (error) {
-                console.error('Erreur soumission:', error);
-                showToast('Erreur', error.message || 'Erreur lors de la publication', 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // Valider les données du formulaire
-        function validateFormData() {
-            const titre = document.getElementById('titre').value.trim();
-            const description = document.getElementById('description').value.trim();
-            const type = document.getElementById('type').value;
-            const whatsapp = document.getElementById('whatsapp').value.trim();
-            const gratuit = document.getElementById('gratuit').checked;
-            
-            // Validation du titre
-            if (!titre) {
-                throw new Error('Le titre est requis');
-            }
-            
-            if (titre.length < 5) {
-                throw new Error('Le titre doit contenir au moins 5 caractères');
-            }
-            
-            // Validation de la description
-            if (!description) {
-                throw new Error('La description est requise');
-            }
-            
-            if (description.length < 20) {
-                throw new Error('La description doit contenir au moins 20 caractères');
-            }
-            
-            // Gestion du prix
-            let prix = null;
-            if (!gratuit) {
-                const prixValue = document.getElementById('prix').value.trim();
-                if (prixValue) {
-                    prix = parseFloat(prixValue);
-                    if (isNaN(prix) || prix < 0) {
-                        throw new Error('Le prix doit être un nombre positif');
-                    }
-                }
-            }
-            
-            // Préparation des données
-            const annonceData = {
-                titre: titre,
-                description: description,
-                type: type,
-                created_at: new Date().toISOString()
-            };
-            
-            // Ajouter le prix si disponible
-            if (prix !== null) {
-                annonceData.prix = prix;
-            } else if (gratuit) {
-                annonceData.prix = 0;
-                annonceData.gratuit = true;
-            }
-            
-            // Ajouter WhatsApp si disponible
-            if (whatsapp) {
-                annonceData.whatsapp = whatsapp;
-            }
-            
-            return annonceData;
-        }
-        
-        // Enregistrer l'annonce dans Supabase (CORRIGÉ - FONCTIONNEL)
+        // Fonction pour sauvegarder l'annonce dans Supabase
         async function saveAnnonceToSupabase(annonceData) {
             try {
                 if (!supabaseClient) {
-                    console.error('Supabase non initialisé');
-                    return false;
+                    throw new Error('Supabase non initialisé');
                 }
                 
-                console.log('Envoi à Supabase...');
+                // Récupérer l'utilisateur connecté
+                const user = await verifierSession();
+                if (!user.loggedIn) {
+                    throw new Error('Utilisateur non connecté');
+                }
                 
-                // Essayer d'abord avec la table 'annonces'
+                // Préparer les données pour Supabase
+                const annonce = {
+                    user_id: user.user.id,
+                    titre: annonceData.title,
+                    description: annonceData.description,
+                    type: annonceData.category,
+                    prix: annonceData.price,
+                    whatsapp: annonceData.whatsapp,
+                    image_url: annonceData.image,
+                    created_at: new Date().toISOString(),
+                    statut: 'actif'
+                };
+                
+                // Insérer l'annonce dans la table 'annonces'
                 const { data, error } = await supabaseClient
                     .from('annonces')
-                    .insert([annonceData])
-                    .select();
+                    .insert([annonce]);
                 
                 if (error) {
-                    console.log('Erreur table annonces:', error.message);
+                    throw new Error('Erreur Supabase: ' + error.message);
+                }
+                
+                console.log('✅ Annonce sauvegardée:', data);
+                return { success: true, data: data };
+                
+            } catch (error) {
+                console.error('Erreur sauvegarde annonce:', error);
+                return { success: false, error: error.message };
+            }
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Page publication chargée');
+            
+            // Initialiser Supabase
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true
+                    }
+                });
+                console.log('✅ Supabase initialisé');
+            }
+            
+            // Vérifier la connexion
+            const session = await verifierSession();
+            const authRequired = document.getElementById('auth-required');
+            const publishForm = document.getElementById('publish-form-container');
+            
+            if (session.loggedIn) {
+                console.log('✅ Utilisateur connecté, affichage formulaire');
+                authRequired.style.display = 'none';
+                publishForm.style.display = 'block';
+                
+                // Initialiser le formulaire
+                initPublishForm();
+                
+            } else {
+                console.log('❌ Utilisateur non connecté, affichage auth required');
+                authRequired.style.display = 'flex';
+                publishForm.style.display = 'none';
+            }
+            
+            // Gestion du thème
+            const themeBtn = document.getElementById('theme-btn');
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            document.body.className = savedTheme;
+            
+            themeBtn.addEventListener('click', function() {
+                const isDark = document.body.classList.contains('dark-mode');
+                document.body.className = isDark ? 'light-mode' : 'dark-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+            });
+            
+            // Vérifier que tout est prêt
+            setTimeout(() => {
+                if (!supabaseClient) {
+                    showNotification('⚠️ Supabase non initialisé', 'error');
+                }
+            }, 1000);
+        });
+        
+        // Initialisation du formulaire
+        function initPublishForm() {
+            const form = document.getElementById('publish-form');
+            const typeOptions = document.querySelectorAll('.type-option');
+            const priceSection = document.getElementById('price-section');
+            const titreInput = document.getElementById('annonce-titre');
+            const titreCount = document.getElementById('titre-count');
+            const descInput = document.getElementById('annonce-description');
+            const descCount = document.getElementById('description-count');
+            const submitBtn = document.getElementById('submit-btn');
+            const previewBtn = document.getElementById('preview-btn');
+            
+            // Gestion du type d'annonce
+            typeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    typeOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
                     
-                    // Si la table n'existe pas, essayer 'ads' (alternative)
-                    if (error.message.includes('does not exist')) {
-                        console.log('Tentative avec table "ads"...');
-                        const { data: adsData, error: adsError } = await supabaseClient
-                            .from('ads')
-                            .insert([annonceData])
-                            .select();
-                        
-                        if (adsError) {
-                            console.log('Erreur table ads:', adsError.message);
-                            // Créer la table localement
-                            return saveToLocalStorage(annonceData);
-                        }
-                        
-                        console.log('✅ Annonce sauvegardée dans table ads:', adsData);
-                        return true;
+                    const type = this.dataset.type;
+                    document.getElementById('annonce-type').value = type;
+                    
+                    // Afficher/masquer la section prix
+                    if (type === 'vente') {
+                        priceSection.style.display = 'flex';
+                        priceSection.style.flexDirection = 'column';
+                    } else {
+                        priceSection.style.display = 'none';
+                        document.getElementById('annonce-prix').value = '';
                     }
                     
-                    // Autre erreur, sauvegarder localement
-                    return saveToLocalStorage(annonceData);
+                    // Mettre à jour l'aperçu
+                    updatePreview();
+                });
+            });
+            
+            // Compteurs de caractères
+            titreInput.addEventListener('input', function() {
+                titreCount.textContent = `${this.value.length}/60`;
+                updatePreview();
+            });
+            
+            descInput.addEventListener('input', function() {
+                descCount.textContent = `${this.value.length}/500`;
+                updatePreview();
+            });
+            
+            // Prix
+            const prixInput = document.getElementById('annonce-prix');
+            prixInput.addEventListener('input', updatePreview);
+            
+            // WhatsApp
+            const whatsappInput = document.getElementById('annonce-whatsapp');
+            whatsappInput.addEventListener('input', updatePreview);
+            
+            // Aperçu
+            previewBtn.addEventListener('click', function() {
+                const titre = document.getElementById('annonce-titre').value;
+                const description = document.getElementById('annonce-description').value;
+                
+                if (!titre || !description) {
+                    showNotification('Veuillez d\'abord remplir le titre et la description', 'error');
+                    return;
                 }
                 
-                console.log('✅ Annonce sauvegardée dans table annonces:', data);
-                return true;
+                const previewContainer = document.getElementById('preview-container');
+                previewContainer.style.display = 'block';
+                previewContainer.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Soumission du formulaire
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
                 
-            } catch (error) {
-                console.error('Erreur sauvegarde:', error);
-                return saveToLocalStorage(annonceData);
-            }
-        }
-        
-        // Sauvegarder dans localStorage (fallback)
-        function saveToLocalStorage(annonceData) {
-            try {
-                const annonces = JSON.parse(localStorage.getItem('afrimarket_annonces') || '[]');
-                annonceData.id = 'local_' + Date.now();
-                annonceData.local = true;
-                annonces.push(annonceData);
-                localStorage.setItem('afrimarket_annonces', JSON.stringify(annonces));
-                console.log('⚠️ Annonce sauvegardée localement (fallback)');
-                return true;
-            } catch (error) {
-                console.error('Erreur sauvegarde locale:', error);
-                return false;
-            }
-        }
-        
-        // Réinitialiser le formulaire
-        function resetForm() {
-            document.getElementById('annonceForm').reset();
-            document.getElementById('type').value = 'vente';
-            document.getElementById('gratuit').checked = false;
-            document.getElementById('prix').disabled = false;
-            document.getElementById('prix').placeholder = '0.00';
-            
-            // Réinitialiser l'image
-            selectedImage = null;
-            document.getElementById('imagePreview').style.display = 'none';
-            document.getElementById('imageFile').value = '';
-            
-            // Réinitialiser la sélection du type
-            const typeOptions = document.querySelectorAll('.type-option');
-            typeOptions.forEach(opt => opt.classList.remove('selected'));
-            typeOptions[0].classList.add('selected');
-            annonceType = 'vente';
-            
-            // Désactiver les boutons
-            updatePublishButton();
-        }
-        
-        // Afficher une notification toast
-        function showToast(title, message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            
-            const toast = document.createElement('div');
-            toast.className = `toast-notification ${type === 'error' ? 'error' : ''}`;
-            toast.dataset.id = Date.now();
-            
-            toast.innerHTML = `
-                <div class="toast-icon ${type === 'error' ? 'error' : ''}">
-                    <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
-                </div>
-                <div class="toast-content">
-                    <div class="toast-title">${title}</div>
-                    <div class="toast-message">${message}</div>
-                </div>
-                <button class="toast-close" onclick="closeToast(${toast.dataset.id})">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            container.insertBefore(toast, container.firstChild);
-            
-            // Supprimer automatiquement après 5 secondes
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.style.opacity = '0';
-                    toast.style.transform = 'translateX(100%)';
-                    setTimeout(() => toast.remove(), 300);
+                // Validation
+                const titre = titreInput.value.trim();
+                const description = descInput.value.trim();
+                
+                if (!titre || !description) {
+                    showNotification('Veuillez remplir tous les champs obligatoires', 'error');
+                    return;
                 }
-            }, 5000);
+                
+                // Désactiver le bouton pendant le traitement
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publication...';
+                showLoading(true);
+                
+                try {
+                    const formData = {
+                        title: titre,
+                        description: description,
+                        category: document.getElementById('annonce-type').value,
+                        price: prixInput.value ? parseFloat(prixInput.value) : null,
+                        whatsapp: whatsappInput.value.trim() || null,
+                        image: null
+                    };
+                    
+                    // Gérer l'image
+                    const imageInput = document.getElementById('image-input');
+                    if (imageInput.files && imageInput.files[0]) {
+                        const imageFile = imageInput.files[0];
+                        
+                        // Vérifier la taille (max 5MB)
+                        if (imageFile.size > 5 * 1024 * 1024) {
+                            throw new Error('L\'image ne doit pas dépasser 5MB');
+                        }
+                        
+                        // Convertir en base64
+                        formData.image = await convertImageToBase64(imageFile);
+                    }
+                    
+                    // Sauvegarder l'annonce dans Supabase
+                    const result = await saveAnnonceToSupabase(formData);
+                    
+                    if (result.success) {
+                        showNotification('✅ Annonce publiée avec succès sur AFRIMARKET !', 'success');
+                        
+                        // Redirection vers l'accueil après 2 secondes
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 3000);
+                        
+                    } else {
+                        throw new Error(result.error || 'Erreur lors de la publication');
+                    }
+                    
+                } catch (error) {
+                    console.error('Erreur publication:', error);
+                    showNotification('❌ Erreur: ' + error.message, 'error');
+                    
+                    // Réactiver le bouton
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publier maintenant';
+                    showLoading(false);
+                }
+            });
+            
+            // Initialiser l'upload d'image
+            initImageUpload();
+            
+            // Initialiser l'aperçu
+            updatePreview();
         }
         
-        window.closeToast = function(id) {
-            const toast = document.querySelector(`.toast-notification[data-id="${id}"]`);
-            if (toast) {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100%)';
-                setTimeout(() => toast.remove(), 300);
+        // Initialiser l'upload d'image
+        function initImageUpload() {
+            const imageUpload = document.getElementById('image-upload');
+            const imageInput = document.getElementById('image-input');
+            const imagePreview = document.getElementById('image-preview');
+            
+            if (!imageUpload || !imageInput) return;
+            
+            // Ouvrir le sélecteur de fichiers au clic
+            imageUpload.addEventListener('click', () => imageInput.click());
+            
+            // Afficher l'aperçu de l'image
+            imageInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        imagePreview.innerHTML = `
+                            <div style="margin-top: 15px;">
+                                <img src="${e.target.result}" alt="Aperçu" style="max-width: 100%; max-height: 300px; border-radius: 8px; object-fit: cover;">
+                                <button type="button" onclick="removeImage()" style="margin-top: 10px; padding: 8px 15px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                    <i class="fas fa-times"></i> Supprimer l'image
+                                </button>
+                            </div>
+                        `;
+                        imagePreview.style.display = 'block';
+                        
+                        // Mettre à jour l'aperçu
+                        updatePreview(e.target.result);
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+        
+        // Fonction pour supprimer l'image
+        window.removeImage = function() {
+            const imageInput = document.getElementById('image-input');
+            const imagePreview = document.getElementById('image-preview');
+            
+            if (imageInput) imageInput.value = '';
+            if (imagePreview) {
+                imagePreview.innerHTML = '';
+                imagePreview.style.display = 'none';
             }
+            
+            updatePreview();
         };
         
-        // Montrer/cacher le loading
-        function showLoading(show) {
-            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        // Mettre à jour l'aperçu
+        function updatePreview(imageUrl = null) {
+            const previewElement = document.getElementById('annonce-preview');
+            if (!previewElement) return;
+            
+            const titre = document.getElementById('annonce-titre')?.value || 'Titre de l\'annonce';
+            const description = document.getElementById('annonce-description')?.value || 'Description de l\'annonce...';
+            const type = document.getElementById('annonce-type')?.value || 'vente';
+            const prix = document.getElementById('annonce-prix')?.value;
+            const whatsapp = document.getElementById('annonce-whatsapp')?.value;
+            
+            // Utiliser l'image uploadée ou une image par défaut
+            const previewImage = imageUrl || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80';
+            
+            const categoryIcon = type === 'vente' ? 'fas fa-shopping-cart' : 'fas fa-newspaper';
+            const categoryText = type === 'vente' ? 'À VENDRE' : 'ACTUALITÉ';
+            const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+            
+            previewElement.innerHTML = `
+                <div class="annonce-image">
+                    <div class="annonce-category category-${type}">
+                        <i class="${categoryIcon}"></i>
+                        ${categoryText}
+                    </div>
+                    <img src="${previewImage}" alt="${titre}" loading="lazy">
+                </div>
+                
+                <div class="annonce-content">
+                    <div class="annonce-header">
+                        <h3 class="annonce-title">${titre}</h3>
+                        ${prix ? `<span class="annonce-price">${prix} €</span>` : ''}
+                    </div>
+                    
+                    <p class="annonce-description">${description}</p>
+                    
+                    <div class="annonce-footer">
+                        <span class="annonce-date">
+                            <i class="far fa-calendar"></i>
+                            ${date}
+                        </span>
+                        ${whatsapp ? `
+                            <a href="#" class="whatsapp-btn">
+                                <i class="fab fa-whatsapp"></i>
+                                WhatsApp
+                            </a>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
         }
     </script>
 </body>

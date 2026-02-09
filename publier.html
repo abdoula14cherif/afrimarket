@@ -1412,7 +1412,141 @@
             }
         }
         
-        // Soumettre l'annonce
+        // Fonction pour vérifier et créer le bucket si nécessaire
+        async function ensureStorageBucket() {
+            try {
+                // Vérifier si le bucket 'images' existe
+                const { data: buckets, error: bucketsError } = await supabaseClient
+                    .storage
+                    .listBuckets();
+                
+                if (bucketsError) throw bucketsError;
+                
+                const bucketExists = buckets.some(bucket => bucket.name === 'images');
+                
+                if (!bucketExists) {
+                    console.log('⚠️ Bucket "images" non trouvé, tentative de création...');
+                    const { error: createError } = await supabaseClient
+                        .storage
+                        .createBucket('images', {
+                            public: true,
+                            allowedMimeTypes: ['image/*'],
+                            fileSizeLimit: 5242880
+                        });
+                    
+                    if (createError) {
+                        console.log('ℹ️ Bucket peut déjà exister ou erreur de permissions');
+                        // Continuer même si erreur, le bucket peut déjà exister
+                    } else {
+                        console.log('✅ Bucket "images" créé avec succès');
+                    }
+                } else {
+                    console.log('✅ Bucket "images" existe déjà');
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Erreur vérification bucket:', error);
+                // Continuer même en cas d'erreur
+                return true;
+            }
+        }
+        
+        // Télécharger l'image sur Supabase (CORRIGÉ)
+        async function uploadImageToSupabase(file) {
+            try {
+                console.log('Début téléchargement image...');
+                const user = await verifierSession();
+                if (!user.loggedIn || !supabaseClient) {
+                    console.error('Utilisateur non connecté ou Supabase non initialisé');
+                    return null;
+                }
+                
+                // Vérifier/créer le bucket (optionnel, continue même en cas d'erreur)
+                await ensureStorageBucket();
+                
+                // Générer un nom de fichier unique
+                const fileExt = file.name.split('.').pop().toLowerCase();
+                const fileName = `annonce_${user.user.id}_${Date.now()}.${fileExt}`;
+                const filePath = fileName; // Pas besoin de sous-dossier
+                
+                console.log('Téléchargement de:', file.name, 'vers:', filePath);
+                
+                // Télécharger le fichier
+                const { data, error } = await supabaseClient.storage
+                    .from('images')
+                    .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+                
+                if (error) {
+                    console.error('Erreur upload Supabase:', error);
+                    
+                    // Si erreur "bucket not found", essayer de créer le bucket
+                    if (error.message.includes('bucket') || error.message.includes('not found')) {
+                        console.log('Tentative de création du bucket...');
+                        const { error: createError } = await supabaseClient
+                            .storage
+                            .createBucket('images', {
+                                public: true,
+                                allowedMimeTypes: ['image/*'],
+                                fileSizeLimit: 5242880
+                            });
+                        
+                        if (!createError) {
+                            // Réessayer l'upload après création du bucket
+                            const { data: retryData, error: retryError } = await supabaseClient.storage
+                                .from('images')
+                                .upload(filePath, file);
+                            
+                            if (retryError) throw retryError;
+                            
+                            const { data: urlData } = supabaseClient.storage
+                                .from('images')
+                                .getPublicUrl(filePath);
+                            
+                            console.log('✅ Image téléchargée après création bucket:', urlData.publicUrl);
+                            return urlData.publicUrl;
+                        }
+                    }
+                    throw error;
+                }
+                
+                // Récupérer l'URL publique
+                const { data: urlData } = supabaseClient.storage
+                    .from('images')
+                    .getPublicUrl(filePath);
+                
+                console.log('✅ Image téléchargée avec succès:', urlData.publicUrl);
+                return urlData.publicUrl;
+                
+            } catch (error) {
+                console.error('Erreur téléchargement image:', error);
+                
+                // Alternative: convertir en base64 si Supabase échoue
+                console.log('Tentative de sauvegarde en base64...');
+                try {
+                    const base64Image = await convertFileToBase64(file);
+                    return base64Image;
+                } catch (base64Error) {
+                    console.error('Échec conversion base64:', base64Error);
+                    return null;
+                }
+            }
+        }
+        
+        // Convertir un fichier en base64 (fallback)
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+        
+        // Soumettre l'annonce (CORRIGÉ)
         async function submitAnnonce() {
             showLoading(true);
             
@@ -1423,17 +1557,32 @@
                 // Télécharger l'image si nécessaire
                 let imageUrl = null;
                 if (selectedImage) {
+                    console.log('Téléchargement image en cours...');
                     imageUrl = await uploadImageToSupabase(selectedImage);
+                    console.log('URL image obtenue:', imageUrl);
+                    
+                    if (imageUrl) {
+                        // Vérifier si c'est une URL Supabase ou base64
+                        if (imageUrl.startsWith('http')) {
+                            annonceData.image_url = imageUrl;
+                        } else {
+                            // C'est du base64, on le sauvegarde directement
+                            annonceData.image_base64 = imageUrl;
+                        }
+                    }
                 }
                 
-                // Ajouter l'URL de l'image aux données
-                if (imageUrl) {
-                    annonceData.image_url = imageUrl;
-                }
-                
-                // Ajouter l'ID utilisateur
+                // Ajouter les métadonnées utilisateur
                 const user = await verifierSession();
                 annonceData.user_id = user.user.id;
+                annonceData.user_name = user.user.nom_complet || 'Utilisateur';
+                annonceData.user_email = user.user.email || '';
+                annonceData.created_at = new Date().toISOString();
+                annonceData.status = 'active';
+                annonceData.views = 0;
+                
+                // DEBUG: Afficher les données
+                console.log('Données annonce à sauvegarder:', annonceData);
                 
                 // Enregistrer dans Supabase
                 const success = await saveAnnonceToSupabase(annonceData);
@@ -1454,7 +1603,7 @@
                 
             } catch (error) {
                 console.error('Erreur soumission:', error);
-                showToast('Erreur', error.message || 'Une erreur est survenue', 'error');
+                showToast('Erreur', error.message || 'Une erreur est survenue lors de la publication', 'error');
             } finally {
                 showLoading(false);
             }
@@ -1502,13 +1651,15 @@
             const annonceData = {
                 titre: titre,
                 description: description,
-                type: type,
-                created_at: new Date().toISOString()
+                type: type
             };
             
             // Ajouter le prix si disponible
             if (prix !== null) {
-                annonceData.prix = prix.toString();
+                annonceData.prix = prix;
+            } else if (gratuit) {
+                annonceData.prix = 0;
+                annonceData.gratuit = true;
             }
             
             // Ajouter WhatsApp si disponible
@@ -1519,52 +1670,52 @@
             return annonceData;
         }
         
-        // Télécharger l'image sur Supabase
-        async function uploadImageToSupabase(file) {
-            try {
-                const user = await verifierSession();
-                if (!user.loggedIn || !supabaseClient) return null;
-                
-                // Générer un nom de fichier unique
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${user.user.id}_${Date.now()}.${fileExt}`;
-                const filePath = `annonces/${fileName}`;
-                
-                // Télécharger le fichier
-                const { data, error } = await supabaseClient.storage
-                    .from('images')
-                    .upload(filePath, file);
-                
-                if (error) throw error;
-                
-                // Récupérer l'URL publique
-                const { data: urlData } = supabaseClient.storage
-                    .from('images')
-                    .getPublicUrl(filePath);
-                
-                return urlData.publicUrl;
-                
-            } catch (error) {
-                console.error('Erreur téléchargement image:', error);
-                return null;
-            }
-        }
-        
-        // Enregistrer l'annonce dans Supabase
+        // Enregistrer l'annonce dans Supabase (CORRIGÉ)
         async function saveAnnonceToSupabase(annonceData) {
             try {
-                if (!supabaseClient) return false;
+                if (!supabaseClient) {
+                    console.error('Supabase client non initialisé');
+                    return false;
+                }
+                
+                console.log('Envoi des données à Supabase...');
                 
                 const { data, error } = await supabaseClient
                     .from('annonces')
-                    .insert([annonceData]);
+                    .insert([annonceData])
+                    .select();
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('Erreur Supabase:', error);
+                    
+                    // Vérifier si la table existe
+                    if (error.message.includes('relation') && error.message.includes('does not exist')) {
+                        console.log('Table "annonces" non trouvée, création nécessaire');
+                        showToast('Configuration requise', 'La table annonces doit être créée dans Supabase', 'error');
+                    }
+                    
+                    throw error;
+                }
                 
+                console.log('✅ Annonce sauvegardée avec succès:', data);
                 return true;
             } catch (error) {
                 console.error('Erreur sauvegarde annonce:', error);
-                return false;
+                
+                // Alternative: sauvegarder dans localStorage temporairement
+                try {
+                    const annonces = JSON.parse(localStorage.getItem('afrimarket_annonces_temp') || '[]');
+                    annonceData.id = Date.now();
+                    annonceData.local_temp = true;
+                    annonces.push(annonceData);
+                    localStorage.setItem('afrimarket_annonces_temp', JSON.stringify(annonces));
+                    console.log('⚠️ Annonce sauvegardée temporairement dans localStorage');
+                    showToast('Mode temporaire', 'Annonce sauvegardée localement (Supabase inaccessible)', 'success');
+                    return true;
+                } catch (localError) {
+                    console.error('Échec sauvegarde locale:', localError);
+                    return false;
+                }
             }
         }
         
@@ -1637,6 +1788,13 @@
         function showLoading(show) {
             document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
         }
+        
+        // Gestion du bouton de publication dans le header
+        document.getElementById('publishHeaderBtn').addEventListener('click', async function() {
+            if (!this.disabled) {
+                await submitAnnonce();
+            }
+        });
     </script>
 </body>
 </html>

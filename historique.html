@@ -4,101 +4,759 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Historique - AFRIMARKET</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
-        .auth-required {
+        :root {
+            --primary-blue: #1d3557;
+            --primary-red: #ef4444;
+            --primary-orange: #f97316;
+            --primary-green: #10b981;
+            --light-bg: #f8fafc;
+            --light-card: #ffffff;
+            --light-text: #1e293b;
+            --light-border: #e2e8f0;
+            --light-gray: #94a3b8;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #f1f5f9;
+            --dark-border: #334155;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            transition: var(--transition);
+            overflow-x: hidden;
+            padding-bottom: 70px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 16px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--light-card);
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .header-content {
             display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        /* Bouton retour */
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--light-text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .dark-mode .back-btn {
+            color: var(--dark-text);
+        }
+
+        .back-btn:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--light-text);
+            line-height: 1;
+        }
+
+        .dark-mode .logo-text {
+            color: var(--dark-text);
+        }
+
+        .logo-text span {
+            color: var(--primary-orange);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Bouton thème */
+        .theme-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--light-text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .dark-mode .theme-btn {
+            color: var(--dark-text);
+        }
+
+        .theme-btn:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        /* Bouton supprimer */
+        .delete-all-btn {
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .delete-all-btn:hover {
+            background: #dc2626;
+        }
+
+        /* Contenu principal */
+        .main-content {
+            padding-top: 20px;
+        }
+
+        /* Section de bienvenue */
+        .welcome-section {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--light-border);
+        }
+
+        .dark-mode .welcome-section {
+            border-color: var(--dark-border);
+        }
+
+        .welcome-content h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .welcome-content h1 {
+            color: var(--dark-text);
+        }
+
+        .welcome-content p {
+            color: var(--light-gray);
+            font-size: 14px;
+        }
+
+        .dark-mode .welcome-content p {
+            color: #94a3b8;
+        }
+
+        /* Statistiques */
+        .stats-section {
+            padding: 25px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: var(--light-card);
+            border-radius: var(--radius-md);
+            padding: 18px 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .dark-mode .stat-card {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--light-text);
+            margin-bottom: 4px;
+        }
+
+        .dark-mode .stat-number {
+            color: var(--dark-text);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--light-gray);
+            font-weight: 500;
+        }
+
+        .dark-mode .stat-label {
+            color: #94a3b8;
+        }
+
+        /* Section historique */
+        .history-section {
+            padding: 25px 0 80px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .section-title {
+            color: var(--dark-text);
+        }
+
+        .history-filters {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .history-filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            background: var(--light-card);
+            border: 1px solid var(--light-border);
+            color: var(--light-text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dark-mode .filter-btn {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            color: white;
+            border-color: transparent;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-item {
+            background: var(--light-card);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-border);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .dark-mode .history-item {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .history-item:active {
+            transform: scale(0.99);
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .item-category {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .item-category.actualite {
+            background: rgba(249, 115, 22, 0.1);
+            color: var(--primary-orange);
+        }
+
+        .item-date {
+            font-size: 11px;
+            color: var(--light-gray);
+        }
+
+        .dark-mode .item-date {
+            color: #94a3b8;
+        }
+
+        .item-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--light-text);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .dark-mode .item-title {
+            color: var(--dark-text);
+        }
+
+        .item-description {
+            font-size: 13px;
+            color: var(--light-gray);
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .dark-mode .item-description {
+            color: #94a3b8;
+        }
+
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--light-border);
+        }
+
+        .dark-mode .item-footer {
+            border-color: var(--dark-border);
+        }
+
+        .item-price {
+            background: var(--primary-blue);
+            color: white;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .view-btn {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .view-btn:hover {
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--primary-red);
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* État vide */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: var(--light-gray);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .dark-mode .empty-state i {
+            color: #475569;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            color: var(--light-text);
+            margin-bottom: 8px;
+        }
+
+        .dark-mode .empty-state h3 {
+            color: var(--dark-text);
+        }
+
+        .empty-state p {
+            color: var(--light-gray);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .dark-mode .empty-state p {
+            color: #94a3b8;
+        }
+
+        .publish-btn {
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .publish-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Authentification requise */
+        .auth-required {
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 40px 20px;
-            min-height: 400px;
+            padding: 60px 20px;
+            min-height: 60vh;
         }
-        
+
         .auth-required i {
             font-size: 64px;
-            color: #ef4444;
+            color: var(--light-gray);
             margin-bottom: 20px;
         }
-        
+
+        .dark-mode .auth-required i {
+            color: #475569;
+        }
+
         .auth-required h2 {
-            color: #1d3557;
-            margin-bottom: 10px;
+            color: var(--light-text);
+            margin-bottom: 12px;
+            font-size: 20px;
         }
-        
+
+        .dark-mode .auth-required h2 {
+            color: var(--dark-text);
+        }
+
         .auth-required p {
-            color: #666;
-            margin-bottom: 30px;
-            max-width: 400px;
+            color: var(--light-gray);
+            margin-bottom: 8px;
+            max-width: 300px;
+            font-size: 14px;
         }
-        
+
+        .dark-mode .auth-required p {
+            color: #94a3b8;
+        }
+
         .auth-buttons {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-        
-        .btn-login {
-            background: #1d3557;
-            color: white;
+
+        .btn-login, .btn-signup {
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 8px;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
         }
-        
+
+        .btn-login {
+            background: var(--primary-blue);
+            color: white;
+        }
+
         .btn-login:hover {
             background: #0f2647;
+            transform: translateY(-2px);
         }
-        
+
         .btn-signup {
-            background: #10b981;
+            background: var(--primary-green);
             color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
         }
-        
+
         .btn-signup:hover {
             background: #0da271;
+            transform: translateY(-2px);
         }
-        
+
+        /* Loading overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 10001;
         }
-        
+
         .loading-spinner {
-            background: white;
+            background: var(--light-card);
             padding: 30px;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dark-mode .loading-spinner {
+            background: var(--dark-card);
+        }
+
+        /* Navigation inférieure */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--light-card);
+            border-top: 1px solid var(--light-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .dark-mode .bottom-nav {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            max-width: 70px;
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-item.active, .nav-item:active {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            color: var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .dark-mode .nav-icon {
+            color: #94a3b8;
+        }
+
+        .nav-item.active .nav-icon, .nav-item:active .nav-icon {
+            color: var(--primary-blue);
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .dark-mode .nav-label {
+            color: #94a3b8;
+        }
+
+        .nav-item.active .nav-label, .nav-item:active .nav-label {
+            color: var(--primary-blue);
+        }
+
+        /* Responsive */
+        @media (min-width: 375px) {
+            .container {
+                padding: 0 18px;
+            }
+            
+            .stats-grid {
+                gap: 15px;
+            }
+        }
+
+        @media (min-width: 414px) {
+            .stats-grid {
+                gap: 18px;
+            }
+            
+            .history-item {
+                padding: 20px;
+            }
+        }
+
+        /* Prévention débordement */
+        html, body {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+
+        img, svg, video {
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
 <body class="light-mode">
-    <!-- Overlay de chargement -->
+    <!-- Loading overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner">
             <i class="fas fa-spinner fa-spin fa-2x"></i>
@@ -106,121 +764,165 @@
         </div>
     </div>
 
-    <!-- En-tête fixe -->
-    <header class="header">
-        <div class="header-container">
-            <a href="dashboard.html" class="logo" style="text-decoration: none; color: inherit;">
-                <i class="fas fa-arrow-left"></i>
-                <h1 style="margin-left: 8px; font-family: 'Montserrat', sans-serif;">Historique</h1>
-            </a>
-            
-            <div class="header-actions">
-                <button class="theme-btn" id="theme-btn" aria-label="Changer de thème">
-                    <i class="fas fa-moon"></i>
-                </button>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="back-btn" onclick="window.history.back()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <a href="dashboard.html" class="logo-container">
+                        <div class="logo-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="logo-text">Historique</div>
+                    </a>
+                </div>
                 
-                <button class="btn clear-btn" id="clear-btn" style="display: none;">
-                    <i class="fas fa-trash"></i>
-                    Tout effacer
-                </button>
+                <div class="header-controls">
+                    <button class="delete-all-btn" id="deleteAllBtn" style="display: none;">
+                        <i class="fas fa-trash"></i>
+                        Tout effacer
+                    </button>
+                    <button class="theme-btn" id="themeBtn">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Contenu principal -->
     <main class="main-content">
-        <!-- Section d'authentification requise -->
-        <div id="auth-required" class="auth-required" style="display: none;">
-            <i class="fas fa-lock"></i>
-            <h2>Connexion requise</h2>
-            <p>Vous devez être connecté pour voir votre historique sur AFRIMARKET.</p>
-            <p>Connectez-vous ou créez un compte gratuitement.</p>
-            <div class="auth-buttons">
-                <a href="connexion.html" class="btn-login">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Se connecter
-                </a>
-                <a href="inscription.html" class="btn-signup">
-                    <i class="fas fa-user-plus"></i>
-                    S'inscrire
-                </a>
+        <div class="container">
+            <!-- Section authentification requise -->
+            <div id="authRequired" class="auth-required">
+                <i class="fas fa-lock"></i>
+                <h2>Connexion requise</h2>
+                <p>Vous devez être connecté pour accéder à votre historique.</p>
+                <p>Connectez-vous ou créez un compte gratuitement.</p>
+                <div class="auth-buttons">
+                    <a href="connexion.html" class="btn-login">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Se connecter
+                    </a>
+                    <a href="inscription.html" class="btn-signup">
+                        <i class="fas fa-user-plus"></i>
+                        S'inscrire
+                    </a>
+                </div>
             </div>
-        </div>
 
-        <!-- Historique pour utilisateurs connectés -->
-        <div id="history-content" class="history-container" style="display: none;">
-            <div class="history-header">
-                <h2>Vos annonces sur AFRIMARKET</h2>
-                <p class="history-subtitle">Historique complet de toutes vos publications</p>
-            </div>
-            
-            <!-- Statistiques -->
-            <div class="stats-cards">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(37, 99, 235, 0.1); color: var(--primary-blue);">
-                        <i class="fas fa-bullhorn"></i>
+            <!-- Contenu pour utilisateurs connectés -->
+            <div id="historyContent" style="display: none;">
+                <!-- Section de bienvenue -->
+                <section class="welcome-section">
+                    <div class="welcome-content">
+                        <h1 id="userGreeting">Votre historique</h1>
+                        <p>Consultez toutes vos publications passées sur AFRIMARKET</p>
                     </div>
-                    <div class="stat-info">
-                        <span class="stat-number" id="total-annonces">0</span>
-                        <span class="stat-label">Total annonces</span>
+                </section>
+
+                <!-- Statistiques -->
+                <section class="stats-section">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div class="stat-number" id="totalAnnonces">0</div>
+                            <div class="stat-label">Total annonces</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-number" id="ventesCount">0</div>
+                            <div class="stat-label">À vendre</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <div class="stat-number" id="actualitesCount">0</div>
+                            <div class="stat-label">Actualités</div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(220, 38, 38, 0.1); color: var(--primary-red);">
-                        <i class="fas fa-shopping-cart"></i>
+                </section>
+
+                <!-- Section historique -->
+                <section class="history-section">
+                    <h2 class="section-title">Toutes vos publications</h2>
+                    
+                    <!-- Filtres -->
+                    <div class="history-filters" id="historyFilters">
+                        <button class="filter-btn active" data-filter="all">
+                            <i class="fas fa-layer-group"></i>
+                            Toutes
+                        </button>
+                        <button class="filter-btn" data-filter="vente">
+                            <i class="fas fa-shopping-cart"></i>
+                            À vendre
+                        </button>
+                        <button class="filter-btn" data-filter="actualite">
+                            <i class="fas fa-newspaper"></i>
+                            Actualités
+                        </button>
                     </div>
-                    <div class="stat-info">
-                        <span class="stat-number" id="ventes-count">0</span>
-                        <span class="stat-label">À vendre</span>
+                    
+                    <!-- Liste d'historique -->
+                    <div class="history-list" id="historyList">
+                        <!-- Les annonces seront chargées ici -->
                     </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(249, 115, 22, 0.1); color: var(--primary-orange);">
-                        <i class="fas fa-newspaper"></i>
+                    
+                    <!-- État vide -->
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <i class="fas fa-history"></i>
+                        <h3>Historique vide</h3>
+                        <p>Vous n'avez pas encore publié d'annonces sur AFRIMARKET</p>
+                        <a href="publier.html" class="publish-btn">
+                            <i class="fas fa-plus-circle"></i>
+                            Publier une annonce
+                        </a>
                     </div>
-                    <div class="stat-info">
-                        <span class="stat-number" id="actualites-count">0</span>
-                        <span class="stat-label">Actualités</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Liste d'historique -->
-            <div class="history-list" id="history-list">
-                <!-- L'historique sera chargé ici -->
-            </div>
-            
-            <!-- Pas d'historique -->
-            <div class="no-history" id="no-history">
-                <i class="fas fa-history"></i>
-                <h3>Historique vide</h3>
-                <p>Vous n'avez pas encore publié d'annonces sur AFRIMARKET</p>
-                <a href="publier.html" class="btn">Publier une annonce</a>
+                </section>
             </div>
         </div>
     </main>
 
-    <!-- Barre de navigation en bas -->
-<nav class="bottom-nav">
-    <a href="dashboard.html" class="nav-item">
-        <i class="fas fa-home"></i>
-        <span>Accueil</span>
-    </a>
-    <a href="publier.html" class="nav-item">
-        <i class="fas fa-plus-square"></i>
-        <span>Publier</span>
-    </a>
-    <a href="gagner.html" class="nav-item">
-        <i class="fas fa-gift"></i>
-        <span>Gagner</span>
-    </a>
-    <a href="historique.html" class="nav-item active">
-        <i class="fas fa-history"></i>
-        <span>Historique</span>
-    </a>
-</nav>
+    <!-- Navigation inférieure -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <div style="position: relative;">
+                <i class="fas fa-home nav-icon"></i>
+            </div>
+            <span class="nav-label">Accueil</span>
+        </a>
+        
+        <a href="publier.html" class="nav-item">
+            <div style="position: relative;">
+                <i class="fas fa-plus-circle nav-icon"></i>
+            </div>
+            <span class="nav-label">Publier</span>
+        </a>
+        
+        <a href="gagner.html" class="nav-item">
+            <div style="position: relative;">
+                <i class="fas fa-gift nav-icon"></i>
+            </div>
+            <span class="nav-label">Gagner</span>
+        </a>
+        
+        <a href="historique.html" class="nav-item active">
+            <div style="position: relative;">
+                <i class="fas fa-history nav-icon"></i>
+            </div>
+            <span class="nav-label">Historique</span>
+        </a>
+    </nav>
 
     <script>
         // Configuration Supabase
@@ -228,19 +930,126 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
         let supabaseClient = null;
+        let userAnnonces = [];
+        let currentFilter = 'all';
         
-        // Fonction pour montrer/cacher le loading
-        function showLoading(show) {
-            const overlay = document.getElementById('loadingOverlay');
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Page historique chargée');
             
-            if (show) {
-                overlay.style.display = 'flex';
+            // Initialiser Supabase
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                    auth: { persistSession: true, autoRefreshToken: true }
+                });
+                console.log('✅ Supabase initialisé');
+            }
+            
+            // Configurer l'interface
+            setupInterface();
+            
+            // Vérifier l'authentification
+            await checkAuthentication();
+        });
+        
+        // Configurer l'interface
+        function setupInterface() {
+            // Gestion du thème
+            const themeBtn = document.getElementById('themeBtn');
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            document.body.className = savedTheme;
+            
+            themeBtn.addEventListener('click', function() {
+                const isDark = document.body.classList.contains('dark-mode');
+                document.body.className = isDark ? 'light-mode' : 'dark-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+                
+                // Changer l'icône du bouton
+                const icon = themeBtn.querySelector('i');
+                icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            });
+            
+            // Mettre à jour l'icône du bouton thème
+            const icon = themeBtn.querySelector('i');
+            icon.className = savedTheme === 'dark-mode' ? 'fas fa-sun' : 'fas fa-moon';
+            
+            // Filtres d'historique
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    displayHistory(userAnnonces);
+                });
+            });
+            
+            // Bouton "Tout effacer"
+            const deleteAllBtn = document.getElementById('deleteAllBtn');
+            deleteAllBtn.addEventListener('click', async () => {
+                if (confirm('⚠️ Êtes-vous sûr de vouloir supprimer TOUTES vos annonces ? Cette action est irréversible.')) {
+                    showLoading(true);
+                    const success = await deleteAllAnnonces();
+                    if (success) {
+                        userAnnonces = [];
+                        updateStats();
+                        displayHistory([]);
+                        deleteAllBtn.style.display = 'none';
+                        alert('✅ Toutes vos annonces ont été supprimées');
+                    } else {
+                        alert('❌ Une erreur est survenue lors de la suppression');
+                    }
+                    showLoading(false);
+                }
+            });
+        }
+        
+        // Vérifier l'authentification
+        async function checkAuthentication() {
+            const user = await verifierSession();
+            const authRequired = document.getElementById('authRequired');
+            const historyContent = document.getElementById('historyContent');
+            const deleteAllBtn = document.getElementById('deleteAllBtn');
+            
+            if (user.loggedIn) {
+                authRequired.style.display = 'none';
+                historyContent.style.display = 'block';
+                
+                // Personnaliser l'accueil
+                setupPersonalWelcome(user);
+                
+                // Charger l'historique
+                await loadUserHistory();
+                
+                // Afficher le bouton "Tout effacer" s'il y a des annonces
+                if (userAnnonces.length > 0) {
+                    deleteAllBtn.style.display = 'flex';
+                }
             } else {
-                overlay.style.display = 'none';
+                authRequired.style.display = 'flex';
+                historyContent.style.display = 'none';
             }
         }
         
-        // Fonction pour vérifier la session
+        // Personnaliser l'accueil
+        function setupPersonalWelcome(user) {
+            const greeting = document.getElementById('userGreeting');
+            const userName = localStorage.getItem('afrimarket_user_name');
+            
+            if (userName) {
+                const firstName = userName.split(' ')[0];
+                const hour = new Date().getHours();
+                let timeGreeting = 'Bonjour';
+                
+                if (hour < 12) timeGreeting = 'Bonjour';
+                else if (hour < 18) timeGreeting = 'Bon après-midi';
+                else timeGreeting = 'Bonsoir';
+                
+                greeting.textContent = `${timeGreeting} ${firstName}, voici votre historique`;
+            }
+        }
+        
+        // Vérifier la session utilisateur
         async function verifierSession() {
             try {
                 const userId = localStorage.getItem('afrimarket_user_id');
@@ -256,247 +1065,126 @@
                         }
                     };
                 }
-                
                 return { loggedIn: false };
-                
             } catch (error) {
-                console.error('Erreur vérification session:', error);
                 return { loggedIn: false };
             }
         }
         
-        // Fonction pour charger les annonces depuis Supabase
+        // Charger l'historique utilisateur
+        async function loadUserHistory() {
+            showLoading(true);
+            
+            try {
+                userAnnonces = await loadAnnoncesFromSupabase();
+                updateStats();
+                displayHistory(userAnnonces);
+            } catch (error) {
+                console.error('Erreur chargement historique:', error);
+                alert('Erreur lors du chargement de votre historique');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Charger les annonces depuis Supabase
         async function loadAnnoncesFromSupabase() {
             try {
-                if (!supabaseClient) {
-                    throw new Error('Supabase non initialisé');
-                }
-                
-                // Récupérer l'utilisateur connecté
                 const user = await verifierSession();
-                if (!user.loggedIn) {
-                    throw new Error('Utilisateur non connecté');
-                }
+                if (!user.loggedIn || !supabaseClient) return [];
                 
-                // Charger les annonces de l'utilisateur depuis Supabase
                 const { data, error } = await supabaseClient
                     .from('annonces')
                     .select('*')
                     .eq('user_id', user.user.id)
                     .order('created_at', { ascending: false });
                 
-                if (error) {
-                    throw new Error('Erreur Supabase: ' + error.message);
-                }
-                
-                console.log('✅ Annonces chargées:', data);
-                return data || [];
-                
+                return error ? [] : (data || []);
             } catch (error) {
                 console.error('Erreur chargement annonces:', error);
                 return [];
             }
         }
         
-        // Fonction pour supprimer une annonce de Supabase
-        async function deleteAnnonceFromSupabase(id) {
-            try {
-                if (!supabaseClient) {
-                    throw new Error('Supabase non initialisé');
-                }
-                
-                // Récupérer l'utilisateur connecté
-                const user = await verifierSession();
-                if (!user.loggedIn) {
-                    throw new Error('Utilisateur non connecté');
-                }
-                
-                // Supprimer l'annonce de Supabase
-                const { error } = await supabaseClient
-                    .from('annonces')
-                    .delete()
-                    .eq('id', id)
-                    .eq('user_id', user.user.id); // S'assurer que l'utilisateur possède l'annonce
-                
-                if (error) {
-                    throw new Error('Erreur Supabase: ' + error.message);
-                }
-                
-                console.log('✅ Annonce supprimée:', id);
-                return { success: true };
-                
-            } catch (error) {
-                console.error('Erreur suppression annonce:', error);
-                return { success: false, error: error.message };
-            }
-        }
-        
-        // Fonction pour effacer toutes les annonces de Supabase
-        async function clearAllAnnoncesFromSupabase() {
-            try {
-                if (!supabaseClient) {
-                    throw new Error('Supabase non initialisé');
-                }
-                
-                // Récupérer l'utilisateur connecté
-                const user = await verifierSession();
-                if (!user.loggedIn) {
-                    throw new Error('Utilisateur non connecté');
-                }
-                
-                // Supprimer toutes les annonces de l'utilisateur
-                const { error } = await supabaseClient
-                    .from('annonces')
-                    .delete()
-                    .eq('user_id', user.user.id);
-                
-                if (error) {
-                    throw new Error('Erreur Supabase: ' + error.message);
-                }
-                
-                console.log('✅ Toutes les annonces supprimées');
-                return { success: true };
-                
-            } catch (error) {
-                console.error('Erreur suppression toutes annonces:', error);
-                return { success: false, error: error.message };
-            }
-        }
-        
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('Page historique chargée');
+        // Mettre à jour les statistiques
+        function updateStats() {
+            const total = userAnnonces.length;
+            const ventes = userAnnonces.filter(a => a.type === 'vente').length;
+            const actualites = userAnnonces.filter(a => a.type === 'actualite').length;
             
-            // Initialiser Supabase
-            if (window.supabase) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                    auth: {
-                        persistSession: true,
-                        autoRefreshToken: true
-                    }
-                });
-                console.log('✅ Supabase initialisé');
-            }
-            
-            // Vérifier la connexion
-            const session = await verifierSession();
-            const authRequired = document.getElementById('auth-required');
-            const historyContent = document.getElementById('history-content');
-            const clearBtn = document.getElementById('clear-btn');
-            
-            if (session.loggedIn) {
-                console.log('✅ Utilisateur connecté, chargement historique');
-                authRequired.style.display = 'none';
-                historyContent.style.display = 'block';
-                clearBtn.style.display = 'flex';
-                
-                // Charger et initialiser l'historique
-                await initHistoryPage();
-                
-            } else {
-                console.log('❌ Utilisateur non connecté, affichage auth required');
-                authRequired.style.display = 'flex';
-                historyContent.style.display = 'none';
-                clearBtn.style.display = 'none';
-            }
-            
-            // Gestion du thème
-            const themeBtn = document.getElementById('theme-btn');
-            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
-            document.body.className = savedTheme;
-            
-            themeBtn.addEventListener('click', function() {
-                const isDark = document.body.classList.contains('dark-mode');
-                document.body.className = isDark ? 'light-mode' : 'dark-mode';
-                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
-            });
-        });
-        
-        // Initialisation de la page historique
-        async function initHistoryPage() {
-            showLoading(true);
-            
-            try {
-                // Charger les annonces depuis Supabase
-                const annonces = await loadAnnoncesFromSupabase();
-                
-                // Mettre à jour les statistiques
-                updateStats(annonces);
-                
-                // Afficher l'historique
-                displayHistory(annonces);
-                
-                // Initialiser le bouton "Tout effacer"
-                initClearButton();
-                
-            } catch (error) {
-                console.error('Erreur initialisation historique:', error);
-                alert('Erreur: ' + error.message);
-            } finally {
-                showLoading(false);
-            }
+            document.getElementById('totalAnnonces').textContent = total;
+            document.getElementById('ventesCount').textContent = ventes;
+            document.getElementById('actualitesCount').textContent = actualites;
         }
         
         // Afficher l'historique
         function displayHistory(annonces) {
-            const historyList = document.getElementById('history-list');
-            const noHistory = document.getElementById('no-history');
+            const historyList = document.getElementById('historyList');
+            const emptyState = document.getElementById('emptyState');
             
-            if (annonces.length === 0) {
-                historyList.style.display = 'none';
-                noHistory.style.display = 'block';
+            // Filtrer selon le filtre actif
+            let filteredAnnonces = annonces;
+            if (currentFilter !== 'all') {
+                filteredAnnonces = annonces.filter(a => a.type === currentFilter);
+            }
+            
+            if (filteredAnnonces.length === 0) {
+                historyList.innerHTML = '';
+                emptyState.style.display = 'block';
                 return;
             }
             
-            // Afficher l'historique
-            historyList.style.display = 'block';
-            noHistory.style.display = 'none';
+            emptyState.style.display = 'none';
             historyList.innerHTML = '';
             
-            // Afficher chaque annonce
-            annonces.forEach((annonce, index) => {
-                const historyItem = createHistoryItem(annonce, index);
+            filteredAnnonces.forEach(annonce => {
+                const historyItem = createHistoryItem(annonce);
                 historyList.appendChild(historyItem);
             });
         }
         
         // Créer un élément d'historique
-        function createHistoryItem(annonce, index) {
+        function createHistoryItem(annonce) {
             const div = document.createElement('div');
             div.className = 'history-item';
             div.dataset.id = annonce.id;
             
+            // Formater la date
             const date = new Date(annonce.created_at);
             const formattedDate = date.toLocaleDateString('fr-FR', {
-                weekday: 'short',
                 day: 'numeric',
                 month: 'short',
                 hour: '2-digit',
                 minute: '2-digit'
             });
             
-            const categoryIcon = annonce.type === 'vente' ? 'fas fa-shopping-cart' : 'fas fa-newspaper';
-            const categoryColor = annonce.type === 'vente' ? 'var(--primary-blue)' : 'var(--primary-orange)';
+            // Icône et couleur selon le type
+            const isVente = annonce.type === 'vente';
+            const categoryIcon = isVente ? 'fa-shopping-cart' : 'fa-newspaper';
+            const categoryClass = isVente ? '' : 'actualite';
+            const categoryText = isVente ? 'À vendre' : 'Actualité';
             
             div.innerHTML = `
                 <div class="history-item-header">
-                    <div class="item-category" style="color: ${categoryColor};">
-                        <i class="${categoryIcon}"></i>
-                        <span>${annonce.type === 'vente' ? 'À vendre' : 'Actualité'}</span>
+                    <div class="item-category ${categoryClass}">
+                        <i class="fas ${categoryIcon}"></i>
+                        <span>${categoryText}</span>
                     </div>
                     <span class="item-date">${formattedDate}</span>
                 </div>
                 
-                <h4 class="item-title">${annonce.titre}</h4>
+                <h3 class="item-title">${annonce.titre}</h3>
+                
+                <p class="item-description">${annonce.description.substring(0, 100)}${annonce.description.length > 100 ? '...' : ''}</p>
                 
                 <div class="item-footer">
                     ${annonce.prix ? `<span class="item-price">${annonce.prix} €</span>` : '<span></span>'}
                     
                     <div class="item-actions">
-                        <button class="item-btn view-btn" onclick="viewAnnonce('${annonce.id}')">
+                        <button class="action-btn view-btn" onclick="viewAnnonce('${annonce.id}')">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="item-btn delete-btn" onclick="deleteAnnonce('${annonce.id}')">
+                        <button class="action-btn delete-btn" onclick="deleteAnnonce('${annonce.id}')">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -506,74 +1194,113 @@
             return div;
         }
         
-        // Mettre à jour les statistiques
-        function updateStats(annonces) {
-            document.getElementById('total-annonces').textContent = annonces.length;
-            
-            const ventes = annonces.filter(a => a.type === 'vente').length;
-            const actualites = annonces.filter(a => a.type === 'actualite').length;
-            
-            document.getElementById('ventes-count').textContent = ventes;
-            document.getElementById('actualites-count').textContent = actualites;
-        }
-        
-        // Initialiser le bouton "Tout effacer"
-        function initClearButton() {
-            const clearBtn = document.getElementById('clear-btn');
-            
-            clearBtn.addEventListener('click', async function() {
-                if (confirm('⚠️ Voulez-vous vraiment effacer TOUTES vos annonces ? Cette action est irréversible.')) {
-                    showLoading(true);
-                    
-                    try {
-                        const result = await clearAllAnnoncesFromSupabase();
-                        
-                        if (result.success) {
-                            alert('✅ Toutes les annonces ont été supprimées');
-                            // Recharger l'historique
-                            await initHistoryPage();
-                        } else {
-                            alert('❌ Erreur: ' + result.error);
-                        }
-                        
-                    } catch (error) {
-                        alert('❌ Erreur: ' + error.message);
-                    } finally {
-                        showLoading(false);
-                    }
+        // Voir une annonce
+        window.viewAnnonce = async function(id) {
+            try {
+                if (!supabaseClient) {
+                    alert('Fonctionnalité de visualisation en cours de développement');
+                    return;
                 }
-            });
-        }
-        
-        // Fonction pour voir une annonce (globale)
-        window.viewAnnonce = function(id) {
-            // Pour l'instant, afficher un message simple
-            alert('Fonctionnalité de visualisation détaillée en développement');
-        };
-        
-        // Fonction pour supprimer une annonce (globale)
-        window.deleteAnnonce = async function(id) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) {
-                showLoading(true);
                 
-                try {
-                    const result = await deleteAnnonceFromSupabase(id);
-                    
-                    if (result.success) {
-                        alert('✅ Annonce supprimée avec succès');
-                        // Recharger l'historique
-                        await initHistoryPage();
-                    } else {
-                        alert('❌ Erreur: ' + result.error);
-                    }
-                    
-                } catch (error) {
-                    alert('❌ Erreur: ' + error.message);
-                } finally {
-                    showLoading(false);
-                }
+                const { data: annonce, error } = await supabaseClient
+                    .from('annonces')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+                
+                if (error) throw error;
+                
+                // Afficher les détails dans un modal simple
+                const modalContent = `
+                    <strong>Titre:</strong> ${annonce.titre}<br><br>
+                    <strong>Type:</strong> ${annonce.type === 'vente' ? 'À vendre' : 'Actualité'}<br><br>
+                    <strong>Description:</strong> ${annonce.description}<br><br>
+                    ${annonce.prix ? `<strong>Prix:</strong> ${annonce.prix} €<br><br>` : ''}
+                    <strong>Date de publication:</strong> ${new Date(annonce.created_at).toLocaleString()}<br><br>
+                    ${annonce.whatsapp ? `<strong>WhatsApp:</strong> ${annonce.whatsapp}` : ''}
+                `;
+                
+                alert(modalContent);
+                
+            } catch (error) {
+                console.error('Erreur visualisation annonce:', error);
+                alert('Impossible de charger les détails de l\'annonce');
             }
         };
+        
+        // Supprimer une annonce
+        window.deleteAnnonce = async function(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')) return;
+            
+            showLoading(true);
+            
+            try {
+                const success = await deleteAnnonceFromSupabase(id);
+                
+                if (success) {
+                    // Supprimer de la liste locale
+                    userAnnonces = userAnnonces.filter(a => a.id !== id);
+                    
+                    // Mettre à jour l'affichage
+                    updateStats();
+                    displayHistory(userAnnonces);
+                    
+                    // Mettre à jour le bouton "Tout effacer"
+                    const deleteAllBtn = document.getElementById('deleteAllBtn');
+                    deleteAllBtn.style.display = userAnnonces.length > 0 ? 'flex' : 'none';
+                    
+                    alert('✅ Annonce supprimée avec succès');
+                } else {
+                    alert('❌ Erreur lors de la suppression');
+                }
+            } catch (error) {
+                alert('❌ Erreur lors de la suppression');
+            } finally {
+                showLoading(false);
+            }
+        };
+        
+        // Supprimer une annonce de Supabase
+        async function deleteAnnonceFromSupabase(id) {
+            try {
+                const user = await verifierSession();
+                if (!user.loggedIn || !supabaseClient) return false;
+                
+                const { error } = await supabaseClient
+                    .from('annonces')
+                    .delete()
+                    .eq('id', id)
+                    .eq('user_id', user.user.id);
+                
+                return !error;
+            } catch (error) {
+                console.error('Erreur suppression annonce:', error);
+                return false;
+            }
+        }
+        
+        // Supprimer toutes les annonces
+        async function deleteAllAnnonces() {
+            try {
+                const user = await verifierSession();
+                if (!user.loggedIn || !supabaseClient) return false;
+                
+                const { error } = await supabaseClient
+                    .from('annonces')
+                    .delete()
+                    .eq('user_id', user.user.id);
+                
+                return !error;
+            } catch (error) {
+                console.error('Erreur suppression toutes annonces:', error);
+                return false;
+            }
+        }
+        
+        // Montrer/cacher le loading
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
     </script>
 </body>
 </html>

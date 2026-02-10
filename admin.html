@@ -1,0 +1,2793 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AFRIMARKET - Administration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SUPABASE OBLIGATOIRE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #1d3557;
+            --primary-red: #ef4444;
+            --primary-orange: #f97316;
+            --primary-green: #10b981;
+            --primary-purple: #8b5cf6;
+            --light-bg: #f8fafc;
+            --light-card: #ffffff;
+            --light-text: #1e293b;
+            --light-border: #e2e8f0;
+            --light-gray: #94a3b8;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #f1f5f9;
+            --dark-border: #334155;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            transition: var(--transition);
+            overflow-x: hidden;
+            padding-bottom: 70px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 16px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--light-card);
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--light-text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .dark-mode .menu-toggle {
+            color: var(--dark-text);
+        }
+
+        .menu-toggle:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--light-text);
+            line-height: 1;
+        }
+
+        .dark-mode .logo-text {
+            color: var(--dark-text);
+        }
+
+        .logo-text span {
+            color: var(--primary-orange);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--light-text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .dark-mode .theme-btn {
+            color: var(--dark-text);
+        }
+
+        .theme-btn:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        /* Menu latéral */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .sidebar-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: var(--light-card);
+            z-index: 9999;
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
+            overflow-y: auto;
+        }
+
+        .dark-mode .sidebar-menu {
+            background: var(--dark-card);
+        }
+
+        .sidebar-menu.open {
+            left: 0;
+        }
+
+        .menu-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--light-border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            color: white;
+        }
+
+        .dark-mode .menu-header {
+            border-color: var(--dark-border);
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .menu-items {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 20px;
+            color: var(--light-text);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 15px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dark-mode .menu-item {
+            color: var(--dark-text);
+        }
+
+        .menu-item:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .menu-item.active {
+            background: rgba(37, 99, 235, 0.15);
+            border-left-color: var(--primary-blue);
+            color: var(--primary-blue);
+            font-weight: 500;
+        }
+
+        .dark-mode .menu-item.active {
+            color: #60a5fa;
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .theme-toggle-menu {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-top: 1px solid var(--light-border);
+        }
+
+        .dark-mode .theme-toggle-menu {
+            border-color: var(--dark-border);
+        }
+
+        .theme-toggle-menu span {
+            color: var(--light-text);
+            font-size: 14px;
+        }
+
+        .dark-mode .theme-toggle-menu span {
+            color: var(--dark-text);
+        }
+
+        .theme-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .theme-slider {
+            background-color: var(--primary-blue);
+        }
+
+        input:checked + .theme-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Section Admin */
+        .admin-section {
+            padding: 20px 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .section-title {
+            color: var(--dark-text);
+        }
+
+        /* Onglets Admin */
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            margin-bottom: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .admin-tab {
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            background: var(--light-card);
+            border: 1px solid var(--light-border);
+            color: var(--light-text);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dark-mode .admin-tab {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .admin-tab.active {
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            color: white;
+            border-color: transparent;
+        }
+
+        .admin-tab i {
+            font-size: 16px;
+        }
+
+        /* Statistiques */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: var(--light-card);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-border);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        .dark-mode .stat-card {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .stat-users .stat-icon {
+            background: rgba(29, 53, 87, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .dark-mode .stat-users .stat-icon {
+            background: rgba(29, 53, 87, 0.3);
+        }
+
+        .stat-ads .stat-icon {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-green);
+        }
+
+        .dark-mode .stat-ads .stat-icon {
+            background: rgba(16, 185, 129, 0.3);
+        }
+
+        .stat-views .stat-icon {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary-purple);
+        }
+
+        .dark-mode .stat-views .stat-icon {
+            background: rgba(139, 92, 246, 0.3);
+        }
+
+        .stat-contacts .stat-icon {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--primary-red);
+        }
+
+        .dark-mode .stat-contacts .stat-icon {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--light-text);
+            margin-bottom: 4px;
+        }
+
+        .dark-mode .stat-number {
+            color: var(--dark-text);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--light-gray);
+            font-weight: 500;
+        }
+
+        .dark-mode .stat-label {
+            color: #94a3b8;
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--light-card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-border);
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .dark-mode .table-container {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .admin-table th {
+            background: rgba(29, 53, 87, 0.05);
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--light-text);
+            border-bottom: 1px solid var(--light-border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .dark-mode .admin-table th {
+            background: rgba(29, 53, 87, 0.2);
+            color: var(--dark-text);
+            border-color: var(--dark-border);
+        }
+
+        .admin-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--light-border);
+            color: var(--light-text);
+            vertical-align: middle;
+        }
+
+        .dark-mode .admin-table td {
+            color: var(--dark-text);
+            border-color: var(--dark-border);
+        }
+
+        .admin-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .admin-table tr:hover {
+            background: rgba(29, 53, 87, 0.05);
+        }
+
+        .dark-mode .admin-table tr:hover {
+            background: rgba(29, 53, 87, 0.15);
+        }
+
+        /* Badges */
+        .badge {
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .badge-admin {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary-purple);
+        }
+
+        .badge-user {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-green);
+        }
+
+        .badge-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-green);
+        }
+
+        .badge-inactive {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--primary-red);
+        }
+
+        .badge-vente {
+            background: rgba(29, 53, 87, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .badge-actualite {
+            background: rgba(249, 115, 22, 0.1);
+            color: var(--primary-orange);
+        }
+
+        /* Actions */
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .edit-btn {
+            background: rgba(29, 53, 87, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .edit-btn:hover {
+            background: rgba(29, 53, 87, 0.2);
+        }
+
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--primary-red);
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .block-btn {
+            background: rgba(249, 115, 22, 0.1);
+            color: var(--primary-orange);
+        }
+
+        .block-btn:hover {
+            background: rgba(249, 115, 22, 0.2);
+        }
+
+        /* Boutons principaux */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--primary-green), #0da271);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--primary-red), #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--light-text);
+            border: 2px solid var(--light-border);
+        }
+
+        .dark-mode .btn-secondary {
+            background: var(--dark-bg);
+            color: var(--dark-text);
+            border-color: var(--dark-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-border);
+        }
+
+        .dark-mode .btn-secondary:hover {
+            background: var(--dark-border);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10002;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal {
+            background: var(--light-card);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+        }
+
+        .dark-mode .modal {
+            background: var(--dark-card);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--light-text);
+        }
+
+        .dark-mode .modal-title {
+            color: var(--dark-text);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--light-gray);
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Formulaires */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .form-label {
+            color: var(--dark-text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--light-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--light-bg);
+            color: var(--light-text);
+            transition: var(--transition);
+        }
+
+        .dark-mode .form-input {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--light-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--light-bg);
+            color: var(--light-text);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .dark-mode .form-select {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        /* Notifications */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            z-index: 10003;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+        }
+
+        .toast-notification {
+            background: var(--light-card);
+            border-radius: var(--radius-md);
+            padding: 15px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: slideInRight 0.3s ease;
+            border-left: 4px solid var(--primary-blue);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .dark-mode .toast-notification {
+            background: var(--dark-card);
+        }
+
+        .toast-notification:hover {
+            transform: translateY(-2px);
+        }
+
+        .toast-notification.success {
+            border-left-color: var(--primary-green);
+        }
+
+        .toast-notification.error {
+            border-left-color: var(--primary-red);
+        }
+
+        .toast-notification.warning {
+            border-left-color: var(--primary-orange);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .toast-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .toast-success .toast-icon {
+            background: linear-gradient(135deg, var(--primary-green), #0da271);
+        }
+
+        .toast-error .toast-icon {
+            background: linear-gradient(135deg, var(--primary-red), #dc2626);
+        }
+
+        .toast-warning .toast-icon {
+            background: linear-gradient(135deg, var(--primary-orange), #ea580c);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: var(--light-text);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .dark-mode .toast-title {
+            color: var(--dark-text);
+        }
+
+        .toast-message {
+            color: var(--light-gray);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .dark-mode .toast-message {
+            color: #94a3b8;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--light-gray);
+            cursor: pointer;
+            padding: 4px;
+            font-size: 12px;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .loading-spinner {
+            background: var(--light-card);
+            padding: 30px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dark-mode .loading-spinner {
+            background: var(--dark-card);
+        }
+
+        /* Navigation inférieure */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--light-card);
+            border-top: 1px solid var(--light-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .dark-mode .bottom-nav {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            max-width: 70px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-item.active, .nav-item:active {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            color: var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .dark-mode .nav-icon {
+            color: #94a3b8;
+        }
+
+        .nav-item.active .nav-icon, .nav-item:active .nav-icon {
+            color: var(--primary-blue);
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .dark-mode .nav-label {
+            color: #94a3b8;
+        }
+
+        .nav-item.active .nav-label, .nav-item:active .nav-label {
+            color: var(--primary-blue);
+        }
+
+        /* Aucune donnée */
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--light-gray);
+        }
+
+        .dark-mode .no-data {
+            color: #94a3b8;
+        }
+
+        .no-data i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-table {
+                min-width: 800px;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            .action-buttons {
+                justify-content: center;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-tab {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+            }
+        }
+
+        /* Prévention débordement */
+        html, body {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+
+        img, svg, video {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 15px;">Chargement...</p>
+        </div>
+    </div>
+
+    <!-- Menu overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Sidebar menu -->
+    <div class="sidebar-menu" id="sidebarMenu">
+        <div class="menu-header">
+            <div class="user-avatar" id="sidebarUserAvatar">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="sidebarUserName">Administrateur</div>
+                <div class="user-email" id="sidebarUserEmail">Chargement...</div>
+            </div>
+        </div>
+        
+        <div class="menu-items">
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-home"></i>
+                <span>Accueil</span>
+            </a>
+            <a href="publier.html" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Publier une annonce</span>
+            </a>
+            <a href="admin.html" class="menu-item active">
+                <i class="fas fa-user-shield"></i>
+                <span>Administration</span>
+            </a>
+            <a href="historique.html" class="menu-item">
+                <i class="fas fa-history"></i>
+                <span>Mon historique</span>
+            </a>
+            <button class="menu-item" id="supportMenuItem">
+                <i class="fas fa-headset"></i>
+                <span>Support & Aide</span>
+            </button>
+            <button class="menu-item" id="refreshMenuItem">
+                <i class="fas fa-sync-alt"></i>
+                <span>Rafraîchir</span>
+            </button>
+            <a href="connexion.html?logout=true" class="menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </a>
+        </div>
+        
+        <div class="theme-toggle-menu">
+            <span>Mode sombre</span>
+            <label class="theme-switch">
+                <input type="checkbox" id="menuThemeToggle">
+                <span class="theme-slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="addUserModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Ajouter un utilisateur</h3>
+                <button class="modal-close" onclick="closeModal('addUserModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label class="form-label">Nom complet</label>
+                        <input type="text" class="form-input" id="newUserName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="newUserEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" class="form-input" id="newUserPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rôle</label>
+                        <select class="form-select" id="newUserRole">
+                            <option value="user">Utilisateur</option>
+                            <option value="admin">Administrateur</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Statut</label>
+                        <select class="form-select" id="newUserStatus">
+                            <option value="active">Actif</option>
+                            <option value="inactive">Inactif</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="addNewUser()">
+                    <i class="fas fa-plus"></i> Ajouter
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('addUserModal')">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Modifier l'utilisateur</h3>
+                <button class="modal-close" onclick="closeModal('editUserModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId">
+                    <div class="form-group">
+                        <label class="form-label">Nom complet</label>
+                        <input type="text" class="form-input" id="editUserName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="editUserEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rôle</label>
+                        <select class="form-select" id="editUserRole">
+                            <option value="user">Utilisateur</option>
+                            <option value="admin">Administrateur</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Statut</label>
+                        <select class="form-select" id="editUserStatus">
+                            <option value="active">Actif</option>
+                            <option value="inactive">Inactif</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="saveUserChanges()">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('editUserModal')">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmer la suppression</h3>
+                <button class="modal-close" onclick="closeModal('deleteConfirmModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteConfirmMessage">Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="confirmDelete()">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('deleteConfirmModal')">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="annonceDetailsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Détails de l'annonce</h3>
+                <button class="modal-close" onclick="closeModal('annonceDetailsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="annonceDetailsContent">
+                    <!-- Les détails seront chargés ici -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="deleteSelectedAnnonce()">
+                    <i class="fas fa-trash"></i> Supprimer l'annonce
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('annonceDetailsModal')">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notifications container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Header -->
+    <header class="app-header" id="appHeader">
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="menu-toggle" id="menuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="dashboard.html" class="logo-container">
+                        <div class="logo-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="logo-text">AFRI<span>MARKET</span></div>
+                    </a>
+                </div>
+                
+                <div class="header-controls">
+                    <button class="theme-btn" id="themeBtn">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="main-content" id="mainContent">
+        <div class="container">
+            <!-- Section Admin -->
+            <section class="admin-section">
+                <h2 class="section-title">Tableau de bord Administrateur</h2>
+                
+                <!-- Onglets -->
+                <div class="admin-tabs" id="adminTabs">
+                    <button class="admin-tab active" data-tab="users">
+                        <i class="fas fa-users"></i>
+                        Utilisateurs
+                    </button>
+                    <button class="admin-tab" data-tab="annonces">
+                        <i class="fas fa-newspaper"></i>
+                        Annonces
+                    </button>
+                    <button class="admin-tab" data-tab="statistiques">
+                        <i class="fas fa-chart-bar"></i>
+                        Statistiques
+                    </button>
+                </div>
+
+                <!-- Statistiques -->
+                <div class="stats-grid" id="statsSection">
+                    <div class="stat-card stat-users">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-number" id="usersCount">0</div>
+                        <div class="stat-label">Utilisateurs</div>
+                    </div>
+                    
+                    <div class="stat-card stat-ads">
+                        <div class="stat-icon">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <div class="stat-number" id="annoncesCount">0</div>
+                        <div class="stat-label">Annonces</div>
+                    </div>
+                    
+                    <div class="stat-card stat-views">
+                        <div class="stat-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-number" id="totalViews">0</div>
+                        <div class="stat-label">Vues totales</div>
+                    </div>
+                    
+                    <div class="stat-card stat-contacts">
+                        <div class="stat-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="stat-number" id="totalContacts">0</div>
+                        <div class="stat-label">Contacts</div>
+                    </div>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="action-buttons" id="actionButtons">
+                    <!-- Les boutons seront ajoutés dynamiquement -->
+                </div>
+
+                <!-- Section Utilisateurs -->
+                <div id="usersSection" class="tab-content">
+                    <div class="table-container">
+                        <table class="admin-table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Rôle</th>
+                                    <th>Statut</th>
+                                    <th>Date d'inscription</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Les utilisateurs seront chargés ici -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section Annonces -->
+                <div id="annoncesSection" class="tab-content" style="display: none;">
+                    <div class="table-container">
+                        <table class="admin-table" id="annoncesTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Type</th>
+                                    <th>Prix</th>
+                                    <th>Vues</th>
+                                    <th>Contacts</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="annoncesTableBody">
+                                <!-- Les annonces seront chargées ici -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section Statistiques -->
+                <div id="statistiquesSection" class="tab-content" style="display: none;">
+                    <div class="table-container">
+                        <table class="admin-table" id="statsTable">
+                            <thead>
+                                <tr>
+                                    <th>Métrique</th>
+                                    <th>Valeur</th>
+                                    <th>Tendance</th>
+                                    <th>Détails</th>
+                                </tr>
+                            </thead>
+                            <tbody id="statsTableBody">
+                                <!-- Les statistiques seront chargées ici -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Navigation inférieure -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <div style="position: relative;">
+                <i class="fas fa-home nav-icon"></i>
+            </div>
+            <span class="nav-label">Accueil</span>
+        </a>
+        
+        <a href="publier.html" class="nav-item">
+            <div style="position: relative;">
+                <i class="fas fa-plus-circle nav-icon"></i>
+            </div>
+            <span class="nav-label">Publier</span>
+        </a>
+        
+        <a href="admin.html" class="nav-item active">
+            <div style="position: relative;">
+                <i class="fas fa-user-shield nav-icon"></i>
+            </div>
+            <span class="nav-label">Admin</span>
+        </a>
+        
+        <a href="historique.html" class="nav-item">
+            <div style="position: relative;">
+                <i class="fas fa-history nav-icon"></i>
+            </div>
+            <span class="nav-label">Historique</span>
+        </a>
+    </nav>
+
+    <script>
+        // Configuration Supabase
+        const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
+        
+        // Configuration Admin
+        const ADMIN_EMAIL = 'abdoula14cherif@gmail.com';
+        
+        let supabaseClient = null;
+        let currentTab = 'users';
+        let currentUserToDelete = null;
+        let currentAnnonceToDelete = null;
+        let allUsers = [];
+        let allAnnonces = [];
+        let deleteType = 'user'; // 'user' ou 'annonce'
+        
+        // Vérifier les permissions admin
+        function checkAdminPermissions() {
+            const userEmail = localStorage.getItem('afrimarket_user_email');
+            const userRole = localStorage.getItem('afrimarket_user_role');
+            const isLoggedIn = localStorage.getItem('afrimarket_logged_in') === 'true';
+            
+            if (!isLoggedIn || userEmail !== ADMIN_EMAIL || userRole !== 'admin') {
+                // Rediriger vers la connexion
+                alert('Accès administrateur requis. Redirection vers la connexion...');
+                window.location.href = 'connexion.html';
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Fonction pour afficher les notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            
+            const toast = document.createElement('div');
+            toast.className = `toast-notification toast-${type}`;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${icons[type] || 'fa-info-circle'}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${type === 'success' ? 'Succès' : 
+                                               type === 'error' ? 'Erreur' : 
+                                               type === 'warning' ? 'Attention' : 
+                                               'Information'}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Supprimer automatiquement après 5 secondes
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 5000);
+            
+            // Cliquer pour fermer
+            toast.addEventListener('click', function() {
+                this.style.opacity = '0';
+                this.style.transform = 'translateX(100%)';
+                setTimeout(() => this.remove(), 300);
+            });
+        }
+        
+        // Fonction pour montrer/cacher le loading
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+        
+        // Fonctions pour les modals
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Page Admin chargée');
+            
+            // Vérifier les permissions
+            if (!checkAdminPermissions()) return;
+            
+            // Initialiser Supabase
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true
+                    }
+                });
+                console.log('✅ Supabase initialisé');
+            }
+            
+            // Configurer l'interface
+            setupInterface();
+            
+            // Mettre à jour les infos utilisateur
+            updateUserInfo();
+            
+            // Charger les données
+            await loadAdminData();
+            
+            // Vérifier et créer l'admin si nécessaire
+            await checkAndCreateAdmin();
+        });
+        
+        // Configurer l'interface
+        function setupInterface() {
+            // Gestion du thème
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            document.body.className = savedTheme;
+            
+            document.getElementById('themeBtn').addEventListener('click', function() {
+                const isDark = document.body.classList.contains('dark-mode');
+                document.body.className = isDark ? 'light-mode' : 'dark-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+                document.getElementById('menuThemeToggle').checked = !isDark;
+            });
+            
+            // Menu burger
+            document.getElementById('menuBtn').addEventListener('click', () => {
+                document.getElementById('sidebarMenu').classList.add('open');
+                document.getElementById('menuOverlay').style.display = 'block';
+            });
+            
+            document.getElementById('menuOverlay').addEventListener('click', () => {
+                document.getElementById('sidebarMenu').classList.remove('open');
+                document.getElementById('menuOverlay').style.display = 'none';
+            });
+            
+            // Thème dans le menu
+            document.getElementById('menuThemeToggle').checked = savedTheme === 'dark-mode';
+            document.getElementById('menuThemeToggle').addEventListener('change', function() {
+                const isDark = this.checked;
+                document.body.className = isDark ? 'dark-mode' : 'light-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'dark-mode' : 'light-mode');
+            });
+            
+            // Support dans le menu
+            document.getElementById('supportMenuItem').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Service Support & Aide\n\n📧 Email: support@afrimarket.com\n📞 Téléphone: +33 1 23 45 67 89\n\nNous sommes disponibles 24h/24 !');
+                closeSidebar();
+            });
+            
+            // Rafraîchir dans le menu
+            document.getElementById('refreshMenuItem').addEventListener('click', async function(e) {
+                e.preventDefault();
+                showLoading(true);
+                await loadAdminData();
+                showLoading(false);
+                showToast('Données rafraîchies', 'success');
+                closeSidebar();
+            });
+            
+            // Onglets Admin
+            const tabButtons = document.querySelectorAll('.admin-tab');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTab = this.dataset.tab;
+                    showTab(currentTab);
+                    updateActionButtons();
+                });
+            });
+            
+            // Initialiser les boutons d'action
+            updateActionButtons();
+        }
+        
+        function closeSidebar() {
+            document.getElementById('sidebarMenu').classList.remove('open');
+            document.getElementById('menuOverlay').style.display = 'none';
+        }
+        
+        function updateUserInfo() {
+            const userName = localStorage.getItem('afrimarket_user_name') || 'Administrateur';
+            const userEmail = localStorage.getItem('afrimarket_user_email') || ADMIN_EMAIL;
+            
+            document.getElementById('sidebarUserName').textContent = userName;
+            document.getElementById('sidebarUserEmail').textContent = userEmail;
+            
+            // Initiales pour l'avatar
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
+        }
+        
+        // Afficher l'onglet sélectionné
+        function showTab(tabName) {
+            ['usersSection', 'annoncesSection', 'statistiquesSection'].forEach(section => {
+                document.getElementById(section).style.display = 'none';
+            });
+            document.getElementById(tabName + 'Section').style.display = 'block';
+            
+            if (tabName === 'statistiques') {
+                updateStatisticsTable();
+            }
+        }
+        
+        // Mettre à jour les boutons d'action
+        function updateActionButtons() {
+            const actionButtons = document.getElementById('actionButtons');
+            
+            switch(currentTab) {
+                case 'users':
+                    actionButtons.innerHTML = `
+                        <button class="btn btn-primary" onclick="showAddUserModal()">
+                            <i class="fas fa-user-plus"></i> Ajouter un utilisateur
+                        </button>
+                        <button class="btn btn-success" onclick="refreshUsers()">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                        <button class="btn btn-secondary" onclick="createTestUsers()">
+                            <i class="fas fa-vial"></i> Créer des tests
+                        </button>
+                    `;
+                    break;
+                    
+                case 'annonces':
+                    actionButtons.innerHTML = `
+                        <button class="btn btn-danger" onclick="deleteAllInactiveAnnonces()">
+                            <i class="fas fa-trash"></i> Supprimer les annonces inactives
+                        </button>
+                        <button class="btn btn-success" onclick="refreshAnnonces()">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                        <button class="btn btn-secondary" onclick="createTestAnnonces()">
+                            <i class="fas fa-vial"></i> Créer des tests
+                        </button>
+                    `;
+                    break;
+                    
+                case 'statistiques':
+                    actionButtons.innerHTML = `
+                        <button class="btn btn-primary" onclick="exportStatistics()">
+                            <i class="fas fa-download"></i> Exporter les statistiques
+                        </button>
+                        <button class="btn btn-success" onclick="refreshStatistics()">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    `;
+                    break;
+            }
+        }
+        
+        // Vérifier et créer l'admin si nécessaire
+        async function checkAndCreateAdmin() {
+            try {
+                // Vérifier si l'admin existe
+                const { data: existingAdmins, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('email', ADMIN_EMAIL);
+                
+                if (error) {
+                    console.error('Erreur vérification admin:', error);
+                    return;
+                }
+                
+                if (!existingAdmins || existingAdmins.length === 0) {
+                    // Créer l'admin
+                    const adminId = 'admin-' + Date.now();
+                    const newAdmin = {
+                        id: adminId,
+                        email: ADMIN_EMAIL,
+                        nom_complet: 'abdoula cherif',
+                        role: 'admin',
+                        statut: 'active',
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    const { error: insertError } = await supabaseClient
+                        .from('users')
+                        .insert([newAdmin]);
+                    
+                    if (!insertError) {
+                        console.log('✅ Admin créé dans la base de données');
+                        showToast('Compte administrateur créé avec succès', 'success');
+                        
+                        // Recharger les utilisateurs
+                        await loadUsersFromSupabase();
+                        updateUsersTable();
+                        updateStatistics();
+                    }
+                } else {
+                    // Vérifier si le rôle est admin
+                    const adminUser = existingAdmins[0];
+                    if (adminUser.role !== 'admin') {
+                        const { error: updateError } = await supabaseClient
+                            .from('users')
+                            .update({ role: 'admin' })
+                            .eq('id', adminUser.id);
+                        
+                        if (!updateError) {
+                            showToast('Rôle admin mis à jour', 'success');
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Erreur création admin:', error);
+            }
+        }
+        
+        // Charger les données admin
+        async function loadAdminData() {
+            showLoading(true);
+            
+            try {
+                // Charger les utilisateurs
+                await loadUsersFromSupabase();
+                
+                // Charger les annonces
+                await loadAnnoncesFromSupabase();
+                
+                // Mettre à jour les statistiques
+                updateStatistics();
+                
+                // Mettre à jour les tables
+                updateUsersTable();
+                updateAnnoncesTable();
+                
+                showToast('Données chargées avec succès', 'success');
+                
+            } catch (error) {
+                console.error('Erreur chargement données admin:', error);
+                showToast('Erreur lors du chargement des données', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Charger les utilisateurs depuis Supabase
+        async function loadUsersFromSupabase() {
+            try {
+                if (!supabaseClient) {
+                    // Données de test
+                    allUsers = [
+                        {
+                            id: 'user-1',
+                            email: ADMIN_EMAIL,
+                            nom_complet: 'abdoula cherif',
+                            role: 'admin',
+                            statut: 'active',
+                            created_at: new Date().toISOString()
+                        },
+                        {
+                            id: 'user-2',
+                            email: 'user@example.com',
+                            nom_complet: 'Utilisateur Test',
+                            role: 'user',
+                            statut: 'active',
+                            created_at: new Date(Date.now() - 86400000).toISOString()
+                        }
+                    ];
+                    return;
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                allUsers = data || [];
+                
+            } catch (error) {
+                console.error('Erreur chargement utilisateurs:', error);
+                allUsers = [];
+            }
+        }
+        
+        // Charger les annonces depuis Supabase
+        async function loadAnnoncesFromSupabase() {
+            try {
+                if (!supabaseClient) {
+                    // Données de test
+                    allAnnonces = [
+                        {
+                            id: 'annonce-1',
+                            titre: 'iPhone 13 Pro Max 256GB',
+                            description: 'Téléphone en excellent état',
+                            type: 'vente',
+                            prix: 850,
+                            views: 150,
+                            contacts: 8,
+                            created_at: new Date(Date.now() - 172800000).toISOString(),
+                            statut: 'actif'
+                        },
+                        {
+                            id: 'annonce-2',
+                            titre: 'Appartement 3 pièces meublé',
+                            description: 'Bel appartement dans quartier calme',
+                            type: 'vente',
+                            prix: 450,
+                            views: 80,
+                            contacts: 3,
+                            created_at: new Date(Date.now() - 86400000).toISOString(),
+                            statut: 'actif'
+                        },
+                        {
+                            id: 'annonce-3',
+                            titre: 'Concert gospel à Yaoundé',
+                            description: 'Grand concert ce samedi',
+                            type: 'actualite',
+                            prix: null,
+                            views: 120,
+                            contacts: 5,
+                            created_at: new Date().toISOString(),
+                            statut: 'actif'
+                        }
+                    ];
+                    return;
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('annonces')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                allAnnonces = data || [];
+                
+            } catch (error) {
+                console.error('Erreur chargement annonces:', error);
+                allAnnonces = [];
+            }
+        }
+        
+        // Mettre à jour les statistiques
+        function updateStatistics() {
+            // Utilisateurs
+            document.getElementById('usersCount').textContent = allUsers.length;
+            
+            // Annonces
+            document.getElementById('annoncesCount').textContent = allAnnonces.length;
+            
+            // Vues totales
+            const totalViews = allAnnonces.reduce((sum, annonce) => sum + (annonce.views || 0), 0);
+            document.getElementById('totalViews').textContent = totalViews.toLocaleString();
+            
+            // Contacts totaux
+            const totalContacts = allAnnonces.reduce((sum, annonce) => sum + (annonce.contacts || 0), 0);
+            document.getElementById('totalContacts').textContent = totalContacts.toLocaleString();
+        }
+        
+        // Mettre à jour le tableau des utilisateurs
+        function updateUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            if (allUsers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="no-data">
+                            <i class="fas fa-users"></i>
+                            <p>Aucun utilisateur trouvé</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            allUsers.forEach(user => {
+                const row = document.createElement('tr');
+                
+                // Formater la date
+                const date = new Date(user.created_at);
+                const formattedDate = date.toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                
+                // ID raccourci
+                const shortId = user.id.length > 8 ? user.id.substring(0, 8) + '...' : user.id;
+                
+                row.innerHTML = `
+                    <td>${shortId}</td>
+                    <td><strong>${user.nom_complet || 'Non renseigné'}</strong></td>
+                    <td>${user.email}</td>
+                    <td>
+                        <span class="badge ${user.role === 'admin' ? 'badge-admin' : 'badge-user'}">
+                            ${user.role === 'admin' ? 'Admin' : 'Utilisateur'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge ${user.statut === 'active' ? 'badge-active' : 'badge-inactive'}">
+                            ${user.statut === 'active' ? 'Actif' : 'Inactif'}
+                        </span>
+                    </td>
+                    <td>${formattedDate}</td>
+                    <td class="actions-cell">
+                        <button class="action-btn edit-btn" onclick="editUser('${user.id}')">
+                            <i class="fas fa-edit"></i>
+                            <span>Modifier</span>
+                        </button>
+                        <button class="action-btn delete-btn" onclick="confirmDeleteUser('${user.id}', '${user.nom_complet}')">
+                            <i class="fas fa-trash"></i>
+                            <span>Supprimer</span>
+                        </button>
+                        ${user.email !== ADMIN_EMAIL ? 
+                            `<button class="action-btn ${user.statut === 'active' ? 'block-btn' : 'edit-btn'}" 
+                                    onclick="toggleUserStatus('${user.id}', '${user.statut === 'active' ? 'inactive' : 'active'}')">
+                                <i class="fas ${user.statut === 'active' ? 'fa-ban' : 'fa-check'}"></i>
+                                <span>${user.statut === 'active' ? 'Bloquer' : 'Activer'}</span>
+                            </button>` : ''
+                        }
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Mettre à jour le tableau des annonces
+        function updateAnnoncesTable() {
+            const tbody = document.getElementById('annoncesTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            if (allAnnonces.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="no-data">
+                            <i class="fas fa-newspaper"></i>
+                            <p>Aucune annonce trouvée</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            allAnnonces.forEach(annonce => {
+                const row = document.createElement('tr');
+                
+                // Formater la date
+                const date = new Date(annonce.created_at);
+                const formattedDate = date.toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                
+                // ID raccourci
+                const shortId = annonce.id.length > 8 ? annonce.id.substring(0, 8) + '...' : annonce.id;
+                
+                // Titre raccourci
+                const shortTitle = annonce.titre.length > 30 ? 
+                    annonce.titre.substring(0, 30) + '...' : annonce.titre;
+                
+                row.innerHTML = `
+                    <td>${shortId}</td>
+                    <td title="${annonce.titre}"><strong>${shortTitle}</strong></td>
+                    <td>
+                        <span class="badge ${annonce.type === 'vente' ? 'badge-vente' : 'badge-actualite'}">
+                            ${annonce.type === 'vente' ? 'À vendre' : 'Actualité'}
+                        </span>
+                    </td>
+                    <td>${annonce.prix ? annonce.prix + ' €' : 'Gratuit'}</td>
+                    <td>${annonce.views || 0}</td>
+                    <td>${annonce.contacts || 0}</td>
+                    <td>${formattedDate}</td>
+                    <td>
+                        <span class="badge ${annonce.statut === 'actif' ? 'badge-active' : 'badge-inactive'}">
+                            ${annonce.statut === 'actif' ? 'Actif' : 'Inactif'}
+                        </span>
+                    </td>
+                    <td class="actions-cell">
+                        <button class="action-btn edit-btn" onclick="viewAnnonceDetails('${annonce.id}')">
+                            <i class="fas fa-eye"></i>
+                            <span>Voir</span>
+                        </button>
+                        <button class="action-btn delete-btn" onclick="confirmDeleteAnnonce('${annonce.id}', '${annonce.titre}')">
+                            <i class="fas fa-trash"></i>
+                            <span>Supprimer</span>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Mettre à jour le tableau des statistiques
+        function updateStatisticsTable() {
+            const tbody = document.getElementById('statsTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            const stats = [
+                { 
+                    metric: 'Utilisateurs actifs', 
+                    value: allUsers.filter(u => u.statut === 'active').length, 
+                    trend: 'up', 
+                    details: `${allUsers.filter(u => u.statut === 'active').length} sur ${allUsers.length} utilisateurs` 
+                },
+                { 
+                    metric: 'Annonces actives', 
+                    value: allAnnonces.filter(a => a.statut === 'actif').length, 
+                    trend: 'up', 
+                    details: `${allAnnonces.filter(a => a.statut === 'actif').length} sur ${allAnnonces.length} annonces` 
+                },
+                { 
+                    metric: 'Taux d\'engagement', 
+                    value: allAnnonces.length > 0 ? 
+                        Math.round((allAnnonces.reduce((sum, a) => sum + (a.contacts || 0), 0) / 
+                        Math.max(1, allAnnonces.reduce((sum, a) => sum + (a.views || 0), 0))) * 100) + '%' : '0%', 
+                    trend: 'up', 
+                    details: 'Contacts par vue' 
+                },
+                { 
+                    metric: 'Annonces par utilisateur', 
+                    value: allUsers.length > 0 ? (allAnnonces.length / allUsers.length).toFixed(1) : '0.0', 
+                    trend: 'stable', 
+                    details: 'Ratio moyen' 
+                },
+                { 
+                    metric: 'Vues moyennes par annonce', 
+                    value: allAnnonces.length > 0 ? 
+                        Math.round(allAnnonces.reduce((sum, a) => sum + (a.views || 0), 0) / allAnnonces.length) : 0, 
+                    trend: 'up', 
+                    details: 'Performance moyenne' 
+                },
+                { 
+                    metric: 'Annonces à vendre', 
+                    value: allAnnonces.filter(a => a.type === 'vente').length, 
+                    trend: 'up', 
+                    details: `${allAnnonces.filter(a => a.type === 'vente').length} annonces` 
+                },
+                { 
+                    metric: 'Annonces d\'actualité', 
+                    value: allAnnonces.filter(a => a.type === 'actualite').length, 
+                    trend: 'stable', 
+                    details: `${allAnnonces.filter(a => a.type === 'actualite').length} annonces` 
+                }
+            ];
+            
+            stats.forEach(stat => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${stat.metric}</strong></td>
+                    <td>${stat.value}</td>
+                    <td>
+                        <i class="fas fa-arrow-${stat.trend === 'up' ? 'up' : stat.trend === 'down' ? 'down' : 'right'} 
+                           style="color: ${stat.trend === 'up' ? '#10b981' : stat.trend === 'down' ? '#ef4444' : '#94a3b8'}">
+                        </i>
+                    </td>
+                    <td>${stat.details}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // ============ FONCTIONS POUR LES UTILISATEURS ============
+        
+        function showAddUserModal() {
+            document.getElementById('addUserForm').reset();
+            showModal('addUserModal');
+        }
+        
+        async function addNewUser() {
+            const name = document.getElementById('newUserName').value;
+            const email = document.getElementById('newUserEmail').value;
+            const password = document.getElementById('newUserPassword').value;
+            const role = document.getElementById('newUserRole').value;
+            const status = document.getElementById('newUserStatus').value;
+            
+            if (!name || !email || !password) {
+                showToast('Veuillez remplir tous les champs obligatoires', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                const newUser = {
+                    id: 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+                    email: email,
+                    nom_complet: name,
+                    role: role,
+                    statut: status,
+                    created_at: new Date().toISOString()
+                };
+                
+                if (supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('users')
+                        .insert([newUser]);
+                    
+                    if (error) throw error;
+                } else {
+                    // Mode test
+                    allUsers.unshift(newUser);
+                }
+                
+                showToast('Utilisateur ajouté avec succès', 'success');
+                closeModal('addUserModal');
+                
+                // Recharger les données
+                await loadUsersFromSupabase();
+                updateUsersTable();
+                updateStatistics();
+                
+            } catch (error) {
+                console.error('Erreur ajout utilisateur:', error);
+                showToast('Erreur lors de l\'ajout de l\'utilisateur', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function editUser(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
+            
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editUserName').value = user.nom_complet || '';
+            document.getElementById('editUserEmail').value = user.email;
+            document.getElementById('editUserRole').value = user.role || 'user';
+            document.getElementById('editUserStatus').value = user.statut || 'active';
+            
+            showModal('editUserModal');
+        }
+        
+        async function saveUserChanges() {
+            const userId = document.getElementById('editUserId').value;
+            const name = document.getElementById('editUserName').value;
+            const email = document.getElementById('editUserEmail').value;
+            const role = document.getElementById('editUserRole').value;
+            const status = document.getElementById('editUserStatus').value;
+            
+            if (!name || !email) {
+                showToast('Veuillez remplir tous les champs obligatoires', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                if (supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('users')
+                        .update({
+                            nom_complet: name,
+                            email: email,
+                            role: role,
+                            statut: status
+                        })
+                        .eq('id', userId);
+                    
+                    if (error) throw error;
+                } else {
+                    // Mode test
+                    const userIndex = allUsers.findIndex(u => u.id === userId);
+                    if (userIndex !== -1) {
+                        allUsers[userIndex] = {
+                            ...allUsers[userIndex],
+                            nom_complet: name,
+                            email: email,
+                            role: role,
+                            statut: status
+                        };
+                    }
+                }
+                
+                showToast('Utilisateur modifié avec succès', 'success');
+                closeModal('editUserModal');
+                
+                // Recharger les données
+                await loadUsersFromSupabase();
+                updateUsersTable();
+                
+            } catch (error) {
+                console.error('Erreur modification utilisateur:', error);
+                showToast('Erreur lors de la modification de l\'utilisateur', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function confirmDeleteUser(userId, userName) {
+            currentUserToDelete = userId;
+            deleteType = 'user';
+            document.getElementById('deleteConfirmMessage').textContent = 
+                `Êtes-vous sûr de vouloir supprimer l'utilisateur "${userName}" ? Cette action est irréversible.`;
+            showModal('deleteConfirmModal');
+        }
+        
+        async function confirmDelete() {
+            showLoading(true);
+            
+            try {
+                if (deleteType === 'user' && currentUserToDelete) {
+                    if (supabaseClient) {
+                        const { error } = await supabaseClient
+                            .from('users')
+                            .delete()
+                            .eq('id', currentUserToDelete);
+                        
+                        if (error) throw error;
+                    } else {
+                        // Mode test
+                        allUsers = allUsers.filter(u => u.id !== currentUserToDelete);
+                    }
+                    
+                    showToast('Utilisateur supprimé avec succès', 'success');
+                    
+                } else if (deleteType === 'annonce' && currentAnnonceToDelete) {
+                    if (supabaseClient) {
+                        const { error } = await supabaseClient
+                            .from('annonces')
+                            .delete()
+                            .eq('id', currentAnnonceToDelete);
+                        
+                        if (error) throw error;
+                    } else {
+                        // Mode test
+                        allAnnonces = allAnnonces.filter(a => a.id !== currentAnnonceToDelete);
+                    }
+                    
+                    showToast('Annonce supprimée avec succès', 'success');
+                    closeModal('annonceDetailsModal');
+                }
+                
+                // Recharger les données
+                await loadAdminData();
+                
+                closeModal('deleteConfirmModal');
+                
+                // Réinitialiser
+                currentUserToDelete = null;
+                currentAnnonceToDelete = null;
+                
+            } catch (error) {
+                console.error('Erreur suppression:', error);
+                showToast('Erreur lors de la suppression', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        async function toggleUserStatus(userId, newStatus) {
+            showLoading(true);
+            
+            try {
+                if (supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('users')
+                        .update({ statut: newStatus })
+                        .eq('id', userId);
+                    
+                    if (error) throw error;
+                } else {
+                    // Mode test
+                    const userIndex = allUsers.findIndex(u => u.id === userId);
+                    if (userIndex !== -1) {
+                        allUsers[userIndex].statut = newStatus;
+                    }
+                }
+                
+                showToast(`Statut utilisateur mis à jour: ${newStatus === 'active' ? 'Actif' : 'Inactif'}`, 'success');
+                
+                // Recharger les données
+                await loadUsersFromSupabase();
+                updateUsersTable();
+                
+            } catch (error) {
+                console.error('Erreur changement statut utilisateur:', error);
+                showToast('Erreur lors du changement de statut', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // ============ FONCTIONS POUR LES ANNONCES ============
+        
+        function viewAnnonceDetails(annonceId) {
+            const annonce = allAnnonces.find(a => a.id === annonceId);
+            if (!annonce) return;
+            
+            currentAnnonceToDelete = annonceId;
+            
+            const date = new Date(annonce.created_at);
+            const formattedDate = date.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            document.getElementById('annonceDetailsContent').innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px; color: var(--primary-blue);">${annonce.titre}</h4>
+                    <p style="color: var(--light-gray); font-size: 14px; margin-bottom: 15px; line-height: 1.6;">
+                        ${annonce.description}
+                    </p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Type</div>
+                            <div class="badge ${annonce.type === 'vente' ? 'badge-vente' : 'badge-actualite'}">
+                                ${annonce.type === 'vente' ? 'À vendre' : 'Actualité'}
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Statut</div>
+                            <div class="badge ${annonce.statut === 'actif' ? 'badge-active' : 'badge-inactive'}">
+                                ${annonce.statut === 'actif' ? 'Actif' : 'Inactif'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Prix</div>
+                            <div style="font-weight: 600;">${annonce.prix ? annonce.prix + ' €' : 'Gratuit'}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Date de publication</div>
+                            <div>${formattedDate}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Nombre de vues</div>
+                            <div style="font-weight: 600; color: var(--primary-blue);">${annonce.views || 0}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Nombre de contacts</div>
+                            <div style="font-weight: 600; color: var(--primary-green);">${annonce.contacts || 0}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            showModal('annonceDetailsModal');
+        }
+        
+        function confirmDeleteAnnonce(annonceId, annonceTitle) {
+            currentAnnonceToDelete = annonceId;
+            deleteType = 'annonce';
+            document.getElementById('deleteConfirmMessage').textContent = 
+                `Êtes-vous sûr de vouloir supprimer l'annonce "${annonceTitle}" ? Cette action est irréversible.`;
+            showModal('deleteConfirmModal');
+        }
+        
+        function deleteSelectedAnnonce() {
+            confirmDelete();
+        }
+        
+        async function deleteAllInactiveAnnonces() {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer toutes les annonces inactives ? Cette action est irréversible.')) {
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                const inactiveAnnonces = allAnnonces.filter(a => a.statut !== 'actif');
+                
+                if (inactiveAnnonces.length === 0) {
+                    showToast('Aucune annonce inactive à supprimer', 'info');
+                    return;
+                }
+                
+                if (supabaseClient) {
+                    // Dans la vraie version, on supprimerait en masse
+                    for (const annonce of inactiveAnnonces) {
+                        const { error } = await supabaseClient
+                            .from('annonces')
+                            .delete()
+                            .eq('id', annonce.id);
+                        
+                        if (error) throw error;
+                    }
+                } else {
+                    // Mode test
+                    allAnnonces = allAnnonces.filter(a => a.statut === 'actif');
+                }
+                
+                showToast(`${inactiveAnnonces.length} annonce(s) inactive(s) supprimée(s)`, 'success');
+                
+                // Recharger les données
+                await loadAnnoncesFromSupabase();
+                updateAnnoncesTable();
+                updateStatistics();
+                
+            } catch (error) {
+                console.error('Erreur suppression annonces inactives:', error);
+                showToast('Erreur lors de la suppression des annonces inactives', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // ============ FONCTIONS D'ACTUALISATION ============
+        
+        async function refreshUsers() {
+            showLoading(true);
+            try {
+                await loadUsersFromSupabase();
+                updateUsersTable();
+                updateStatistics();
+                showToast('Liste des utilisateurs actualisée', 'success');
+            } catch (error) {
+                showToast('Erreur lors de l\'actualisation', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        async function refreshAnnonces() {
+            showLoading(true);
+            try {
+                await loadAnnoncesFromSupabase();
+                updateAnnoncesTable();
+                updateStatistics();
+                showToast('Liste des annonces actualisée', 'success');
+            } catch (error) {
+                showToast('Erreur lors de l\'actualisation', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function refreshStatistics() {
+            updateStatistics();
+            updateStatisticsTable();
+            showToast('Statistiques actualisées', 'success');
+        }
+        
+        // ============ FONCTIONS DE TEST ============
+        
+        async function createTestUsers() {
+            if (!confirm('Créer 3 utilisateurs de test ?')) return;
+            
+            showLoading(true);
+            
+            try {
+                const testUsers = [
+                    {
+                        id: 'test-user-1',
+                        email: 'test1@example.com',
+                        nom_complet: 'Jean Dupont',
+                        role: 'user',
+                        statut: 'active',
+                        created_at: new Date(Date.now() - 86400000 * 2).toISOString()
+                    },
+                    {
+                        id: 'test-user-2',
+                        email: 'test2@example.com',
+                        nom_complet: 'Marie Martin',
+                        role: 'user',
+                        statut: 'active',
+                        created_at: new Date(Date.now() - 86400000).toISOString()
+                    },
+                    {
+                        id: 'test-user-3',
+                        email: 'test3@example.com',
+                        nom_complet: 'Pierre Durand',
+                        role: 'user',
+                        statut: 'inactive',
+                        created_at: new Date().toISOString()
+                    }
+                ];
+                
+                if (supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('users')
+                        .insert(testUsers);
+                    
+                    if (error) throw error;
+                } else {
+                    allUsers = [...testUsers, ...allUsers];
+                }
+                
+                showToast('3 utilisateurs de test créés', 'success');
+                
+                // Recharger les données
+                await loadUsersFromSupabase();
+                updateUsersTable();
+                updateStatistics();
+                
+            } catch (error) {
+                console.error('Erreur création utilisateurs test:', error);
+                showToast('Erreur lors de la création des tests', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        async function createTestAnnonces() {
+            if (!confirm('Créer 3 annonces de test ?')) return;
+            
+            showLoading(true);
+            
+            try {
+                const testAnnonces = [
+                    {
+                        id: 'test-annonce-1',
+                        titre: 'Voiture Peugeot 208',
+                        description: 'Voiture en excellent état, 50.000 km',
+                        type: 'vente',
+                        prix: 12000,
+                        views: 45,
+                        contacts: 2,
+                        created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+                        statut: 'actif'
+                    },
+                    {
+                        id: 'test-annonce-2',
+                        titre: 'Festival de musique',
+                        description: 'Grand festival de musique ce week-end',
+                        type: 'actualite',
+                        prix: null,
+                        views: 67,
+                        contacts: 4,
+                        created_at: new Date(Date.now() - 86400000).toISOString(),
+                        statut: 'inactif'
+                    },
+                    {
+                        id: 'test-annonce-3',
+                        titre: 'MacBook Pro M1',
+                        description: 'Ordinateur comme neuf, acheté il y a 6 mois',
+                        type: 'vente',
+                        prix: 1500,
+                        views: 89,
+                        contacts: 6,
+                        created_at: new Date().toISOString(),
+                        statut: 'actif'
+                    }
+                ];
+                
+                if (supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('annonces')
+                        .insert(testAnnonces);
+                    
+                    if (error) throw error;
+                } else {
+                    allAnnonces = [...testAnnonces, ...allAnnonces];
+                }
+                
+                showToast('3 annonces de test créées', 'success');
+                
+                // Recharger les données
+                await loadAnnoncesFromSupabase();
+                updateAnnoncesTable();
+                updateStatistics();
+                
+            } catch (error) {
+                console.error('Erreur création annonces test:', error);
+                showToast('Erreur lors de la création des tests', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // ============ FONCTION D'EXPORT ============
+        
+        function exportStatistics() {
+            const data = {
+                users: allUsers,
+                annonces: allAnnonces,
+                statistics: {
+                    totalUsers: allUsers.length,
+                    totalAnnonces: allAnnonces.length,
+                    totalViews: allAnnonces.reduce((sum, a) => sum + (a.views || 0), 0),
+                    totalContacts: allAnnonces.reduce((sum, a) => sum + (a.contacts || 0), 0),
+                    activeUsers: allUsers.filter(u => u.statut === 'active').length,
+                    activeAnnonces: allAnnonces.filter(a => a.statut === 'actif').length,
+                    exportDate: new Date().toISOString()
+                }
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `afrimarket_stats_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showToast('Statistiques exportées avec succès', 'success');
+        }
+    </script>
+</body>
+</html>

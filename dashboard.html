@@ -1443,59 +1443,68 @@
         }
         
         // Charger les annonces depuis Supabase
-        async function loadAllAnnoncesFromSupabase() {
-            try {
-                if (!supabaseClient) {
-                    // Simuler des données pour le développement
-                    allAnnonces = [
-                        {
-                            id: '1',
-                            titre: 'iPhone 13 Pro Max 256GB',
-                            description: 'Téléphone en excellent état, acheté il y a 6 mois. Accessoires inclus.',
-                            prix: '850 000',
-                            type: 'vente',
-                            image_url: null,
-                            whatsapp: '+237699887766',
-                            created_at: new Date(Date.now() - 172800000).toISOString()
-                        },
-                        {
-                            id: '2',
-                            titre: 'Appartement 3 pièces meublé',
-                            description: 'Bel appartement dans quartier calme, proche des commodités.',
-                            prix: '450 000',
-                            type: 'vente',
-                            image_url: null,
-                            whatsapp: '+237677889900',
-                            created_at: new Date(Date.now() - 86400000).toISOString()
-                        },
-                        {
-                            id: '3',
-                            titre: 'Concert gospel à Yaoundé',
-                            description: 'Grand concert gospel ce samedi à la salle des fêtes.',
-                            prix: null,
-                            type: 'actualite',
-                            image_url: null,
-                            whatsapp: '+237655443322',
-                            created_at: new Date().toISOString()
-                        }
-                    ];
-                    return;
+async function loadAllAnnoncesFromSupabase() {
+    try {
+        if (!supabaseClient) {
+            // Simuler des données pour le développement
+            allAnnonces = [
+                {
+                    id: '1',
+                    titre: 'iPhone 13 Pro Max 256GB',
+                    description: 'Téléphone en excellent état, acheté il y a 6 mois. Accessoires inclus.',
+                    prix: '850 000',
+                    type: 'vente',
+                    image_url: null,
+                    whatsapp: '+237699887766',
+                    created_at: new Date(Date.now() - 172800000).toISOString(),
+                    views: 150,
+                    contacts: 8,
+                    statut: 'actif'
+                },
+                {
+                    id: '2',
+                    titre: 'Appartement 3 pièces meublé',
+                    description: 'Bel appartement dans quartier calme, proche des commodités.',
+                    prix: '450 000',
+                    type: 'vente',
+                    image_url: null,
+                    whatsapp: '+237677889900',
+                    created_at: new Date(Date.now() - 86400000).toISOString(),
+                    views: 80,
+                    contacts: 3,
+                    statut: 'actif'
+                },
+                {
+                    id: '3',
+                    titre: 'Concert gospel à Yaoundé',
+                    description: 'Grand concert gospel ce samedi à la salle des fêtes.',
+                    prix: null,
+                    type: 'actualite',
+                    image_url: null,
+                    whatsapp: '+237655443322',
+                    created_at: new Date().toISOString(),
+                    views: 120,
+                    contacts: 5,
+                    statut: 'actif'
                 }
-                
-                const { data, error } = await supabaseClient
-                    .from('annonces')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                allAnnonces = data || [];
-                
-            } catch (error) {
-                console.error('Erreur chargement annonces:', error);
-                allAnnonces = [];
-            }
+            ];
+            return;
         }
+        
+        const { data, error } = await supabaseClient
+            .from('annonces')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        allAnnonces = data || [];
+        
+    } catch (error) {
+        console.error('Erreur chargement annonces:', error);
+        allAnnonces = [];
+    }
+}
         
         // Afficher les annonces
         function displayAnnonces(annonces) {

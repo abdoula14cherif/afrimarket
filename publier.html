@@ -1363,50 +1363,50 @@
         }
         
         // Fonction pour sauvegarder l'annonce dans Supabase
-        async function saveAnnonceToSupabase(annonceData) {
-            try {
-                if (!supabaseClient) {
-                    throw new Error('Supabase non initialisé');
-                }
-                
-                // Récupérer l'utilisateur connecté
-                const user = await verifierSession();
-                if (!user.loggedIn) {
-                    throw new Error('Utilisateur non connecté');
-                }
-                
-                // Préparer les données pour Supabase
-                const annonce = {
-                    user_id: user.user.id,
-                    titre: annonceData.title,
-                    description: annonceData.description,
-                    type: annonceData.category,
-                    prix: annonceData.price,
-                    whatsapp: annonceData.whatsapp,
-                    image_url: annonceData.image,
-                    created_at: new Date().toISOString(),
-                    statut: 'actif',
-                    views: 0,
-                    contacts: 0
-                };
-                
-                // Insérer l'annonce dans la table 'annonces'
-                const { data, error } = await supabaseClient
-                    .from('annonces')
-                    .insert([annonce]);
-                
-                if (error) {
-                    throw new Error('Erreur Supabase: ' + error.message);
-                }
-                
-                console.log('✅ Annonce sauvegardée:', data);
-                return { success: true, data: data };
-                
-            } catch (error) {
-                console.error('Erreur sauvegarde annonce:', error);
-                return { success: false, error: error.message };
-            }
+async function saveAnnonceToSupabase(annonceData) {
+    try {
+        if (!supabaseClient) {
+            throw new Error('Supabase non initialisé');
         }
+        
+        // Récupérer l'utilisateur connecté
+        const user = await verifierSession();
+        if (!user.loggedIn) {
+            throw new Error('Utilisateur non connecté');
+        }
+        
+        // Préparer les données pour Supabase avec les bonnes colonnes
+        const annonce = {
+            user_id: user.user.id,
+            titre: annonceData.title,
+            description: annonceData.description,
+            type: annonceData.category,
+            prix: annonceData.price,
+            whatsapp: annonceData.whatsapp,
+            image_url: annonceData.image,
+            created_at: new Date().toISOString(),
+            statut: 'actif',
+            views: 0,
+            contacts: 0
+        };
+        
+        // Insérer l'annonce dans la table 'annonces'
+        const { data, error } = await supabaseClient
+            .from('annonces')
+            .insert([annonce]);
+        
+        if (error) {
+            throw new Error('Erreur Supabase: ' + error.message);
+        }
+        
+        console.log('✅ Annonce sauvegardée:', data);
+        return { success: true, data: data };
+        
+    } catch (error) {
+        console.error('Erreur sauvegarde annonce:', error);
+        return { success: false, error: error.message };
+    }
+}
         
         // Initialisation
         document.addEventListener('DOMContentLoaded', async function() {

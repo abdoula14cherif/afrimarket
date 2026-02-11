@@ -400,6 +400,11 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
         /* Loading overlay */
         .loading-overlay {
             position: fixed;
@@ -485,7 +490,7 @@
     <header class="app-header">
         <div class="container">
             <div class="header-content">
-                <a href="dashboard.html" class="logo-container">
+                <a href="index.html" class="logo-container">
                     <div class="logo-icon">
                         <i class="fas fa-store"></i>
                     </div>
@@ -561,8 +566,8 @@
 
                 <!-- Footer -->
                 <div class="auth-footer">
-                    <p>Pas encore de compte ? <a href="inscription.html">S'inscrire</a></p>
-                    <p><a href="dashboard.html">Continuer sans compte</a></p>
+                    <p>Pas encore de compte ? <a href="index.html">S'inscrire</a></p>
+                    <p><a href="dashboard.html" class="continue-sans-compte">Continuer sans compte</a></p>
                     
                     <!-- Accès admin caché -->
                     <div class="admin-link">
@@ -576,24 +581,27 @@
     </main>
 
     <script>
-        // Configuration Supabase
+        // ============================================
+        // CONFIGURATION SUPABASE
+        // ============================================
         const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
-        // Configuration Admin - ACCÈS UNIQUEMENT POUR TOI
+        // Configuration Admin
         const ADMIN_EMAIL = 'abdoula14cherif@gmail.com';
         const ADMIN_PASSWORD = 'abdoula.@5';
         
         let supabaseClient = null;
         let adminClickCount = 0;
         
-        // Fonction pour afficher les notifications
+        // ============================================
+        // FONCTIONS D'INTERFACE
+        // ============================================
+        
         function showNotification(message, type = 'info') {
-            // Supprimer les anciennes notifications
             const oldNotif = document.querySelector('.notification');
             if (oldNotif) oldNotif.remove();
             
-            // Créer la nouvelle notification
             const notif = document.createElement('div');
             notif.className = `notification ${type}`;
             notif.innerHTML = `
@@ -605,11 +613,12 @@
             
             document.body.appendChild(notif);
             
-            // Supprimer après 5 secondes
-            setTimeout(() => notif.remove(), 5000);
+            setTimeout(() => {
+                notif.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notif.remove(), 300);
+            }, 5000);
         }
         
-        // Fonction pour montrer/cacher le loading
         function showLoading(show) {
             const overlay = document.getElementById('loadingOverlay');
             const loginBtn = document.getElementById('loginBtn');
@@ -629,54 +638,39 @@
             }
         }
         
-        // Vérifier si l'utilisateur est admin
-        function isAdminUser(email) {
-            return email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
-        }
+        // ============================================
+        // FONCTION DE CONNEXION - SANS REDIRECTION AUTOMATIQUE
+        // ============================================
         
-        // Fonction de connexion
         async function connecterUtilisateur(email, password, rememberMe = false) {
             try {
-                console.log('Connexion pour:', email);
+                console.log('🔑 Connexion pour:', email);
                 
-                // VÉRIFICATION SPÉCIALE POUR L'ADMIN
-                const isAdmin = isAdminUser(email) && password === ADMIN_PASSWORD;
+                // VÉRIFICATION ADMIN
+                const isAdmin = email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASSWORD;
                 
                 if (isAdmin) {
-                    console.log('✅ Connexion admin détectée');
+                    console.log('✅ Connexion admin');
                     
-                    // Créer un ID unique pour l'admin
                     const adminId = 'admin-' + Date.now();
                     
-                    // Stocker les informations admin
                     localStorage.setItem('afrimarket_user_id', adminId);
                     localStorage.setItem('afrimarket_user_email', ADMIN_EMAIL);
-                    localStorage.setItem('afrimarket_user_name', 'abdoula cherif');
+                    localStorage.setItem('afrimarket_user_name', 'Abdoula Cherif');
                     localStorage.setItem('afrimarket_user_role', 'admin');
                     localStorage.setItem('afrimarket_logged_in', 'true');
-                    
-                    if (rememberMe) {
-                        localStorage.setItem('afrimarket_remember_me', 'true');
-                    }
                     
                     return {
                         success: true,
                         message: '✅ Connexion administrateur réussie !',
-                        user: {
-                            email: ADMIN_EMAIL,
-                            nom_complet: 'abdoula cherif',
-                            role: 'admin'
-                        },
+                        redirect: 'admin.html',
                         isAdmin: true
                     };
                 }
                 
-                // POUR LES UTILISATEURS NORMALS - CONNEXION SUPABASE
+                // CONNEXION SUPABASE
                 if (!supabaseClient) {
-                    return {
-                        success: false,
-                        error: 'Système de connexion indisponible'
-                    };
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 }
                 
                 const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -685,7 +679,7 @@
                 });
                 
                 if (error) {
-                    console.error('Erreur connexion:', error);
+                    console.error('❌ Erreur:', error);
                     
                     let errorMsg = error.message;
                     if (error.message.includes('Invalid login credentials')) {
@@ -695,28 +689,24 @@
                     return { success: false, error: errorMsg };
                 }
                 
-                console.log('✅ Connexion utilisateur réussie:', data);
+                console.log('✅ Connexion réussie:', data.user?.email);
                 
-                // Stocker les informations utilisateur
+                // Stocker les infos
                 localStorage.setItem('afrimarket_user_id', data.user.id);
                 localStorage.setItem('afrimarket_user_email', data.user.email);
                 localStorage.setItem('afrimarket_user_name', data.user.user_metadata?.nom_complet || 'Utilisateur');
                 localStorage.setItem('afrimarket_user_role', 'user');
                 localStorage.setItem('afrimarket_logged_in', 'true');
                 
-                if (rememberMe) {
-                    localStorage.setItem('afrimarket_remember_me', 'true');
-                }
-                
                 return {
                     success: true,
-                    message: 'Connexion réussie !',
-                    user: data.user,
+                    message: '✅ Connexion réussie !',
+                    redirect: 'dashboard.html',
                     isAdmin: false
                 };
                 
             } catch (error) {
-                console.error('Erreur générale:', error);
+                console.error('❌ Erreur générale:', error);
                 return {
                     success: false,
                     error: 'Erreur de connexion. Veuillez réessayer.'
@@ -724,54 +714,29 @@
             }
         }
         
-        // Vérifier si déjà connecté
-        async function verifierSession() {
-            try {
-                const userId = localStorage.getItem('afrimarket_user_id');
-                const loggedIn = localStorage.getItem('afrimarket_logged_in') === 'true';
-                const userEmail = localStorage.getItem('afrimarket_user_email');
-                const userRole = localStorage.getItem('afrimarket_user_role');
-                
-                if (userId && loggedIn && userEmail) {
-                    // Si c'est l'admin, rediriger vers admin.html
-                    if (userEmail === ADMIN_EMAIL && userRole === 'admin') {
-                        console.log('✅ Admin déjà connecté, redirection vers admin.html');
-                        window.location.href = 'admin.html';
-                        return true;
-                    } else {
-                        // Si c'est un utilisateur normal, rediriger vers dashboard
-                        console.log('✅ Utilisateur déjà connecté, redirection vers dashboard.html');
-                        window.location.href = 'dashboard.html';
-                        return true;
-                    }
-                }
-                
-                return false;
-                
-            } catch (error) {
-                console.error('Erreur vérification session:', error);
-                return false;
-            }
-        }
+        // ============================================
+        // INITIALISATION - AUCUNE REDIRECTION AUTOMATIQUE
+        // ============================================
         
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('Page connexion chargée');
-            
-            // Vérifier si déjà connecté
-            const isConnected = await verifierSession();
-            if (isConnected) return;
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Page connexion chargée');
             
             // Initialiser Supabase
             if (window.supabase) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
                     auth: {
                         persistSession: true,
-                        autoRefreshToken: true
+                        autoRefreshToken: true,
+                        detectSessionInUrl: false
                     }
                 });
                 console.log('✅ Supabase initialisé');
             }
+            
+            // ===== NE PAS REDIRIGER AUTOMATIQUEMENT =====
+            // ⚠️ SUPPRESSION DE LA FONCTION verifierSession()
+            // ⚠️ PLUS DE REDIRECTION AUTOMATIQUE VERS DASHBOARD
+            // ============================================
             
             // Gestion du thème
             const themeBtn = document.getElementById('themeBtn');
@@ -802,106 +767,88 @@
             if (forgotPasswordBtn) {
                 forgotPasswordBtn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    showNotification('Contactez support@afrimarket.com pour réinitialiser votre mot de passe', 'info');
+                    showNotification('📧 Contactez support@afrimarket.com', 'info');
                 });
             }
             
-            // Accès admin caché
+            // Accès admin
             const adminBtn = document.getElementById('adminAccessBtn');
             if (adminBtn) {
                 adminBtn.addEventListener('click', function() {
                     adminClickCount++;
                     
                     if (adminClickCount === 3) {
-                        // Remplir automatiquement les champs admin
                         document.getElementById('login-email').value = ADMIN_EMAIL;
                         document.getElementById('login-password').value = ADMIN_PASSWORD;
                         document.getElementById('remember-me').checked = true;
+                        showNotification('✅ Champs admin pré-remplis', 'success');
                         
-                        showNotification('Champs admin pré-remplis. Cliquez sur "Se connecter"', 'success');
-                        
-                        // Réinitialiser le compteur après 5 secondes
-                        setTimeout(() => {
-                            adminClickCount = 0;
-                        }, 5000);
-                    } else if (adminClickCount === 1) {
-                        showNotification('Cliquez 2 fois de plus pour remplir les champs admin', 'info');
-                        setTimeout(() => {
-                            adminClickCount = 0;
-                        }, 3000);
+                        setTimeout(() => { adminClickCount = 0; }, 5000);
                     }
                 });
             }
             
-            // Soumission formulaire
+            // Soumission formulaire - UNIQUEMENT ICI LA REDIRECTION
             const form = document.getElementById('connexion-form');
             
             if (form) {
                 form.addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    console.log('Formulaire soumis');
+                    console.log('📤 Soumission formulaire');
                     
                     const email = document.getElementById('login-email').value.trim().toLowerCase();
                     const password = document.getElementById('login-password').value;
                     const rememberMe = document.getElementById('remember-me').checked;
                     
-                    // Validation basique
-                    if (!email.includes('@') || !email.includes('.')) {
-                        showNotification('Email invalide', 'error');
+                    if (!email.includes('@')) {
+                        showNotification('❌ Email invalide', 'error');
                         return;
                     }
                     
                     if (password.length < 6) {
-                        showNotification('Mot de passe trop court (minimum 6 caractères)', 'error');
+                        showNotification('❌ Mot de passe trop court', 'error');
                         return;
                     }
                     
-                    // Afficher le loading
                     showLoading(true);
                     
                     try {
-                        // Appeler la fonction de connexion
                         const result = await connecterUtilisateur(email, password, rememberMe);
                         
                         if (result.success) {
                             showNotification(result.message, 'success');
                             
-                            // Redirection selon le type d'utilisateur
+                            // ✅ REDIRECTION UNIQUEMENT ICI - APRÈS CONNEXION RÉUSSIE
                             setTimeout(() => {
-                                if (result.isAdmin) {
-                                    window.location.href = 'admin.html';
-                                } else {
-                                    window.location.href = 'dashboard.html';
-                                }
+                                window.location.href = result.redirect;
                             }, 1500);
-                            
                         } else {
-                            showNotification('Erreur: ' + result.error, 'error');
+                            showNotification('❌ ' + result.error, 'error');
                             showLoading(false);
                         }
-                        
                     } catch (error) {
-                        console.error('Erreur catch:', error);
-                        showNotification('Erreur technique: ' + error.message, 'error');
+                        console.error('❌ Erreur:', error);
+                        showNotification('❌ Erreur technique', 'error');
                         showLoading(false);
                     }
                 });
             }
             
-            // Pré-remplir l'email si stocké
+            // Pré-remplir email si "Se souvenir de moi" était coché
             const savedEmail = localStorage.getItem('afrimarket_user_email');
             if (savedEmail && document.getElementById('login-email')) {
                 document.getElementById('login-email').value = savedEmail;
                 document.getElementById('remember-me').checked = true;
             }
             
-            // Pré-remplir avec des données de test (désactiver en production)
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                // Seulement en développement local
-                console.log('Mode développement - pré-remplissage activé');
-                // document.getElementById('login-email').value = 'test@example.com';
-                // document.getElementById('login-password').value = 'password123';
+            // Message dans l'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const message = urlParams.get('message');
+            if (message) {
+                showNotification(decodeURIComponent(message), 'info');
             }
+            
+            console.log('✅ Page connexion prête');
         });
     </script>
 </body>

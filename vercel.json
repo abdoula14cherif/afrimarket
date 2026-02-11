@@ -15,6 +15,11 @@
   ],
   "redirects": [
     {
+      "source": "/",
+      "destination": "/dashboard.html",
+      "permanent": true
+    },
+    {
       "source": "/accueil",
       "destination": "/dashboard.html",
       "permanent": true
@@ -26,34 +31,34 @@
     },
     {
       "source": "/connexion",
-      "destination": "/Connexion.html",
+      "destination": "/connexion.html",
+      "permanent": true
+    },
+    {
+      "source": "/login",
+      "destination": "/connexion.html",
+      "permanent": true
+    },
+    {
+      "source": "/signin",
+      "destination": "/connexion.html",
       "permanent": true
     },
     {
       "source": "/inscription",
-      "destination": "/signup.html",
+      "destination": "/inscription.html",
+      "permanent": true
+    },
+    {
+      "source": "/signup",
+      "destination": "/inscription.html",
+      "permanent": true
+    },
+    {
+      "source": "/register",
+      "destination": "/inscription.html",
       "permanent": true
     }
   ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        }
-      ]
-    }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false
+  "cleanUrls": true
 }

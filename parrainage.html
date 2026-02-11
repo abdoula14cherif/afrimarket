@@ -8,6 +8,7 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
+        /* Styles identiques à la version précédente */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -48,7 +49,6 @@
             transition: var(--transition);
             overflow-x: hidden;
             padding-bottom: 70px;
-            -webkit-text-size-adjust: 100%;
         }
 
         body.dark-mode {
@@ -63,7 +63,7 @@
             margin: 0 auto;
         }
 
-        /* Header */
+        /* Header - Même style que précédemment */
         .app-header {
             position: sticky;
             top: 0;
@@ -72,8 +72,6 @@
             padding: 12px 0;
             border-bottom: 1px solid var(--light-border);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            transition: var(--transition);
         }
 
         .dark-mode .app-header {
@@ -85,7 +83,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
         }
 
         .menu-toggle {
@@ -96,18 +93,10 @@
             cursor: pointer;
             padding: 8px;
             border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
         }
 
         .dark-mode .menu-toggle {
             color: var(--dark-text);
-        }
-
-        .menu-toggle:hover {
-            background: rgba(37, 99, 235, 0.1);
         }
 
         .logo-container {
@@ -134,7 +123,6 @@
             font-size: 18px;
             font-weight: 800;
             color: var(--light-text);
-            line-height: 1;
         }
 
         .dark-mode .logo-text {
@@ -159,21 +147,13 @@
             cursor: pointer;
             padding: 8px;
             border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
         }
 
         .dark-mode .theme-btn {
             color: var(--dark-text);
         }
 
-        .theme-btn:hover {
-            background: rgba(37, 99, 235, 0.1);
-        }
-
-        /* Menu burger latéral */
+        /* Menu burger latéral - Version simplifiée */
         .menu-overlay {
             position: fixed;
             top: 0;
@@ -183,7 +163,6 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 9998;
             display: none;
-            animation: fadeIn 0.3s ease;
         }
 
         .sidebar-menu {
@@ -217,10 +196,6 @@
             color: white;
         }
 
-        .dark-mode .menu-header {
-            border-color: var(--dark-border);
-        }
-
         .user-avatar {
             width: 50px;
             height: 50px;
@@ -232,7 +207,6 @@
             color: white;
             font-size: 20px;
             font-weight: bold;
-            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
         .user-info {
@@ -281,10 +255,6 @@
             font-weight: 500;
         }
 
-        .dark-mode .menu-item.active {
-            color: #60a5fa;
-        }
-
         .menu-item i {
             width: 20px;
             text-align: center;
@@ -297,10 +267,6 @@
             justify-content: space-between;
             padding: 16px 20px;
             border-top: 1px solid var(--light-border);
-        }
-
-        .dark-mode .theme-toggle-menu {
-            border-color: var(--dark-border);
         }
 
         .theme-toggle-menu span {
@@ -797,40 +763,96 @@
             transform: rotate(45deg);
         }
 
-        /* Section Filleuls */
-        .referrals-section {
+        /* Section Arbre de Parrainage */
+        .tree-section {
             padding: 25px 0;
         }
 
-        .referrals-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .referral-item {
+        .tree-container {
             background: var(--light-card);
-            border-radius: var(--radius-md);
-            padding: 16px;
+            border-radius: var(--radius-lg);
+            padding: 25px;
             box-shadow: var(--shadow);
             border: 1px solid var(--light-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
 
-        .dark-mode .referral-item {
+        .dark-mode .tree-container {
             background: var(--dark-card);
             border-color: var(--dark-border);
         }
 
-        .referral-info {
+        .tree-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .tree-title {
+            color: var(--dark-text);
+        }
+
+        .level-container {
+            margin-bottom: 30px;
+        }
+
+        .level-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .level-badge {
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .level-badge.level1 {
+            background: linear-gradient(135deg, #FFD700, #FDB931);
+        }
+
+        .level-badge.level2 {
+            background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+        }
+
+        .level-badge.level3 {
+            background: linear-gradient(135deg, #CD7F32, #8B4513);
+        }
+
+        .level-stats {
+            font-size: 13px;
+            color: var(--light-gray);
+        }
+
+        .referrals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .referral-tree-card {
+            background: var(--light-bg);
+            border-radius: var(--radius-md);
+            padding: 15px;
+            border: 1px solid var(--light-border);
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .referral-avatar {
+        .dark-mode .referral-tree-card {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
+        }
+
+        .tree-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -843,44 +865,35 @@
             font-weight: 600;
         }
 
-        .referral-details h4 {
-            font-size: 15px;
+        .tree-info {
+            flex: 1;
+        }
+
+        .tree-name {
+            font-size: 14px;
             font-weight: 600;
             margin-bottom: 4px;
             color: var(--light-text);
         }
 
-        .dark-mode .referral-details h4 {
+        .dark-mode .tree-name {
             color: var(--dark-text);
         }
 
-        .referral-details p {
-            font-size: 12px;
+        .tree-detail {
+            font-size: 11px;
             color: var(--light-gray);
         }
 
-        .referral-commission {
-            text-align: right;
-        }
-
-        .commission-value {
-            font-size: 16px;
+        .tree-commission {
+            font-size: 14px;
             font-weight: 700;
             color: var(--referral-color);
         }
 
-        .commission-level-badge {
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: var(--radius-sm);
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--referral-color);
-            margin-top: 4px;
-        }
-
         .no-referrals {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             color: var(--light-gray);
         }
 
@@ -1053,12 +1066,11 @@
             transition: var(--transition);
             flex: 1;
             max-width: 70px;
-            position: relative;
             text-decoration: none;
             color: inherit;
         }
 
-        .nav-item.active, .nav-item:active {
+        .nav-item.active {
             background: rgba(37, 99, 235, 0.1);
         }
 
@@ -1072,7 +1084,7 @@
             color: #94a3b8;
         }
 
-        .nav-item.active .nav-icon, .nav-item:active .nav-icon {
+        .nav-item.active .nav-icon {
             color: var(--primary-blue);
         }
 
@@ -1087,7 +1099,7 @@
             color: #94a3b8;
         }
 
-        .nav-item.active .nav-label, .nav-item:active .nav-label {
+        .nav-item.active .nav-label {
             color: var(--primary-blue);
         }
 
@@ -1118,6 +1130,10 @@
         @media (min-width: 768px) {
             .referral-share {
                 grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .referrals-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
     </style>
@@ -1255,7 +1271,7 @@
                         </div>
                         <div class="stat-label">Filleuls directs</div>
                         <div class="stat-value" id="directCount">0</div>
-                        <div class="stat-sub">Niveau 1</div>
+                        <div class="stat-sub">Niveau 1 - 1 000 F</div>
                     </div>
                     
                     <div class="stat-card">
@@ -1264,7 +1280,7 @@
                         </div>
                         <div class="stat-label">Filleuls niveau 2</div>
                         <div class="stat-value" id="level2Count">0</div>
-                        <div class="stat-sub">Indirects</div>
+                        <div class="stat-sub">Niveau 2 - 500 F</div>
                     </div>
                     
                     <div class="stat-card">
@@ -1273,7 +1289,7 @@
                         </div>
                         <div class="stat-label">Filleuls niveau 3</div>
                         <div class="stat-value" id="level3Count">0</div>
-                        <div class="stat-sub">3ème niveau</div>
+                        <div class="stat-sub">Niveau 3 - 250 F</div>
                     </div>
                     
                     <div class="stat-card">
@@ -1287,7 +1303,7 @@
                 </div>
             </section>
 
-            <!-- Section Lien de Parrainage (visible uniquement si débloqué) -->
+            <!-- Section Lien de Parrainage (visible si débloqué) -->
             <section class="link-section" id="referralLinkSection" style="display: none;">
                 <div class="link-card">
                     <div class="link-header">
@@ -1326,7 +1342,7 @@
                 </div>
             </section>
 
-            <!-- Section Déblocage (visible uniquement si non débloqué) -->
+            <!-- Section Déblocage (visible si non débloqué) -->
             <section class="unlock-section" id="unlockSection">
                 <div class="unlock-card">
                     <div class="unlock-icon">
@@ -1382,23 +1398,54 @@
                         <div>
                             <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 5px; color: var(--light-text);">Comment ça fonctionne ?</h4>
                             <p style="font-size: 13px; color: var(--light-gray);">
-                                Quand une personne s'inscrit via votre lien et active son compte, vous recevez 1 000 F. 
-                                Si cette personne parraine à son tour quelqu'un, vous recevez 500 F. 
-                                Au 3ème niveau, vous recevez 250 F.
+                                • <strong>Niveau 1</strong> : Vous parrainez A → A s'inscrit → Vous gagnez 1 000 F<br>
+                                • <strong>Niveau 2</strong> : A débloque son lien et parraine B → B s'inscrit → Vous gagnez 500 F<br>
+                                • <strong>Niveau 3</strong> : B débloque son lien et parraine C → C s'inscrit → Vous gagnez 250 F
                             </p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Section Mes Filleuls -->
-            <section class="referrals-section" id="referralsSection" style="display: none;">
-                <h2 class="section-title">
-                    <i class="fas fa-user-friends"></i> Mes filleuls
-                </h2>
-                
-                <div id="referralsList" class="referrals-list">
-                    <!-- Liste chargée dynamiquement -->
+            <!-- Section Arbre de Parrainage (visible si débloqué) -->
+            <section class="tree-section" id="referralTreeSection" style="display: none;">
+                <div class="tree-container">
+                    <h3 class="tree-title">
+                        <i class="fas fa-sitemap"></i> Votre arbre de parrainage
+                    </h3>
+                    
+                    <!-- Niveau 1 -->
+                    <div class="level-container" id="level1Container">
+                        <div class="level-header">
+                            <div class="level-badge level1">
+                                <i class="fas fa-crown"></i> Niveau 1 - Filleuls directs
+                            </div>
+                            <span class="level-stats" id="level1Stats">0 filleul - 0 F gagnés</span>
+                        </div>
+                        <div class="referrals-grid" id="level1List"></div>
+                    </div>
+                    
+                    <!-- Niveau 2 -->
+                    <div class="level-container" id="level2Container">
+                        <div class="level-header">
+                            <div class="level-badge level2">
+                                <i class="fas fa-user-friends"></i> Niveau 2 - Filleuls indirects
+                            </div>
+                            <span class="level-stats" id="level2Stats">0 filleul - 0 F gagnés</span>
+                        </div>
+                        <div class="referrals-grid" id="level2List"></div>
+                    </div>
+                    
+                    <!-- Niveau 3 -->
+                    <div class="level-container" id="level3Container">
+                        <div class="level-header">
+                            <div class="level-badge level3">
+                                <i class="fas fa-users"></i> Niveau 3 - 3ème niveau
+                            </div>
+                            <span class="level-stats" id="level3Stats">0 filleul - 0 F gagnés</span>
+                        </div>
+                        <div class="referrals-grid" id="level3List"></div>
+                    </div>
                 </div>
             </section>
         </div>
@@ -1410,22 +1457,18 @@
             <i class="fas fa-home nav-icon"></i>
             <span class="nav-label">Accueil</span>
         </a>
-        
         <a href="explorer.html" class="nav-item">
             <i class="fas fa-search nav-icon"></i>
             <span class="nav-label">Explorer</span>
         </a>
-        
         <a href="publier.html" class="nav-item">
             <i class="fas fa-plus-circle nav-icon"></i>
             <span class="nav-label">Publier</span>
         </a>
-        
         <a href="gagner.html" class="nav-item">
             <i class="fas fa-gift nav-icon"></i>
             <span class="nav-label">Gagner</span>
         </a>
-        
         <a href="parrainage.html" class="nav-item active">
             <i class="fas fa-users nav-icon"></i>
             <span class="nav-label">Parrainage</span>
@@ -1582,6 +1625,9 @@
                             direct_count: 0,
                             level2_count: 0,
                             level3_count: 0,
+                            direct_earnings: 0,
+                            level2_earnings: 0,
+                            level3_earnings: 0,
                             total_earned: 0,
                             created_at: new Date().toISOString(),
                             updated_at: new Date().toISOString()
@@ -1634,8 +1680,8 @@
                 // Mettre à jour l'interface
                 updateReferralUI();
                 
-                // Charger la liste des filleuls
-                await loadReferralsList();
+                // Charger l'arbre de parrainage
+                await loadReferralTree();
                 
             } catch (error) {
                 console.error('Erreur chargement données parrainage:', error);
@@ -1659,10 +1705,10 @@
                 statusBadge.style.background = 'rgba(16, 185, 129, 0.2)';
                 statusMessage.textContent = 'Votre lien de parrainage est actif. Partagez-le pour gagner !';
                 
-                // Afficher la section lien
+                // Afficher les sections
                 document.getElementById('referralLinkSection').style.display = 'block';
                 document.getElementById('unlockSection').style.display = 'none';
-                document.getElementById('referralsSection').style.display = 'block';
+                document.getElementById('referralTreeSection').style.display = 'block';
                 
                 // Mettre à jour le lien
                 document.getElementById('referralLink').value = userReferralData.referral_link;
@@ -1675,18 +1721,19 @@
                 statusBadge.style.background = 'rgba(239, 68, 68, 0.2)';
                 statusMessage.textContent = 'Débloquez votre lien de parrainage pour commencer à gagner';
                 
-                // Afficher la section déblocage
+                // Afficher les sections
                 document.getElementById('referralLinkSection').style.display = 'none';
                 document.getElementById('unlockSection').style.display = 'block';
-                document.getElementById('referralsSection').style.display = 'none';
+                document.getElementById('referralTreeSection').style.display = 'none';
             }
         }
         
-        // Charger la liste des filleuls
-        async function loadReferralsList() {
+        // Charger l'arbre de parrainage
+        async function loadReferralTree() {
             if (!userReferralData?.is_unlocked) return;
             
             try {
+                // Récupérer tous les filleuls avec leurs informations
                 const { data: referrals, error } = await supabaseClient
                     .from('referral_relationships')
                     .select(`
@@ -1694,32 +1741,48 @@
                         referred_user_id,
                         level,
                         commission_earned,
-                        status,
                         created_at,
-                        referred_user:users(email, user_metadata)
+                        referred_user:users(id, email, user_metadata, created_at)
                     `)
                     .eq('referrer_id', currentUser.id)
                     .order('created_at', { ascending: false });
                 
                 if (error) throw error;
                 
-                displayReferrals(referrals || []);
+                // Filtrer par niveau
+                const level1 = referrals?.filter(r => r.level === 1) || [];
+                const level2 = referrals?.filter(r => r.level === 2) || [];
+                const level3 = referrals?.filter(r => r.level === 3) || [];
+                
+                // Calculer les gains par niveau
+                const level1Earnings = level1.reduce((sum, r) => sum + (r.commission_earned || 0), 0);
+                const level2Earnings = level2.reduce((sum, r) => sum + (r.commission_earned || 0), 0);
+                const level3Earnings = level3.reduce((sum, r) => sum + (r.commission_earned || 0), 0);
+                
+                // Mettre à jour les statistiques
+                document.getElementById('level1Stats').innerHTML = `${level1.length} filleul${level1.length > 1 ? 's' : ''} - ${level1Earnings.toLocaleString()} F gagnés`;
+                document.getElementById('level2Stats').innerHTML = `${level2.length} filleul${level2.length > 1 ? 's' : ''} - ${level2Earnings.toLocaleString()} F gagnés`;
+                document.getElementById('level3Stats').innerHTML = `${level3.length} filleul${level3.length > 1 ? 's' : ''} - ${level3Earnings.toLocaleString()} F gagnés`;
+                
+                // Afficher les listes
+                displayReferralLevel(level1, 'level1List');
+                displayReferralLevel(level2, 'level2List');
+                displayReferralLevel(level3, 'level3List');
                 
             } catch (error) {
-                console.error('Erreur chargement filleuls:', error);
+                console.error('Erreur chargement arbre parrainage:', error);
             }
         }
         
-        // Afficher la liste des filleuls
-        function displayReferrals(referrals) {
-            const container = document.getElementById('referralsList');
+        // Afficher les filleuls d'un niveau
+        function displayReferralLevel(referrals, containerId) {
+            const container = document.getElementById(containerId);
             
-            if (referrals.length === 0) {
+            if (!referrals || referrals.length === 0) {
                 container.innerHTML = `
-                    <div class="no-referrals">
-                        <i class="fas fa-user-friends"></i>
-                        <h3 style="margin-bottom: 8px;">Aucun filleul pour le moment</h3>
-                        <p style="font-size: 13px;">Partagez votre lien pour commencer à gagner !</p>
+                    <div class="no-referrals" style="grid-column: 1 / -1; padding: 20px;">
+                        <i class="fas fa-user-friends" style="font-size: 32px;"></i>
+                        <p style="font-size: 13px;">Aucun filleul à ce niveau</p>
                     </div>
                 `;
                 return;
@@ -1734,22 +1797,24 @@
                 const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
                 const date = new Date(ref.created_at).toLocaleDateString('fr-FR');
                 
+                // Vérifier si le filleul a débloqué son lien
+                const hasUnlockedLink = ref.referred_user?.user_metadata?.referral_unlocked || false;
+                
                 const item = document.createElement('div');
-                item.className = 'referral-item';
+                item.className = 'referral-tree-card';
                 item.innerHTML = `
-                    <div class="referral-info">
-                        <div class="referral-avatar">
-                            ${initials}
-                        </div>
-                        <div class="referral-details">
-                            <h4>${userName}</h4>
-                            <p>Inscrit le ${date}</p>
-                        </div>
+                    <div class="tree-avatar">
+                        ${initials}
                     </div>
-                    <div class="referral-commission">
-                        <div class="commission-value">${ref.commission_earned.toLocaleString()} F</div>
-                        <div class="commission-level-badge">Niveau ${ref.level}</div>
+                    <div class="tree-info">
+                        <div class="tree-name">${userName}</div>
+                        <div class="tree-detail">Inscrit le ${date}</div>
+                        ${hasUnlockedLink ? 
+                            '<div class="tree-detail" style="color: #10b981;"><i class="fas fa-unlock"></i> Lien débloqué</div>' : 
+                            '<div class="tree-detail" style="color: #94a3b8;"><i class="fas fa-lock"></i> Lien non débloqué</div>'
+                        }
                     </div>
+                    <div class="tree-commission">${ref.commission_earned.toLocaleString()} F</div>
                 `;
                 
                 container.appendChild(item);
@@ -1798,7 +1863,7 @@
         // Partager sur WhatsApp
         window.shareViaWhatsApp = function() {
             const link = document.getElementById('referralLink').value;
-            const text = `🎯 Rejoins-moi sur AFRIMARKET et gagne de l'argent !\n\n✅ Teste des applications : 200 F\n✅ Complète des tâches : 200 F\n✅ Parrainage : jusqu'à 1 750 F\n\n👉 Mon lien d'invitation : ${link}`;
+            const text = `🎯 Rejoins-moi sur AFRIMARKET et gagne de l'argent !\n\n✅ Teste des applications : 200 F\n✅ Complète des tâches : 200 F\n✅ Parrainage : jusqu'à 1 750 F\n\n💰 Débloque ton lien et gagne 1 000 F par filleul direct, 500 F au niveau 2, 250 F au niveau 3 !\n\n👉 Mon lien d'invitation : ${link}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         };
         
@@ -1811,14 +1876,14 @@
         // Partager sur Twitter
         window.shareViaTwitter = function() {
             const link = document.getElementById('referralLink').value;
-            const text = 'Rejoins-moi sur AFRIMARKET et gagne de l\'argent facilement !';
+            const text = 'Rejoins-moi sur AFRIMARKET et gagne de l\'argent facilement ! Parrainage jusqu\'à 1 750 F';
             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`, '_blank');
         };
         
         // Partager sur Telegram
         window.shareViaTelegram = function() {
             const link = document.getElementById('referralLink').value;
-            const text = `🎯 AFRIMARKET - Gagne de l'argent facilement !\n\n${link}`;
+            const text = `🎯 AFRIMARKET - Gagne de l'argent facilement !\n\n💰 Parrainage à 3 niveaux :\n• Niveau 1 : 1 000 F\n• Niveau 2 : 500 F\n• Niveau 3 : 250 F\n\n${link}`;
             window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`, '_blank');
         };
         

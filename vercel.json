@@ -1,41 +1,4 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/ref/(.*)",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/parrainage/(.*)",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/invitation/(.*)",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/inscription",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/connexion",
-      "dest": "/connexion.html"
-    },
-    {
-      "src": "/dashboard",
-      "dest": "/dashboard.html"
-    }
-  ],
   "cleanUrls": true,
   "trailingSlash": false
 }

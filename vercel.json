@@ -16,49 +16,9 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/dashboard.html",
-      "permanent": true
-    },
-    {
-      "source": "/accueil",
-      "destination": "/dashboard.html",
-      "permanent": true
-    },
-    {
-      "source": "/home",
-      "destination": "/dashboard.html",
-      "permanent": true
-    },
-    {
-      "source": "/connexion",
-      "destination": "/connexion.html",
-      "permanent": true
-    },
-    {
-      "source": "/login",
-      "destination": "/connexion.html",
-      "permanent": true
-    },
-    {
-      "source": "/signin",
-      "destination": "/connexion.html",
-      "permanent": true
-    },
-    {
-      "source": "/inscription",
-      "destination": "/inscription.html",
-      "permanent": true
-    },
-    {
-      "source": "/signup",
-      "destination": "/inscription.html",
-      "permanent": true
-    },
-    {
-      "source": "/register",
-      "destination": "/inscription.html",
-      "permanent": true
+      "destination": "/accueil.html",
+      "permanent": false
     }
   ],
-  "cleanUrls": true
+  "cleanUrls": false
 }

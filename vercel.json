@@ -26,7 +26,7 @@
     },
     {
       "source": "/connexion",
-      "destination": "/login.html",
+      "destination": "/Connexion.html",
       "permanent": true
     },
     {

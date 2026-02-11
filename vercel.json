@@ -1,29 +1,41 @@
 {
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/ref/:code",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/parrainage/:code",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/invitation/:code",
-      "destination": "/index.html"
+      "src": "*.html",
+      "use": "@vercel/static"
     }
   ],
-  "redirects": [
+  "routes": [
     {
-      "source": "/",
-      "destination": "/index.html",
-      "permanent": false
+      "src": "/ref/(.*)",
+      "dest": "/index.html"
     },
     {
-      "source": "/inscription",
-      "destination": "/index.html",
-      "permanent": true
+      "src": "/parrainage/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/invitation/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/inscription",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/connexion",
+      "dest": "/connexion.html"
+    },
+    {
+      "src": "/dashboard",
+      "dest": "/dashboard.html"
     }
   ],
-  "cleanUrls": true
+  "cleanUrls": true,
+  "trailingSlash": false
 }

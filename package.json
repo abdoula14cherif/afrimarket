@@ -1,0 +1,14 @@
+{
+  "name": "afrimarket",
+  "version": "1.0.0",
+  "description": "AFRIMARKET - Plateforme de gains",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel deploy --prod"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  }
+}

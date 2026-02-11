@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AFRIMARKET - Programme de Parrainage</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SUPABASE OBLIGATOIRE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #1d3557;
+            --primary-red: #ef4444;
+            --primary-orange: #f97316;
+            --primary-green: #10b981;
+            --light-bg: #f8fafc;
+            --light-card: #ffffff;
+            --light-text: #1e293b;
+            --light-border: #e2e8f0;
+            --light-gray: #94a3b8;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #f1f5f9;
+            --dark-border: #334155;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --referral-color: #f59e0b;
+            --level1-color: #FFD700;
+            --level2-color: #C0C0C0;
+            --level3-color: #CD7F32;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            transition: var(--transition);
+            overflow-x: hidden;
+            padding-bottom: 70px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 16px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--light-card);
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--light-text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .dark-mode .menu-toggle {
+            color: var(--dark-text);
+        }
+
+        .menu-toggle:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--light-text);
+            line-height: 1;
+        }
+
+        .dark-mode .logo-text {
+            color: var(--dark-text);
+        }
+
+        .logo-text span {
+            color: var(--primary-orange);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--light-text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .dark-mode .theme-btn {
+            color: var(--dark-text);
+        }
+
+        .theme-btn:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        /* Menu burger latéral */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .sidebar-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: var(--light-card);
+            z-index: 9999;
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
+            overflow-y: auto;
+        }
+
+        .dark-mode .sidebar-menu {
+            background: var(--dark-card);
+        }
+
+        .sidebar-menu.open {
+            left: 0;
+        }
+
+        .menu-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--light-border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            color: white;
+        }
+
+        .dark-mode .menu-header {
+            border-color: var(--dark-border);
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .menu-items {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 20px;
+            color: var(--light-text);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 15px;
+        }
+
+        .dark-mode .menu-item {
+            color: var(--dark-text);
+        }
+
+        .menu-item:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .menu-item.active {
+            background: rgba(37, 99, 235, 0.15);
+            border-left-color: var(--primary-blue);
+            color: var(--primary-blue);
+            font-weight: 500;
+        }
+
+        .dark-mode .menu-item.active {
+            color: #60a5fa;
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .theme-toggle-menu {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-top: 1px solid var(--light-border);
+        }
+
+        .dark-mode .theme-toggle-menu {
+            border-color: var(--dark-border);
+        }
+
+        .theme-toggle-menu span {
+            color: var(--light-text);
+            font-size: 14px;
+        }
+
+        .dark-mode .theme-toggle-menu span {
+            color: var(--dark-text);
+        }
+
+        .theme-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .theme-slider {
+            background-color: var(--primary-blue);
+        }
+
+        input:checked + .theme-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Section Statut Parrainage */
+        .status-section {
+            padding: 20px 0;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, var(--referral-color), #d97706);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1%, transparent 1%);
+            background-size: 20px 20px;
+            opacity: 0.3;
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .status-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        /* Section Statistiques */
+        .stats-section {
+            padding: 25px 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dark-mode .section-title {
+            color: var(--dark-text);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: var(--light-card);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .dark-mode .stat-card {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--referral-color), #d97706);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--light-gray);
+            margin-bottom: 4px;
+        }
+
+        .dark-mode .stat-label {
+            color: #94a3b8;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--light-text);
+        }
+
+        .dark-mode .stat-value {
+            color: var(--dark-text);
+        }
+
+        .stat-sub {
+            font-size: 11px;
+            color: var(--light-gray);
+            margin-top: 4px;
+        }
+
+        /* Section Lien de Parrainage */
+        .link-section {
+            padding: 25px 0;
+            border-bottom: 1px solid var(--light-border);
+        }
+
+        .dark-mode .link-section {
+            border-color: var(--dark-border);
+        }
+
+        .link-card {
+            background: var(--light-card);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-border);
+        }
+
+        .dark-mode .link-card {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .link-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .link-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--referral-color), #d97706);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .link-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--light-text);
+        }
+
+        .dark-mode .link-title {
+            color: var(--dark-text);
+        }
+
+        .link-description {
+            font-size: 13px;
+            color: var(--light-gray);
+            margin-top: 4px;
+        }
+
+        .referral-link-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .referral-link-input {
+            flex: 1;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--light-border);
+            background: var(--light-bg);
+            color: var(--light-text);
+            font-family: monospace;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dark-mode .referral-link-input {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .referral-copy {
+            padding: 14px 24px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: linear-gradient(135deg, var(--referral-color), #d97706);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .referral-copy:active {
+            transform: scale(0.98);
+        }
+
+        .referral-share {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .share-btn {
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: var(--light-border);
+            color: var(--light-text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .dark-mode .share-btn {
+            background: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .share-btn:active {
+            transform: scale(0.98);
+        }
+
+        .share-btn.whatsapp {
+            background: #25D366;
+            color: white;
+        }
+
+        .share-btn.facebook {
+            background: #4267B2;
+            color: white;
+        }
+
+        .share-btn.twitter {
+            background: #1DA1F2;
+            color: white;
+        }
+
+        .share-btn.telegram {
+            background: #0088cc;
+            color: white;
+        }
+
+        /* Section Déblocage */
+        .unlock-section {
+            padding: 25px 0;
+            border-bottom: 1px solid var(--light-border);
+        }
+
+        .dark-mode .unlock-section {
+            border-color: var(--dark-border);
+        }
+
+        .unlock-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .dark-mode .unlock-card {
+            background: linear-gradient(135deg, #2d3748, #1a202c);
+        }
+
+        .unlock-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(245, 158, 11, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #f59e0b;
+            margin: 0 auto 20px;
+        }
+
+        .unlock-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .unlock-description {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .unlock-price {
+            font-size: 36px;
+            font-weight: 800;
+            color: #f59e0b;
+            margin-bottom: 10px;
+        }
+
+        .unlock-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 18px;
+            border-radius: var(--radius-md);
+            border: none;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .unlock-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Section Structure des Commissions */
+        .commission-section {
+            padding: 25px 0;
+        }
+
+        .commission-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .commission-card {
+            background: var(--light-card);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-border);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark-mode .commission-card {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .commission-level {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--light-gray);
+            margin-bottom: 10px;
+        }
+
+        .commission-amount {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--referral-color);
+            margin-bottom: 8px;
+        }
+
+        .commission-label {
+            font-size: 13px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .commission-label {
+            color: var(--dark-text);
+        }
+
+        .commission-badge {
+            position: absolute;
+            top: 10px;
+            right: -25px;
+            background: var(--referral-color);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 25px;
+            transform: rotate(45deg);
+        }
+
+        /* Section Filleuls */
+        .referrals-section {
+            padding: 25px 0;
+        }
+
+        .referrals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .referral-item {
+            background: var(--light-card);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dark-mode .referral-item {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .referral-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .referral-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--referral-color), #d97706);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .referral-details h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .referral-details h4 {
+            color: var(--dark-text);
+        }
+
+        .referral-details p {
+            font-size: 12px;
+            color: var(--light-gray);
+        }
+
+        .referral-commission {
+            text-align: right;
+        }
+
+        .commission-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--referral-color);
+        }
+
+        .commission-level-badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--referral-color);
+            margin-top: 4px;
+        }
+
+        .no-referrals {
+            text-align: center;
+            padding: 40px;
+            color: var(--light-gray);
+        }
+
+        .no-referrals i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Notification toast */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            z-index: 10002;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+        }
+
+        .toast-notification {
+            background: var(--light-card);
+            border-radius: var(--radius-md);
+            padding: 15px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: slideInRight 0.3s ease;
+            border-left: 4px solid var(--primary-blue);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dark-mode .toast-notification {
+            background: var(--dark-card);
+        }
+
+        .toast-notification:hover {
+            transform: translateY(-2px);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: var(--light-text);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .dark-mode .toast-title {
+            color: var(--dark-text);
+        }
+
+        .toast-message {
+            color: var(--light-gray);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .dark-mode .toast-message {
+            color: #94a3b8;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--light-gray);
+            cursor: pointer;
+            padding: 4px;
+            font-size: 12px;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10003;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-spinner {
+            background: var(--light-card);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .dark-mode .loading-spinner {
+            background: var(--dark-card);
+        }
+
+        .loading-spinner i {
+            font-size: 40px;
+            color: var(--referral-color);
+            margin-bottom: 15px;
+        }
+
+        .loading-spinner p {
+            color: var(--light-text);
+            font-size: 14px;
+        }
+
+        .dark-mode .loading-spinner p {
+            color: var(--dark-text);
+        }
+
+        /* Navigation inférieure */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--light-card);
+            border-top: 1px solid var(--light-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .dark-mode .bottom-nav {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            max-width: 70px;
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-item.active, .nav-item:active {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            color: var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .dark-mode .nav-icon {
+            color: #94a3b8;
+        }
+
+        .nav-item.active .nav-icon, .nav-item:active .nav-icon {
+            color: var(--primary-blue);
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .dark-mode .nav-label {
+            color: #94a3b8;
+        }
+
+        .nav-item.active .nav-label, .nav-item:active .nav-label {
+            color: var(--primary-blue);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (min-width: 375px) {
+            .container {
+                padding: 0 18px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .referral-share {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Chargement de vos informations...</p>
+        </div>
+    </div>
+
+    <!-- Toast notifications container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Menu overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Sidebar menu -->
+    <div class="sidebar-menu" id="sidebarMenu">
+        <div class="menu-header">
+            <div class="user-avatar" id="sidebarUserAvatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="sidebarUserName">Utilisateur</div>
+                <div class="user-email" id="sidebarUserEmail">email@example.com</div>
+            </div>
+        </div>
+        
+        <div class="menu-items">
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-home"></i>
+                <span>Accueil</span>
+            </a>
+            <a href="publier.html" class="menu-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Publier une annonce</span>
+            </a>
+            <a href="historique.html" class="menu-item">
+                <i class="fas fa-history"></i>
+                <span>Mon historique</span>
+            </a>
+            <a href="gagner.html" class="menu-item">
+                <i class="fas fa-gift"></i>
+                <span>Gagner de l'argent</span>
+            </a>
+            <a href="parrainage.html" class="menu-item active">
+                <i class="fas fa-users"></i>
+                <span>Parrainage</span>
+            </a>
+            <a href="retrait.html" class="menu-item">
+                <i class="fas fa-wallet"></i>
+                <span>Retrait</span>
+            </a>
+            <a href="recharge.html" class="menu-item">
+                <i class="fas fa-coins"></i>
+                <span>Recharger</span>
+            </a>
+            <div class="menu-item" id="supportMenuItem">
+                <i class="fas fa-headset"></i>
+                <span>Support & Aide</span>
+            </div>
+            <a href="connexion.html?logout=true" class="menu-item" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </a>
+        </div>
+        
+        <div class="theme-toggle-menu">
+            <span>Mode sombre</span>
+            <label class="theme-switch">
+                <input type="checkbox" id="menuThemeToggle">
+                <span class="theme-slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header" id="appHeader">
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="menu-toggle" id="menuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="dashboard.html" class="logo-container">
+                        <div class="logo-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="logo-text">AFRI<span>MARKET</span></div>
+                    </a>
+                </div>
+                
+                <div class="header-controls">
+                    <button class="theme-btn" id="themeBtn">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="main-content" id="mainContent">
+        <div class="container">
+            <!-- Section Statut Parrainage -->
+            <section class="status-section">
+                <div class="status-card">
+                    <div class="status-header">
+                        <div class="status-badge" id="referralStatusBadge">
+                            <i class="fas fa-lock"></i>
+                            <span>Non débloqué</span>
+                        </div>
+                        <i class="fas fa-users" style="font-size: 40px; opacity: 0.2;"></i>
+                    </div>
+                    <h2 class="status-title">Programme de Parrainage</h2>
+                    <p class="status-subtitle" id="referralStatusMessage">
+                        Débloquez votre lien de parrainage pour commencer à gagner
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section Statistiques -->
+            <section class="stats-section">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i> Vos statistiques
+                </h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="stat-label">Filleuls directs</div>
+                        <div class="stat-value" id="directCount">0</div>
+                        <div class="stat-sub">Niveau 1</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-label">Filleuls niveau 2</div>
+                        <div class="stat-value" id="level2Count">0</div>
+                        <div class="stat-sub">Indirects</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="stat-label">Filleuls niveau 3</div>
+                        <div class="stat-value" id="level3Count">0</div>
+                        <div class="stat-sub">3ème niveau</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-label">Total gagné</div>
+                        <div class="stat-value" id="totalEarned">0 F</div>
+                        <div class="stat-sub">Commissions</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Lien de Parrainage (visible uniquement si débloqué) -->
+            <section class="link-section" id="referralLinkSection" style="display: none;">
+                <div class="link-card">
+                    <div class="link-header">
+                        <div class="link-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div>
+                            <h3 class="link-title">Votre lien de parrainage personnel</h3>
+                            <p class="link-description">
+                                Partagez ce lien avec vos amis. Gagnez 1 000 F par inscription active !
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="referral-link-container">
+                        <input type="text" class="referral-link-input" id="referralLink" readonly>
+                        <button class="referral-copy" onclick="copyReferralLink()">
+                            <i class="fas fa-copy"></i> Copier
+                        </button>
+                    </div>
+                    
+                    <div class="referral-share">
+                        <button class="share-btn whatsapp" onclick="shareViaWhatsApp()">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                        <button class="share-btn facebook" onclick="shareViaFacebook()">
+                            <i class="fab fa-facebook-f"></i> Facebook
+                        </button>
+                        <button class="share-btn twitter" onclick="shareViaTwitter()">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </button>
+                        <button class="share-btn telegram" onclick="shareViaTelegram()">
+                            <i class="fab fa-telegram"></i> Telegram
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Déblocage (visible uniquement si non débloqué) -->
+            <section class="unlock-section" id="unlockSection">
+                <div class="unlock-card">
+                    <div class="unlock-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="unlock-title">Débloquez votre lien de parrainage</h3>
+                    <p class="unlock-description">
+                        Pour commencer à gagner de l'argent en parrainant vos amis, 
+                        vous devez d'abord débloquer votre lien de parrainage.
+                    </p>
+                    <div class="unlock-price">2 150 F</div>
+                    <p style="font-size: 13px; opacity: 0.8; margin-bottom: 20px;">
+                        Paiement unique - Valable à vie
+                    </p>
+                    <a href="recharge.html" class="unlock-btn">
+                        <i class="fas fa-coins"></i> Recharger et débloquer
+                    </a>
+                </div>
+            </section>
+
+            <!-- Section Structure des Commissions -->
+            <section class="commission-section">
+                <h2 class="section-title">
+                    <i class="fas fa-trophy"></i> Structure des commissions
+                </h2>
+                
+                <div class="commission-grid">
+                    <div class="commission-card">
+                        <div class="commission-level">NIVEAU 1</div>
+                        <div class="commission-amount">1 000 F</div>
+                        <div class="commission-label">Filleul direct</div>
+                        <div class="commission-badge">Direct</div>
+                    </div>
+                    
+                    <div class="commission-card">
+                        <div class="commission-level">NIVEAU 2</div>
+                        <div class="commission-amount">500 F</div>
+                        <div class="commission-label">Filleul indirect</div>
+                        <div class="commission-badge">Niveau 2</div>
+                    </div>
+                    
+                    <div class="commission-card">
+                        <div class="commission-level">NIVEAU 3</div>
+                        <div class="commission-amount">250 F</div>
+                        <div class="commission-label">3ème niveau</div>
+                        <div class="commission-badge">Niveau 3</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--light-card); border-radius: var(--radius-md); padding: 16px; margin-top: 20px; border: 1px solid var(--light-border);">
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <i class="fas fa-info-circle" style="color: var(--referral-color); font-size: 20px;"></i>
+                        <div>
+                            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 5px; color: var(--light-text);">Comment ça fonctionne ?</h4>
+                            <p style="font-size: 13px; color: var(--light-gray);">
+                                Quand une personne s'inscrit via votre lien et active son compte, vous recevez 1 000 F. 
+                                Si cette personne parraine à son tour quelqu'un, vous recevez 500 F. 
+                                Au 3ème niveau, vous recevez 250 F.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Mes Filleuls -->
+            <section class="referrals-section" id="referralsSection" style="display: none;">
+                <h2 class="section-title">
+                    <i class="fas fa-user-friends"></i> Mes filleuls
+                </h2>
+                
+                <div id="referralsList" class="referrals-list">
+                    <!-- Liste chargée dynamiquement -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Navigation inférieure -->
+    <nav class="bottom-nav" id="bottomNav">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home nav-icon"></i>
+            <span class="nav-label">Accueil</span>
+        </a>
+        
+        <a href="explorer.html" class="nav-item">
+            <i class="fas fa-search nav-icon"></i>
+            <span class="nav-label">Explorer</span>
+        </a>
+        
+        <a href="publier.html" class="nav-item">
+            <i class="fas fa-plus-circle nav-icon"></i>
+            <span class="nav-label">Publier</span>
+        </a>
+        
+        <a href="gagner.html" class="nav-item">
+            <i class="fas fa-gift nav-icon"></i>
+            <span class="nav-label">Gagner</span>
+        </a>
+        
+        <a href="parrainage.html" class="nav-item active">
+            <i class="fas fa-users nav-icon"></i>
+            <span class="nav-label">Parrainage</span>
+        </a>
+    </nav>
+
+    <script>
+        // Configuration Supabase
+        const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
+        
+        let supabaseClient = null;
+        let currentUser = null;
+        let userReferralData = null;
+        
+        // Éléments DOM
+        const body = document.body;
+        const menuBtn = document.getElementById('menuBtn');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const sidebarMenu = document.getElementById('sidebarMenu');
+        const themeBtn = document.getElementById('themeBtn');
+        const menuThemeToggle = document.getElementById('menuThemeToggle');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Page Parrainage chargée');
+            
+            // Initialiser Supabase
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                    auth: { persistSession: true, autoRefreshToken: true }
+                });
+                console.log('✅ Supabase initialisé');
+                
+                // Vérifier la session utilisateur
+                await checkUserSession();
+            }
+            
+            // Configurer l'interface
+            setupInterface();
+        });
+        
+        // Configurer l'interface
+        function setupInterface() {
+            // Gestion du thème
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            body.className = savedTheme;
+            
+            themeBtn.addEventListener('click', function() {
+                const isDark = body.classList.contains('dark-mode');
+                body.className = isDark ? 'light-mode' : 'dark-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+                menuThemeToggle.checked = !isDark;
+            });
+            
+            // Menu burger
+            menuBtn.addEventListener('click', () => {
+                sidebarMenu.classList.add('open');
+                menuOverlay.style.display = 'block';
+            });
+            
+            menuOverlay.addEventListener('click', () => {
+                sidebarMenu.classList.remove('open');
+                menuOverlay.style.display = 'none';
+            });
+            
+            menuThemeToggle.checked = savedTheme === 'dark-mode';
+            
+            menuThemeToggle.addEventListener('change', function() {
+                const isDark = this.checked;
+                body.className = isDark ? 'dark-mode' : 'light-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'dark-mode' : 'light-mode');
+            });
+            
+            // Support
+            document.getElementById('supportMenuItem').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Service Support & Aide\n\n📧 Email: support@afrimarket.com\n📞 Téléphone: +33 1 23 45 67 89');
+                sidebarMenu.classList.remove('open');
+                menuOverlay.style.display = 'none';
+            });
+            
+            // Déconnexion
+            document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+                e.preventDefault();
+                if (supabaseClient) {
+                    await supabaseClient.auth.signOut();
+                }
+                localStorage.removeItem('afrimarket_user');
+                window.location.href = 'connexion.html';
+            });
+        }
+        
+        // Vérifier la session utilisateur
+        async function checkUserSession() {
+            try {
+                showLoading(true);
+                
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (error || !session) {
+                    console.error('Pas de session active');
+                    window.location.href = 'connexion.html';
+                    return;
+                }
+                
+                currentUser = session.user;
+                console.log('✅ Utilisateur connecté:', currentUser.email);
+                
+                // Mettre à jour le menu
+                updateUserMenu();
+                
+                // Vérifier ou créer les données de parrainage
+                await initializeReferralData();
+                
+                // Charger les données de parrainage
+                await loadReferralData();
+                
+            } catch (error) {
+                console.error('Erreur session:', error);
+                showToastNotification({
+                    title: 'Erreur',
+                    message: 'Impossible de charger votre session',
+                    icon: 'fa-exclamation-circle'
+                });
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Initialiser ou récupérer les données de parrainage
+        async function initializeReferralData() {
+            try {
+                // Vérifier si l'utilisateur a déjà des données de parrainage
+                const { data: existingData, error: fetchError } = await supabaseClient
+                    .from('referral_data')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+                
+                if (fetchError && fetchError.code === 'PGRST116') {
+                    // Pas de données existantes, créer un nouveau code de parrainage
+                    const referralCode = generateReferralCode();
+                    const referralLink = `https://afrimarket.com/ref/${referralCode}`;
+                    
+                    const { data: newData, error: insertError } = await supabaseClient
+                        .from('referral_data')
+                        .insert({
+                            user_id: currentUser.id,
+                            referral_code: referralCode,
+                            referral_link: referralLink,
+                            is_unlocked: false,
+                            direct_count: 0,
+                            level2_count: 0,
+                            level3_count: 0,
+                            total_earned: 0,
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        })
+                        .select()
+                        .single();
+                    
+                    if (insertError) throw insertError;
+                    
+                    userReferralData = newData;
+                    console.log('✅ Données de parrainage créées');
+                    
+                } else if (fetchError) {
+                    throw fetchError;
+                } else {
+                    userReferralData = existingData;
+                    console.log('✅ Données de parrainage chargées');
+                }
+                
+            } catch (error) {
+                console.error('Erreur initialisation parrainage:', error);
+                throw error;
+            }
+        }
+        
+        // Générer un code de parrainage unique
+        function generateReferralCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 8; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+        
+        // Charger les données de parrainage
+        async function loadReferralData() {
+            try {
+                // Récupérer les données de parrainage
+                const { data: referralData, error } = await supabaseClient
+                    .from('referral_data')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+                
+                if (error) throw error;
+                
+                userReferralData = referralData;
+                
+                // Mettre à jour l'interface
+                updateReferralUI();
+                
+                // Charger la liste des filleuls
+                await loadReferralsList();
+                
+            } catch (error) {
+                console.error('Erreur chargement données parrainage:', error);
+            }
+        }
+        
+        // Mettre à jour l'interface selon le statut
+        function updateReferralUI() {
+            // Mettre à jour les statistiques
+            document.getElementById('directCount').textContent = userReferralData.direct_count || 0;
+            document.getElementById('level2Count').textContent = userReferralData.level2_count || 0;
+            document.getElementById('level3Count').textContent = userReferralData.level3_count || 0;
+            document.getElementById('totalEarned').textContent = `${(userReferralData.total_earned || 0).toLocaleString()} F`;
+            
+            // Mettre à jour le statut
+            const statusBadge = document.getElementById('referralStatusBadge');
+            const statusMessage = document.getElementById('referralStatusMessage');
+            
+            if (userReferralData.is_unlocked) {
+                statusBadge.innerHTML = '<i class="fas fa-unlock"></i> <span>Débloqué</span>';
+                statusBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+                statusMessage.textContent = 'Votre lien de parrainage est actif. Partagez-le pour gagner !';
+                
+                // Afficher la section lien
+                document.getElementById('referralLinkSection').style.display = 'block';
+                document.getElementById('unlockSection').style.display = 'none';
+                document.getElementById('referralsSection').style.display = 'block';
+                
+                // Mettre à jour le lien
+                document.getElementById('referralLink').value = userReferralData.referral_link;
+                
+                // Mettre à jour le solde dans la page gagner
+                updateEarningsBalance(userReferralData.total_earned);
+                
+            } else {
+                statusBadge.innerHTML = '<i class="fas fa-lock"></i> <span>Non débloqué</span>';
+                statusBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+                statusMessage.textContent = 'Débloquez votre lien de parrainage pour commencer à gagner';
+                
+                // Afficher la section déblocage
+                document.getElementById('referralLinkSection').style.display = 'none';
+                document.getElementById('unlockSection').style.display = 'block';
+                document.getElementById('referralsSection').style.display = 'none';
+            }
+        }
+        
+        // Charger la liste des filleuls
+        async function loadReferralsList() {
+            if (!userReferralData?.is_unlocked) return;
+            
+            try {
+                const { data: referrals, error } = await supabaseClient
+                    .from('referral_relationships')
+                    .select(`
+                        id,
+                        referred_user_id,
+                        level,
+                        commission_earned,
+                        status,
+                        created_at,
+                        referred_user:users(email, user_metadata)
+                    `)
+                    .eq('referrer_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                displayReferrals(referrals || []);
+                
+            } catch (error) {
+                console.error('Erreur chargement filleuls:', error);
+            }
+        }
+        
+        // Afficher la liste des filleuls
+        function displayReferrals(referrals) {
+            const container = document.getElementById('referralsList');
+            
+            if (referrals.length === 0) {
+                container.innerHTML = `
+                    <div class="no-referrals">
+                        <i class="fas fa-user-friends"></i>
+                        <h3 style="margin-bottom: 8px;">Aucun filleul pour le moment</h3>
+                        <p style="font-size: 13px;">Partagez votre lien pour commencer à gagner !</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            referrals.forEach(ref => {
+                const userName = ref.referred_user?.user_metadata?.full_name || 
+                               ref.referred_user?.email?.split('@')[0] || 
+                               'Utilisateur';
+                const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+                const date = new Date(ref.created_at).toLocaleDateString('fr-FR');
+                
+                const item = document.createElement('div');
+                item.className = 'referral-item';
+                item.innerHTML = `
+                    <div class="referral-info">
+                        <div class="referral-avatar">
+                            ${initials}
+                        </div>
+                        <div class="referral-details">
+                            <h4>${userName}</h4>
+                            <p>Inscrit le ${date}</p>
+                        </div>
+                    </div>
+                    <div class="referral-commission">
+                        <div class="commission-value">${ref.commission_earned.toLocaleString()} F</div>
+                        <div class="commission-level-badge">Niveau ${ref.level}</div>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+        
+        // Mettre à jour le menu utilisateur
+        function updateUserMenu() {
+            const userName = currentUser.user_metadata?.full_name || 
+                           currentUser.email?.split('@')[0] || 
+                           'Utilisateur';
+            const userEmail = currentUser.email || '';
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            document.getElementById('sidebarUserName').textContent = userName;
+            document.getElementById('sidebarUserEmail').textContent = userEmail;
+            document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
+            
+            localStorage.setItem('afrimarket_user_name', userName);
+            localStorage.setItem('afrimarket_user_email', userEmail);
+        }
+        
+        // Copier le lien de parrainage
+        window.copyReferralLink = async function() {
+            const linkInput = document.getElementById('referralLink');
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999);
+            
+            try {
+                await navigator.clipboard.writeText(linkInput.value);
+                showToastNotification({
+                    title: 'Lien copié !',
+                    message: 'Votre lien de parrainage a été copié',
+                    icon: 'fa-copy'
+                });
+            } catch (err) {
+                document.execCommand('copy');
+                showToastNotification({
+                    title: 'Lien copié !',
+                    message: 'Votre lien de parrainage a été copié',
+                    icon: 'fa-copy'
+                });
+            }
+        };
+        
+        // Partager sur WhatsApp
+        window.shareViaWhatsApp = function() {
+            const link = document.getElementById('referralLink').value;
+            const text = `🎯 Rejoins-moi sur AFRIMARKET et gagne de l'argent !\n\n✅ Teste des applications : 200 F\n✅ Complète des tâches : 200 F\n✅ Parrainage : jusqu'à 1 750 F\n\n👉 Mon lien d'invitation : ${link}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        };
+        
+        // Partager sur Facebook
+        window.shareViaFacebook = function() {
+            const link = document.getElementById('referralLink').value;
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`, '_blank');
+        };
+        
+        // Partager sur Twitter
+        window.shareViaTwitter = function() {
+            const link = document.getElementById('referralLink').value;
+            const text = 'Rejoins-moi sur AFRIMARKET et gagne de l\'argent facilement !';
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`, '_blank');
+        };
+        
+        // Partager sur Telegram
+        window.shareViaTelegram = function() {
+            const link = document.getElementById('referralLink').value;
+            const text = `🎯 AFRIMARKET - Gagne de l'argent facilement !\n\n${link}`;
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`, '_blank');
+        };
+        
+        // Mettre à jour le solde dans la page gagner
+        function updateEarningsBalance(amount) {
+            localStorage.setItem('afrimarket_referral_earnings', amount.toString());
+            
+            // Émettre un événement pour mettre à jour la page gagner
+            const event = new CustomEvent('referralEarningsUpdate', { detail: { amount } });
+            window.dispatchEvent(event);
+        }
+        
+        // Afficher une notification toast
+        function showToastNotification(notification) {
+            const container = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.dataset.id = Date.now();
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${notification.icon}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${notification.title}</div>
+                    <div class="toast-message">${notification.message}</div>
+                </div>
+                <button class="toast-close" onclick="closeToast('${toast.dataset.id}')">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 5000);
+        }
+        
+        window.closeToast = function(id) {
+            const toast = document.querySelector(`.toast-notification[data-id="${id}"]`);
+            if (toast) {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }
+        };
+        
+        // Afficher/masquer le chargement
+        function showLoading(show) {
+            loadingOverlay.style.display = show ? 'flex' : 'none';
+        }
+        
+        // Écouter les mises à jour de déblocage depuis la page recharge
+        window.addEventListener('referralUnlocked', async function(event) {
+            if (event.detail.userId === currentUser?.id) {
+                userReferralData.is_unlocked = true;
+                await supabaseClient
+                    .from('referral_data')
+                    .update({ 
+                        is_unlocked: true,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', currentUser.id);
+                
+                updateReferralUI();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -2,23 +2,38 @@
   "rewrites": [
     {
       "source": "/ref/:code",
-      "destination": "/inscription.html"
+      "destination": "/index.html"
     },
     {
       "source": "/parrainage/:code",
-      "destination": "/inscription.html"
+      "destination": "/index.html"
     },
     {
       "source": "/invitation/:code",
-      "destination": "/inscription.html"
+      "destination": "/index.html"
     }
   ],
   "redirects": [
     {
+      "source": "/inscription",
+      "destination": "/index.html",
+      "permanent": true
+    },
+    {
+      "source": "/signup",
+      "destination": "/index.html",
+      "permanent": true
+    },
+    {
+      "source": "/register",
+      "destination": "/index.html",
+      "permanent": true
+    },
+    {
       "source": "/",
-      "destination": "/accueil.html",
+      "destination": "/index.html",
       "permanent": false
     }
   ],
-  "cleanUrls": false
+  "cleanUrls": true
 }

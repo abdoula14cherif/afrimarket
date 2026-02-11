@@ -572,7 +572,7 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
         // ============================================
-        // CONFIGURATION ADMIN - CORRIGÉE
+        // CONFIGURATION ADMIN
         // ============================================
         const ADMIN_EMAIL = 'abdoula14cherif@gmail.com';
         const ADMIN_PASSWORD = 'abdoula.@5';
@@ -625,7 +625,7 @@
         }
         
         // ============================================
-        // FONCTION DE CONNEXION - VERSION CORRIGÉE
+        // FONCTION DE CONNEXION - SPÉCIALE ANDROID
         // ============================================
         
         async function connecterUtilisateur(email, password, rememberMe = false) {
@@ -638,20 +638,37 @@
                 if (isAdmin) {
                     console.log('✅ Connexion admin réussie');
                     
-                    // 🟢 NETTOYER COMPLÈTEMENT L'ANCIENNE SESSION
-                    localStorage.clear();
+                    // 📱 ANDROID: NE PAS UTILISER localStorage.clear()
+                    // CAR SUR ANDROID ÇA PEUT CAUSER DES PROBLÈMES
                     
-                    // 🟢 STOCKER LES NOUVELLES INFORMATIONS
-                    const adminId = 'admin-' + Date.now();
-                    
-                    localStorage.setItem('afrimarket_logged_in', 'true');
-                    localStorage.setItem('afrimarket_user_id', adminId);
-                    localStorage.setItem('afrimarket_user_email', email);
-                    localStorage.setItem('afrimarket_user_name', 'Abdoula Cherif');
-                    localStorage.setItem('afrimarket_user_role', 'admin');
-                    localStorage.setItem('afrimarket_session_time', Date.now().toString());
-                    
-                    console.log('✅ Session admin créée dans localStorage');
+                    // Stocker les informations admin
+                    try {
+                        localStorage.setItem('afrimarket_logged_in', 'true');
+                        localStorage.setItem('afrimarket_user_email', email);
+                        localStorage.setItem('afrimarket_user_name', 'Abdoula Cherif');
+                        localStorage.setItem('afrimarket_user_role', 'admin');
+                        localStorage.setItem('afrimarket_user_id', 'admin-' + Date.now());
+                        localStorage.setItem('afrimarket_session_time', Date.now().toString());
+                        
+                        // 📱 ANDROID: Vérifier que le stockage a fonctionné
+                        const test = localStorage.getItem('afrimarket_logged_in');
+                        console.log('📱 Android - localStorage test:', test);
+                        
+                        if (test !== 'true') {
+                            // Fallback: utiliser sessionStorage
+                            sessionStorage.setItem('afrimarket_logged_in', 'true');
+                            sessionStorage.setItem('afrimarket_user_email', email);
+                            sessionStorage.setItem('afrimarket_user_role', 'admin');
+                            console.log('📱 Fallback vers sessionStorage');
+                        }
+                        
+                    } catch (e) {
+                        console.error('❌ Erreur localStorage sur Android:', e);
+                        // Utiliser sessionStorage comme fallback
+                        sessionStorage.setItem('afrimarket_logged_in', 'true');
+                        sessionStorage.setItem('afrimarket_user_email', email);
+                        sessionStorage.setItem('afrimarket_user_role', 'admin');
+                    }
                     
                     return {
                         success: true,
@@ -684,14 +701,18 @@
                 
                 console.log('✅ Connexion utilisateur réussie:', data.user?.email);
                 
-                // 🟢 NETTOYER ET STOCKER
-                localStorage.clear();
-                
-                localStorage.setItem('afrimarket_logged_in', 'true');
-                localStorage.setItem('afrimarket_user_id', data.user.id);
-                localStorage.setItem('afrimarket_user_email', data.user.email);
-                localStorage.setItem('afrimarket_user_name', data.user.user_metadata?.nom_complet || 'Utilisateur');
-                localStorage.setItem('afrimarket_user_role', 'user');
+                // Stocker les informations utilisateur
+                try {
+                    localStorage.setItem('afrimarket_logged_in', 'true');
+                    localStorage.setItem('afrimarket_user_id', data.user.id);
+                    localStorage.setItem('afrimarket_user_email', data.user.email);
+                    localStorage.setItem('afrimarket_user_name', data.user.user_metadata?.nom_complet || 'Utilisateur');
+                    localStorage.setItem('afrimarket_user_role', 'user');
+                } catch (e) {
+                    console.error('❌ Erreur localStorage:', e);
+                    sessionStorage.setItem('afrimarket_logged_in', 'true');
+                    sessionStorage.setItem('afrimarket_user_email', data.user.email);
+                }
                 
                 return {
                     success: true,
@@ -710,11 +731,11 @@
         }
         
         // ============================================
-        // INITIALISATION
+        // INITIALISATION - SPÉCIALE ANDROID
         // ============================================
         
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Page connexion chargée');
+            console.log('🚀 Page connexion chargée sur Android');
             
             // Initialiser Supabase
             if (window.supabase) {
@@ -722,14 +743,53 @@
                     auth: {
                         persistSession: true,
                         autoRefreshToken: true,
-                        detectSessionInUrl: false
+                        detectSessionInUrl: false,
+                        storage: window.localStorage // Essayer localStorage d'abord
                     }
                 });
                 console.log('✅ Supabase initialisé');
             }
             
-            // === NE PAS REDIRIGER AUTOMATIQUEMENT ===
+            // 📱 ANDROID: Vérifier si déjà connecté via localStorage ou sessionStorage
+            function checkExistingSession() {
+                // Vérifier localStorage
+                let loggedIn = localStorage.getItem('afrimarket_logged_in') === 'true';
+                let userEmail = localStorage.getItem('afrimarket_user_email');
+                let userRole = localStorage.getItem('afrimarket_user_role');
+                
+                // Vérifier sessionStorage si localStorage vide
+                if (!loggedIn) {
+                    loggedIn = sessionStorage.getItem('afrimarket_logged_in') === 'true';
+                    userEmail = sessionStorage.getItem('afrimarket_user_email');
+                    userRole = sessionStorage.getItem('afrimarket_user_role');
+                }
+                
+                if (loggedIn && userEmail) {
+                    console.log('📱 Session existante trouvée:', userEmail);
+                    
+                    // Restaurer dans localStorage si nécessaire
+                    if (!localStorage.getItem('afrimarket_logged_in')) {
+                        try {
+                            localStorage.setItem('afrimarket_logged_in', 'true');
+                            localStorage.setItem('afrimarket_user_email', userEmail);
+                            if (userRole) localStorage.setItem('afrimarket_user_role', userRole);
+                        } catch (e) {}
+                    }
+                    
+                    // Rediriger vers la bonne page
+                    if (userRole === 'admin' || userEmail === ADMIN_EMAIL) {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                    return true;
+                }
+                return false;
+            }
+            
+            // NE PAS REDIRIGER AUTOMATIQUEMENT POUR CETTE PAGE
             // La connexion se fait UNIQUEMENT via le formulaire
+            // checkExistingSession(); // ← COMMENTÉ POUR ÉVITER LES BOUCLES
             
             // Gestion du thème
             const themeBtn = document.getElementById('themeBtn');
@@ -832,13 +892,6 @@
                 });
             }
             
-            // Pré-remplir email si "Se souvenir de moi" était coché
-            const savedEmail = localStorage.getItem('afrimarket_user_email');
-            if (savedEmail && document.getElementById('login-email')) {
-                document.getElementById('login-email').value = savedEmail;
-                document.getElementById('remember-me').checked = true;
-            }
-            
             // Message dans l'URL
             const urlParams = new URLSearchParams(window.location.search);
             const message = urlParams.get('message');
@@ -846,7 +899,7 @@
                 showNotification(decodeURIComponent(message), 'info');
             }
             
-            console.log('✅ Page connexion prête');
+            console.log('✅ Page connexion prête pour Android');
         });
     </script>
 </body>

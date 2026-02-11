@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirection - AFRIMARKET</title>
+    <script>
+        // Récupérer le code depuis l'URL
+        const path = window.location.pathname;
+        let code = path.split('/ref/')[1];
+        
+        if (code) {
+            code = code.split('/')[0].split('?')[0];
+            // Rediriger vers index.html avec le code
+            window.location.href = '/index.html?ref=' + code.toUpperCase();
+        } else {
+            window.location.href = '/index.html';
+        }
+    </script>
+</head>
+<body>
+    <p>Redirection...</p>
+</body>
+</html>

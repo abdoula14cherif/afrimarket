@@ -126,7 +126,7 @@
                 <p>Rejoignez AFRIMARKET et gagnez de l'argent</p>
             </div>
 
-            <!-- BADGE DE PARRAINAGE (visible si code présent) -->
+            <!-- BADGE DE PARRAINAGE (rempli dynamiquement) -->
             <div id="referralBadge" style="display: none;" class="referral-badge">
                 <i class="fas fa-gift"></i>
                 <div style="flex: 1;">
@@ -219,73 +219,22 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
         let supabaseClient = null;
-        
-        // ============================================
-        // SYSTÈME DE PARRAINAGE - CODE COMPLET
-        // ============================================
-        
-        // Variable globale pour le code de parrainage
         let referralCode = null;
         
-        // Fonction pour récupérer le code depuis l'URL
+        // ============================================
+        // SYSTÈME DE PARRAINAGE - VERSION SIMPLIFIÉE
+        // ============================================
+        
+        // 1. Récupérer le code depuis l'URL
         function getReferralCodeFromURL() {
-            // Format 1: ?ref=ABC123
             const urlParams = new URLSearchParams(window.location.search);
-            let code = urlParams.get('ref');
-            
-            // Format 2: /ref/ABC123 (via Vercel)
-            if (!code && window.location.pathname.includes('/ref/')) {
-                code = window.location.pathname.split('/ref/')[1];
-                if (code) code = code.split('/')[0].split('?')[0];
-            }
-            
-            // Format 3: /parrainage/ABC123
-            if (!code && window.location.pathname.includes('/parrainage/')) {
-                code = window.location.pathname.split('/parrainage/')[1];
-                if (code) code = code.split('/')[0].split('?')[0];
-            }
-            
-            // Format 4: /invitation/ABC123
-            if (!code && window.location.pathname.includes('/invitation/')) {
-                code = window.location.pathname.split('/invitation/')[1];
-                if (code) code = code.split('/')[0].split('?')[0];
-            }
-            
+            const code = urlParams.get('ref');
             return code ? code.toUpperCase() : null;
         }
         
-        // Fonction pour vérifier si le code de parrainage est valide
-        async function validateReferralCode(code) {
-            if (!code || !supabaseClient) return null;
-            
-            try {
-                const { data, error } = await supabaseClient
-                    .from('referral_data')
-                    .select('user_id, referral_code, is_unlocked')
-                    .eq('referral_code', code)
-                    .single();
-                
-                if (error || !data) {
-                    console.log('❌ Code de parrainage invalide:', code);
-                    return null;
-                }
-                
-                if (!data.is_unlocked) {
-                    console.log('❌ Le parrain n\'a pas débloqué son lien:', code);
-                    return null;
-                }
-                
-                console.log('✅ Code de parrainage valide:', code);
-                return data;
-                
-            } catch (error) {
-                console.error('Erreur validation code:', error);
-                return null;
-            }
-        }
-        
-        // Fonction pour afficher le badge de parrainage
+        // 2. Afficher le badge de parrainage
         function showReferralBadge(code) {
+            // Créer un badge dynamique
             const badge = document.createElement('div');
             badge.style.cssText = `
                 background: linear-gradient(135deg, #f59e0b, #d97706);
@@ -295,40 +244,41 @@
                 margin-bottom: 25px;
                 display: flex;
                 align-items: center;
-                gap: 12px;
+                gap: 15px;
                 font-size: 15px;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             `;
             badge.innerHTML = `
-                <i class="fas fa-gift" style="font-size: 24px;"></i>
+                <i class="fas fa-gift" style="font-size: 28px;"></i>
                 <div style="flex: 1;">
-                    <strong style="font-size: 16px;">🎯 Vous êtes parrainé !</strong>
-                    <div style="margin-top: 5px;">
-                        Code: <span style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; font-family: monospace; font-weight: 700; letter-spacing: 1px;">${code}</span>
+                    <strong style="font-size: 16px;">🎯 VOUS ÊTES PARRAINÉ !</strong>
+                    <div style="margin-top: 5px; font-size: 14px;">
+                        Code: <span style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; font-family: monospace; font-weight: bold; letter-spacing: 1px;">${code}</span>
                     </div>
                 </div>
             `;
             
-            // Insérer le badge en haut du formulaire
+            // Insérer le badge avant le formulaire
             const form = document.getElementById('inscription-form');
             if (form) {
                 form.parentNode.insertBefore(badge, form);
             }
             
-            // Afficher aussi le badge existant
+            // Activer aussi le badge existant
             const existingBadge = document.getElementById('referralBadge');
             const message = document.getElementById('referralMessage');
-            if (existingBadge) {
+            if (existingBadge && message) {
                 existingBadge.style.display = 'flex';
                 message.innerHTML = `Code: <span class="referral-code">${code}</span>`;
             }
+            
+            console.log('✅ Badge affiché pour le code:', code);
         }
         
         // ============================================
         // FONCTIONS D'INTERFACE
         // ============================================
         
-        // Fonction pour afficher les notifications
         function showNotification(message, type = 'info') {
             const oldNotif = document.querySelector('.notification');
             if (oldNotif) oldNotif.remove();
@@ -351,7 +301,6 @@
             }, 5000);
         }
         
-        // Fonction pour montrer/cacher le loading
         function showLoading(show) {
             const overlay = document.getElementById('loadingOverlay');
             const submitBtn = document.getElementById('submit-btn');
@@ -368,7 +317,7 @@
         }
         
         // ============================================
-        // FONCTION D'INSCRIPTION AVEC PARRAINAGE
+        // FONCTION D'INSCRIPTION
         // ============================================
         
         async function inscrireUtilisateur(userData) {
@@ -463,25 +412,30 @@
                 showNotification('❌ Erreur: Supabase non chargé', 'error');
             }
             
-            // 2. DÉTECTER LE CODE DE PARRAINAGE
+            // ========================================
+            // 2. SYSTÈME DE PARRAINAGE - SIMPLIFIÉ
+            // ========================================
+            
+            // Récupérer le code depuis l'URL
             const codeFromURL = getReferralCodeFromURL();
             
             if (codeFromURL) {
-                console.log('🔍 Vérification du code:', codeFromURL);
+                console.log('🎯 CODE DÉTECTÉ:', codeFromURL);
                 
-                // Valider le code
-                const referralData = await validateReferralCode(codeFromURL);
+                // Stocker le code
+                referralCode = codeFromURL;
                 
-                if (referralData) {
-                    referralCode = codeFromURL;
-                    showReferralBadge(codeFromURL);
-                    showNotification(`🎉 Vous êtes parrainé ! Code: ${codeFromURL}`, 'success');
-                } else {
-                    showNotification('⚠️ Ce lien de parrainage n\'est pas valide ou n\'a pas été débloqué', 'warning');
-                }
+                // Afficher le badge IMMÉDIATEMENT (sans validation)
+                showReferralBadge(codeFromURL);
+                showNotification(`🎉 Vous êtes parrainé ! Code: ${codeFromURL}`, 'success');
+            } else {
+                console.log('❌ Aucun code de parrainage détecté');
             }
             
-            // 3. Gestion du thème
+            // ========================================
+            // 3. GESTION DU THÈME
+            // ========================================
+            
             const themeBtn = document.getElementById('theme-btn');
             const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
             document.body.className = savedTheme;
@@ -492,7 +446,10 @@
                 localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
             });
             
-            // 4. Toggle mot de passe
+            // ========================================
+            // 4. TOGGLE MOT DE PASSE
+            // ========================================
+            
             const toggleBtn = document.getElementById('toggle-password');
             const passwordInput = document.getElementById('password');
             
@@ -503,7 +460,10 @@
                     '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
             });
             
-            // 5. Vérification confirmation mot de passe
+            // ========================================
+            // 5. CONFIRMATION MOT DE PASSE
+            // ========================================
+            
             const confirmInput = document.getElementById('confirm-password');
             const matchHint = document.getElementById('password-match');
             
@@ -517,14 +477,10 @@
                 }
             });
             
-            // 6. Message dans l'URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const message = urlParams.get('message');
-            if (message) {
-                showNotification(decodeURIComponent(message), 'info');
-            }
+            // ========================================
+            // 6. SOUmission FORMULAIRE
+            // ========================================
             
-            // 7. Soumission formulaire
             const form = document.getElementById('inscription-form');
             
             form.addEventListener('submit', async function(e) {
@@ -600,10 +556,14 @@
                 }
             });
             
-            // 8. Email dans l'URL (test)
-            const emailParam = urlParams.get('email');
-            if (emailParam) {
-                document.getElementById('email').value = decodeURIComponent(emailParam);
+            // ========================================
+            // 7. MESSAGE DANS L'URL
+            // ========================================
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const message = urlParams.get('message');
+            if (message) {
+                showNotification(decodeURIComponent(message), 'info');
             }
             
             console.log('✅ Page inscription prête');

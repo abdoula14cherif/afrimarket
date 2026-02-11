@@ -37,6 +37,10 @@
             background: #3b82f6;
         }
         
+        .notification.warning {
+            background: #f59e0b;
+        }
+        
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -65,6 +69,30 @@
             padding: 30px;
             border-radius: 10px;
             text-align: center;
+        }
+        
+        .referral-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .referral-badge i {
+            font-size: 20px;
+        }
+        
+        .referral-code {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-family: monospace;
         }
     </style>
 </head>
@@ -95,7 +123,16 @@
         <div class="auth-card">
             <div class="auth-header">
                 <h2><i class="fas fa-user-plus"></i> Créer un compte</h2>
-                <p>Rejoignez AFRIMARKET pour publier vos annonces</p>
+                <p>Rejoignez AFRIMARKET et gagnez de l'argent</p>
+            </div>
+
+            <!-- BADGE DE PARRAINAGE (visible si code présent) -->
+            <div id="referralBadge" style="display: none;" class="referral-badge">
+                <i class="fas fa-gift"></i>
+                <div style="flex: 1;">
+                    <strong>🎯 Vous êtes parrainé !</strong>
+                    <span id="referralMessage" style="margin-left: 5px;"></span>
+                </div>
             </div>
 
             <form id="inscription-form" class="auth-form">
@@ -105,6 +142,14 @@
                     </label>
                     <input type="text" id="nom-complet" name="nom_complet" 
                            placeholder="Ex: Jean Dupont" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telephone" class="form-label">
+                        <i class="fas fa-phone"></i> Téléphone (optionnel)
+                    </label>
+                    <input type="tel" id="telephone" name="telephone" 
+                           placeholder="Ex: +237 6 00 00 00 00">
                 </div>
 
                 <div class="form-group">
@@ -140,7 +185,14 @@
                 <div class="form-group checkbox-group">
                     <input type="checkbox" id="conditions" name="conditions" required>
                     <label for="conditions">
-                        J'accepte les conditions d'utilisation
+                        J'accepte les <a href="conditions.html" target="_blank">conditions d'utilisation</a>
+                    </label>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="newsletter" name="newsletter">
+                    <label for="newsletter">
+                        Recevoir les offres et actualités (optionnel)
                     </label>
                 </div>
 
@@ -152,6 +204,10 @@
                     <p>Déjà un compte ? <a href="connexion.html" class="link">Se connecter</a></p>
                 </div>
             </form>
+            
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--light-border); text-align: center; font-size: 13px; color: var(--light-gray);">
+                <i class="fas fa-shield-alt"></i> Vos données sont sécurisées
+            </div>
         </div>
     </main>
 
@@ -161,26 +217,25 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
         let supabaseClient = null;
+        let referralCode = null;
         
         // Fonction pour afficher les notifications
         function showNotification(message, type = 'info') {
-            // Supprimer les anciennes notifications
             const oldNotif = document.querySelector('.notification');
             if (oldNotif) oldNotif.remove();
             
-            // Créer la nouvelle notification
             const notif = document.createElement('div');
             notif.className = `notification ${type}`;
             notif.innerHTML = `
                 <i class="fas ${type === 'success' ? 'fa-check-circle' : 
                                type === 'error' ? 'fa-exclamation-circle' : 
+                               type === 'warning' ? 'fa-exclamation-triangle' :
                                'fa-info-circle'}"></i>
                 <span>${message}</span>
             `;
             
             document.body.appendChild(notif);
             
-            // Supprimer après 5 secondes
             setTimeout(() => {
                 notif.style.animation = 'slideOut 0.3s ease';
                 setTimeout(() => notif.remove(), 300);
@@ -203,19 +258,79 @@
             }
         }
         
-        // Fonction d'inscription
+        // Fonction pour récupérer le code de parrainage depuis l'URL
+        function getReferralCodeFromURL() {
+            // Format 1: ?ref=ABC123
+            const urlParams = new URLSearchParams(window.location.search);
+            let code = urlParams.get('ref');
+            
+            // Format 2: /ref/ABC123
+            if (!code && window.location.pathname.includes('/ref/')) {
+                code = window.location.pathname.split('/ref/')[1];
+                // Nettoyer
+                if (code) code = code.split('/')[0].split('?')[0];
+            }
+            
+            return code ? code.toUpperCase() : null;
+        }
+        
+        // Fonction pour vérifier si le code de parrainage est valide
+        async function validateReferralCode(code) {
+            if (!code || !supabaseClient) return null;
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('referral_data')
+                    .select('user_id, referral_code, is_unlocked')
+                    .eq('referral_code', code)
+                    .single();
+                
+                if (error || !data) {
+                    console.log('Code de parrainage invalide:', code);
+                    return null;
+                }
+                
+                // Vérifier que le parrain a DÉBLOQUÉ son lien
+                if (!data.is_unlocked) {
+                    console.log('Le parrain n\'a pas débloqué son lien');
+                    return null;
+                }
+                
+                console.log('✅ Code de parrainage valide:', code);
+                return data;
+                
+            } catch (error) {
+                console.error('Erreur validation code:', error);
+                return null;
+            }
+        }
+        
+        // Fonction d'inscription avec parrainage
         async function inscrireUtilisateur(userData) {
             try {
                 console.log('Inscription pour:', userData.email);
+                
+                // PRÉPARER LES MÉTADONNÉES AVEC LE CODE DE PARRAINAGE
+                const userMetadata = {
+                    nom_complet: userData.nom_complet,
+                    telephone: userData.telephone || null,
+                    newsletter: userData.newsletter || false,
+                    date_inscription: new Date().toISOString()
+                };
+                
+                // AJOUTER LE CODE DE PARRAINAGE SI DISPONIBLE
+                if (referralCode) {
+                    userMetadata.referral_code = referralCode;
+                    console.log('🎯 Parrainage détecté avec code:', referralCode);
+                }
                 
                 // Inscription avec Supabase
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: userData.email,
                     password: userData.password,
                     options: {
-                        data: {
-                            nom_complet: userData.nom_complet
-                        }
+                        data: userMetadata,
+                        emailRedirectTo: 'https://afrimarket-prod.vercel.app/dashboard.html'
                     }
                 });
                 
@@ -233,6 +348,7 @@
                 }
                 
                 console.log('✅ Inscription réussie:', data);
+                console.log('🎯 Code de parrainage transmis:', referralCode || 'Aucun');
                 
                 // Stocker les infos utilisateur
                 if (data.user) {
@@ -240,6 +356,11 @@
                     localStorage.setItem('afrimarket_user_email', data.user.email);
                     localStorage.setItem('afrimarket_user_name', userData.nom_complet);
                     localStorage.setItem('afrimarket_logged_in', 'true');
+                    
+                    // Stocker le code de parrainage utilisé
+                    if (referralCode) {
+                        localStorage.setItem('afrimarket_referral_used', referralCode);
+                    }
                 }
                 
                 return { 
@@ -259,7 +380,7 @@
         }
         
         // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('Page inscription chargée');
             
             // Initialiser Supabase
@@ -267,10 +388,46 @@
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
                     auth: {
                         persistSession: true,
-                        autoRefreshToken: true
+                        autoRefreshToken: true,
+                        detectSessionInUrl: true
                     }
                 });
                 console.log('✅ Supabase initialisé');
+                
+                // VÉRIFIER LE CODE DE PARRAINAGE DANS L'URL
+                const codeFromURL = getReferralCodeFromURL();
+                
+                if (codeFromURL) {
+                    console.log('🔍 Vérification du code:', codeFromURL);
+                    
+                    // Valider le code
+                    const referralData = await validateReferralCode(codeFromURL);
+                    
+                    if (referralData) {
+                        referralCode = codeFromURL;
+                        
+                        // Afficher le badge de parrainage
+                        const badge = document.getElementById('referralBadge');
+                        const message = document.getElementById('referralMessage');
+                        
+                        badge.style.display = 'flex';
+                        message.innerHTML = `Code: <span class="referral-code">${codeFromURL}</span>`;
+                        
+                        showNotification(`🎉 Vous êtes parrainé ! Code: ${codeFromURL}`, 'success');
+                    } else {
+                        // Code invalide
+                        console.log('Code de parrainage invalide ou non débloqué');
+                        showNotification('⚠️ Ce lien de parrainage n\'est pas valide ou n\'a pas été débloqué', 'warning');
+                    }
+                }
+                
+                // Vérifier si un message est présent dans l'URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const message = urlParams.get('message');
+                if (message) {
+                    showNotification(decodeURIComponent(message), 'info');
+                }
+                
             } else {
                 showNotification('Erreur: Supabase non chargé', 'error');
             }
@@ -303,8 +460,12 @@
             
             confirmInput.addEventListener('input', function() {
                 const match = this.value === passwordInput.value;
-                matchHint.textContent = match ? '✅ Mots de passe identiques' : '❌ Mots de passe différents';
-                matchHint.style.color = match ? '#10b981' : '#ef4444';
+                if (this.value.length > 0) {
+                    matchHint.textContent = match ? '✅ Mots de passe identiques' : '❌ Mots de passe différents';
+                    matchHint.style.color = match ? '#10b981' : '#ef4444';
+                } else {
+                    matchHint.textContent = '';
+                }
             });
             
             // Soumission formulaire
@@ -328,13 +489,27 @@
                 // Données utilisateur
                 const userData = {
                     nom_complet: document.getElementById('nom-complet').value.trim(),
+                    telephone: document.getElementById('telephone').value.trim(),
                     email: document.getElementById('email').value.trim().toLowerCase(),
-                    password: passwordInput.value
+                    password: passwordInput.value,
+                    newsletter: document.getElementById('newsletter').checked
                 };
                 
                 // Validation email
                 if (!userData.email.includes('@')) {
                     showNotification('Email invalide', 'error');
+                    return;
+                }
+                
+                // Validation nom complet
+                if (userData.nom_complet.length < 3) {
+                    showNotification('Nom complet trop court', 'error');
+                    return;
+                }
+                
+                // Vérifier conditions
+                if (!document.getElementById('conditions').checked) {
+                    showNotification('Vous devez accepter les conditions', 'error');
                     return;
                 }
                 
@@ -348,18 +523,22 @@
                     if (result.success) {
                         showNotification(result.message, 'success');
                         
+                        // Message si parrainage
+                        if (referralCode) {
+                            showNotification(`🎯 Inscription avec code: ${referralCode}`, 'success');
+                        }
+                        
                         // Message spécifique si confirmation email nécessaire
                         if (result.requiresEmailConfirmation) {
-                            showNotification('Vérifiez votre email pour confirmer votre compte', 'info');
+                            showNotification('📧 Vérifiez votre email pour confirmer votre compte', 'info');
                             
-                            // Redirection vers connexion après 3 secondes
                             setTimeout(() => {
                                 window.location.href = 'connexion.html?message=Vérifiez votre email pour confirmer votre compte';
                             }, 3000);
                             
                         } else {
-                            // REDIRECTION VERS DASHBOARD.HTML après 2 secondes
-                            showNotification('Inscription réussie ! Redirection vers le tableau de bord...', 'success');
+                            // REDIRECTION VERS DASHBOARD.HTML
+                            showNotification('✅ Inscription réussie ! Redirection...', 'success');
                             
                             setTimeout(() => {
                                 console.log('Redirection vers dashboard.html');
@@ -368,16 +547,23 @@
                         }
                         
                     } else {
-                        showNotification('Erreur: ' + result.error, 'error');
+                        showNotification('❌ ' + result.error, 'error');
                         showLoading(false);
                     }
                     
                 } catch (error) {
                     console.error('Erreur catch:', error);
-                    showNotification('Erreur technique: ' + error.message, 'error');
+                    showNotification('❌ Erreur technique: ' + error.message, 'error');
                     showLoading(false);
                 }
             });
+            
+            // Pré-remplir l'email si fourni dans l'URL (pour les tests)
+            const urlParams = new URLSearchParams(window.location.search);
+            const emailParam = urlParams.get('email');
+            if (emailParam) {
+                document.getElementById('email').value = decodeURIComponent(emailParam);
+            }
             
             // Vérifier que tout est prêt
             setTimeout(() => {

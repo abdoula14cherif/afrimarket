@@ -324,15 +324,27 @@
                     console.log('🎯 Parrainage détecté avec code:', referralCode);
                 }
                 
-                // Inscription avec Supabase
-                const { data, error } = await supabaseClient.auth.signUp({
-                    email: userData.email,
-                    password: userData.password,
-                    options: {
-                        data: userMetadata,
-                        emailRedirectTo: 'https://afrimarket-prod.vercel.app/dashboard.html'
-                    }
-                });
+                // Inscription avec Supabase - AVEC PARRAINAGE
+const userMetadata = {
+    nom_complet: userData.nom_complet,
+    telephone: userData.telephone || null,
+    date_inscription: new Date().toISOString()
+};
+
+// AJOUTER LE CODE DE PARRAINAGE SI PRÉSENT
+if (referralCode) {
+    userMetadata.referral_code = referralCode;
+    console.log('🎯 Parrainage activé avec code:', referralCode);
+}
+
+const { data, error } = await supabaseClient.auth.signUp({
+    email: userData.email,
+    password: userData.password,
+    options: {
+        data: userMetadata,
+        emailRedirectTo: 'https://afrimarket-prod.vercel.app/dashboard.html'
+    }
+});
                 
                 if (error) {
                     console.error('Erreur Supabase:', error);
@@ -378,6 +390,82 @@
                 };
             }
         }
+        
+        // ============================================
+// CODE DE PARRAINAGE - À AJOUTER ICI
+// ============================================
+
+// Variable globale pour stocker le code de parrainage
+let referralCode = null;
+
+// Fonction pour récupérer le code depuis l'URL
+function getReferralCodeFromURL() {
+    // Format 1: ?ref=ABC123
+    const urlParams = new URLSearchParams(window.location.search);
+    let code = urlParams.get('ref');
+    
+    // Format 2: /ref/ABC123 (via Vercel)
+    if (!code && window.location.pathname.includes('/ref/')) {
+        code = window.location.pathname.split('/ref/')[1];
+        if (code) code = code.split('/')[0].split('?')[0];
+    }
+    
+    // Format 3: /parrainage/ABC123
+    if (!code && window.location.pathname.includes('/parrainage/')) {
+        code = window.location.pathname.split('/parrainage/')[1];
+        if (code) code = code.split('/')[0].split('?')[0];
+    }
+    
+    // Format 4: /invitation/ABC123
+    if (!code && window.location.pathname.includes('/invitation/')) {
+        code = window.location.pathname.split('/invitation/')[1];
+        if (code) code = code.split('/')[0].split('?')[0];
+    }
+    
+    return code ? code.toUpperCase() : null;
+}
+
+// Afficher un badge si code de parrainage détecté
+function showReferralBadge(code) {
+    const badge = document.createElement('div');
+    badge.style.cssText = `
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+    `;
+    badge.innerHTML = `
+        <i class="fas fa-gift" style="font-size: 20px;"></i>
+        <div style="flex: 1;">
+            <strong>🎯 Vous êtes parrainé !</strong>
+            <span style="margin-left: 5px;">Code: <span style="background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-family: monospace; font-weight: 600;">${code}</span></span>
+        </div>
+    `;
+    
+    // Insérer le badge en haut du formulaire
+    const form = document.getElementById('inscription-form');
+    if (form) {
+        form.parentNode.insertBefore(badge, form);
+    }
+}
+
+// Détecter le code au chargement
+const codeFromURL = getReferralCodeFromURL();
+if (codeFromURL) {
+    referralCode = codeFromURL;
+    console.log('✅ Code de parrainage détecté:', codeFromURL);
+    
+    // Afficher le badge après que le DOM soit chargé
+    document.addEventListener('DOMContentLoaded', function() {
+        showReferralBadge(codeFromURL);
+    });
+}
+// ============================================
         
         // Initialisation
         document.addEventListener('DOMContentLoaded', async function() {

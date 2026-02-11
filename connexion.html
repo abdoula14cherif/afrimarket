@@ -646,27 +646,34 @@
             try {
                 console.log('🔑 Connexion pour:', email);
                 
-                // VÉRIFICATION ADMIN
-                const isAdmin = email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASSWORD;
-                
-                if (isAdmin) {
-                    console.log('✅ Connexion admin');
-                    
-                    const adminId = 'admin-' + Date.now();
-                    
-                    localStorage.setItem('afrimarket_user_id', adminId);
-                    localStorage.setItem('afrimarket_user_email', ADMIN_EMAIL);
-                    localStorage.setItem('afrimarket_user_name', 'Abdoula Cherif');
-                    localStorage.setItem('afrimarket_user_role', 'admin');
-                    localStorage.setItem('afrimarket_logged_in', 'true');
-                    
-                    return {
-                        success: true,
-                        message: '✅ Connexion administrateur réussie !',
-                        redirect: 'admin.html',
-                        isAdmin: true
-                    };
-                }
+               // ============================================
+// CONNEXION ADMIN - VERSION CORRIGÉE
+// ============================================
+
+// Dans la fonction connecterUtilisateur, REMPLACEZ ce bloc :
+
+if (isAdmin) {
+    console.log('✅ Connexion admin');
+    
+    const adminId = 'admin-' + Date.now();
+    
+    // ✅ STOCKAGE PROPRE - SANS DOUBLON
+    localStorage.setItem('afrimarket_user_id', adminId);
+    localStorage.setItem('afrimarket_user_email', email);
+    localStorage.setItem('afrimarket_user_name', 'Abdoula Cherif');
+    localStorage.setItem('afrimarket_user_role', 'admin');
+    localStorage.setItem('afrimarket_logged_in', 'true');
+    localStorage.setItem('afrimarket_session_time', Date.now().toString());
+    
+    // NE PAS UTILISER SESSIONSTORAGE
+    
+    return {
+        success: true,
+        message: '✅ Connexion administrateur réussie !',
+        redirect: 'admin.html',
+        isAdmin: true
+    };
+}
                 
                 // CONNEXION SUPABASE
                 if (!supabaseClient) {

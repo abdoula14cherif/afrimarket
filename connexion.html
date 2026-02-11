@@ -9,6 +9,7 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
+        /* TOUS LES STYLES RESTENT IDENTIQUES */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -60,7 +61,6 @@
             padding: 0 20px;
         }
 
-        /* Header */
         .app-header {
             background-color: var(--light-card);
             padding: 15px 0;
@@ -137,7 +137,6 @@
             background: rgba(37, 99, 235, 0.1);
         }
 
-        /* Contenu principal */
         .main-content {
             flex: 1;
             display: flex;
@@ -191,7 +190,6 @@
             color: #94a3b8;
         }
 
-        /* Formulaire */
         .auth-form {
             display: flex;
             flex-direction: column;
@@ -299,7 +297,6 @@
             text-decoration: underline;
         }
 
-        /* Bouton de connexion */
         .auth-btn {
             background: linear-gradient(135deg, var(--primary-blue), #2a5298);
             color: white;
@@ -333,7 +330,6 @@
             box-shadow: none !important;
         }
 
-        /* Footer auth */
         .auth-footer {
             text-align: center;
             margin-top: 25px;
@@ -369,7 +365,6 @@
             text-decoration: underline;
         }
 
-        /* Notifications */
         .notification {
             position: fixed;
             top: 20px;
@@ -405,7 +400,6 @@
             to { transform: translateX(100%); opacity: 0; }
         }
 
-        /* Loading overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -431,7 +425,6 @@
             background: var(--dark-card);
         }
 
-        /* Admin link */
         .admin-link {
             margin-top: 15px;
             padding-top: 15px;
@@ -458,19 +451,16 @@
             background: rgba(139, 92, 246, 0.2);
         }
 
-        /* Responsive */
         @media (max-width: 480px) {
             .auth-card {
                 padding: 30px 20px;
                 margin: 0 15px;
             }
-            
             .container {
                 padding: 0 15px;
             }
         }
 
-        /* Prévention débordement */
         html, body {
             overflow-x: hidden;
             max-width: 100%;
@@ -496,7 +486,6 @@
                     </div>
                     <div class="logo-text">AFRI<span>MARKET</span></div>
                 </a>
-                
                 <button class="theme-btn" id="themeBtn">
                     <i class="fas fa-moon"></i>
                 </button>
@@ -517,7 +506,6 @@
                 </div>
 
                 <form id="connexion-form" class="auth-form">
-                    <!-- Email -->
                     <div class="form-group">
                         <label for="login-email" class="form-label required">
                             <i class="fas fa-envelope"></i> Adresse email
@@ -531,7 +519,6 @@
                                autocomplete="email">
                     </div>
 
-                    <!-- Mot de passe -->
                     <div class="form-group">
                         <label for="login-password" class="form-label required">
                             <i class="fas fa-lock"></i> Mot de passe
@@ -558,18 +545,15 @@
                         </div>
                     </div>
 
-                    <!-- Bouton de connexion -->
                     <button type="submit" class="btn auth-btn" id="loginBtn">
                         <i class="fas fa-sign-in-alt"></i> Se connecter
                     </button>
                 </form>
 
-                <!-- Footer -->
                 <div class="auth-footer">
                     <p>Pas encore de compte ? <a href="index.html">S'inscrire</a></p>
                     <p><a href="dashboard.html" class="continue-sans-compte">Continuer sans compte</a></p>
                     
-                    <!-- Accès admin caché -->
                     <div class="admin-link">
                         <button type="button" class="admin-link-btn" id="adminAccessBtn">
                             <i class="fas fa-user-shield"></i> Accès administrateur
@@ -587,7 +571,9 @@
         const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
-        // Configuration Admin
+        // ============================================
+        // CONFIGURATION ADMIN - CORRIGÉE
+        // ============================================
         const ADMIN_EMAIL = 'abdoula14cherif@gmail.com';
         const ADMIN_PASSWORD = 'abdoula.@5';
         
@@ -639,43 +625,43 @@
         }
         
         // ============================================
-        // FONCTION DE CONNEXION - SANS REDIRECTION AUTOMATIQUE
+        // FONCTION DE CONNEXION - VERSION CORRIGÉE
         // ============================================
         
         async function connecterUtilisateur(email, password, rememberMe = false) {
             try {
                 console.log('🔑 Connexion pour:', email);
                 
-               // ============================================
-// CONNEXION ADMIN - VERSION CORRIGÉE
-// ============================================
-
-// Dans la fonction connecterUtilisateur, REMPLACEZ ce bloc :
-
-if (isAdmin) {
-    console.log('✅ Connexion admin');
-    
-    const adminId = 'admin-' + Date.now();
-    
-    // ✅ STOCKAGE PROPRE - SANS DOUBLON
-    localStorage.setItem('afrimarket_user_id', adminId);
-    localStorage.setItem('afrimarket_user_email', email);
-    localStorage.setItem('afrimarket_user_name', 'Abdoula Cherif');
-    localStorage.setItem('afrimarket_user_role', 'admin');
-    localStorage.setItem('afrimarket_logged_in', 'true');
-    localStorage.setItem('afrimarket_session_time', Date.now().toString());
-    
-    // NE PAS UTILISER SESSIONSTORAGE
-    
-    return {
-        success: true,
-        message: '✅ Connexion administrateur réussie !',
-        redirect: 'admin.html',
-        isAdmin: true
-    };
-}
+                // === VÉRIFICATION ADMIN ===
+                const isAdmin = (email === ADMIN_EMAIL && password === ADMIN_PASSWORD);
                 
-                // CONNEXION SUPABASE
+                if (isAdmin) {
+                    console.log('✅ Connexion admin réussie');
+                    
+                    // 🟢 NETTOYER COMPLÈTEMENT L'ANCIENNE SESSION
+                    localStorage.clear();
+                    
+                    // 🟢 STOCKER LES NOUVELLES INFORMATIONS
+                    const adminId = 'admin-' + Date.now();
+                    
+                    localStorage.setItem('afrimarket_logged_in', 'true');
+                    localStorage.setItem('afrimarket_user_id', adminId);
+                    localStorage.setItem('afrimarket_user_email', email);
+                    localStorage.setItem('afrimarket_user_name', 'Abdoula Cherif');
+                    localStorage.setItem('afrimarket_user_role', 'admin');
+                    localStorage.setItem('afrimarket_session_time', Date.now().toString());
+                    
+                    console.log('✅ Session admin créée dans localStorage');
+                    
+                    return {
+                        success: true,
+                        message: '✅ Connexion administrateur réussie !',
+                        redirect: 'admin.html',
+                        isAdmin: true
+                    };
+                }
+                
+                // === CONNEXION UTILISATEUR NORMAL ===
                 if (!supabaseClient) {
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 }
@@ -686,7 +672,7 @@ if (isAdmin) {
                 });
                 
                 if (error) {
-                    console.error('❌ Erreur:', error);
+                    console.error('❌ Erreur Supabase:', error);
                     
                     let errorMsg = error.message;
                     if (error.message.includes('Invalid login credentials')) {
@@ -696,14 +682,16 @@ if (isAdmin) {
                     return { success: false, error: errorMsg };
                 }
                 
-                console.log('✅ Connexion réussie:', data.user?.email);
+                console.log('✅ Connexion utilisateur réussie:', data.user?.email);
                 
-                // Stocker les infos
+                // 🟢 NETTOYER ET STOCKER
+                localStorage.clear();
+                
+                localStorage.setItem('afrimarket_logged_in', 'true');
                 localStorage.setItem('afrimarket_user_id', data.user.id);
                 localStorage.setItem('afrimarket_user_email', data.user.email);
                 localStorage.setItem('afrimarket_user_name', data.user.user_metadata?.nom_complet || 'Utilisateur');
                 localStorage.setItem('afrimarket_user_role', 'user');
-                localStorage.setItem('afrimarket_logged_in', 'true');
                 
                 return {
                     success: true,
@@ -722,7 +710,7 @@ if (isAdmin) {
         }
         
         // ============================================
-        // INITIALISATION - AUCUNE REDIRECTION AUTOMATIQUE
+        // INITIALISATION
         // ============================================
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -740,10 +728,8 @@ if (isAdmin) {
                 console.log('✅ Supabase initialisé');
             }
             
-            // ===== NE PAS REDIRIGER AUTOMATIQUEMENT =====
-            // ⚠️ SUPPRESSION DE LA FONCTION verifierSession()
-            // ⚠️ PLUS DE REDIRECTION AUTOMATIQUE VERS DASHBOARD
-            // ============================================
+            // === NE PAS REDIRIGER AUTOMATIQUEMENT ===
+            // La connexion se fait UNIQUEMENT via le formulaire
             
             // Gestion du thème
             const themeBtn = document.getElementById('themeBtn');
@@ -778,7 +764,7 @@ if (isAdmin) {
                 });
             }
             
-            // Accès admin
+            // Accès admin - Pré-remplissage après 3 clics
             const adminBtn = document.getElementById('adminAccessBtn');
             if (adminBtn) {
                 adminBtn.addEventListener('click', function() {
@@ -791,11 +777,15 @@ if (isAdmin) {
                         showNotification('✅ Champs admin pré-remplis', 'success');
                         
                         setTimeout(() => { adminClickCount = 0; }, 5000);
+                    } else if (adminClickCount === 1) {
+                        showNotification('👆 Cliquez 2 fois de plus pour admin', 'info');
+                    } else if (adminClickCount === 2) {
+                        showNotification('👆 1 dernier clic pour admin', 'info');
                     }
                 });
             }
             
-            // Soumission formulaire - UNIQUEMENT ICI LA REDIRECTION
+            // Soumission formulaire
             const form = document.getElementById('connexion-form');
             
             if (form) {
@@ -807,6 +797,7 @@ if (isAdmin) {
                     const password = document.getElementById('login-password').value;
                     const rememberMe = document.getElementById('remember-me').checked;
                     
+                    // Validations
                     if (!email.includes('@')) {
                         showNotification('❌ Email invalide', 'error');
                         return;
@@ -825,7 +816,7 @@ if (isAdmin) {
                         if (result.success) {
                             showNotification(result.message, 'success');
                             
-                            // ✅ REDIRECTION UNIQUEMENT ICI - APRÈS CONNEXION RÉUSSIE
+                            // ✅ REDIRECTION APRÈS CONNEXION RÉUSSIE
                             setTimeout(() => {
                                 window.location.href = result.redirect;
                             }, 1500);

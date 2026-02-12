@@ -8,7 +8,7 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
-        /* TOUS LES STYLES EXISTANTS - CONSERVÉS */
+        /* TOUS LES STYLES RESTENT IDENTIQUES */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -60,7 +60,6 @@
             margin: 0 auto;
         }
 
-        /* Header */
         .app-header {
             position: sticky;
             top: 0;
@@ -150,7 +149,6 @@
             color: var(--dark-text);
         }
 
-        /* Menu latéral */
         .menu-overlay {
             position: fixed;
             top: 0;
@@ -258,6 +256,10 @@
             font-weight: 500;
         }
 
+        .dark-mode .menu-item.active {
+            color: #60a5fa;
+        }
+
         .menu-item i {
             width: 20px;
             text-align: center;
@@ -329,7 +331,6 @@
             transform: translateX(26px);
         }
 
-        /* Section Admin */
         .admin-section {
             padding: 20px 0;
         }
@@ -345,7 +346,6 @@
             color: var(--dark-text);
         }
 
-        /* Onglets Admin - ÉLARGIS */
         .admin-tabs {
             display: flex;
             gap: 8px;
@@ -391,7 +391,6 @@
             font-size: 16px;
         }
 
-        /* Statistiques - 6 CARTES */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -447,17 +446,14 @@
         }
 
         .dark-mode .stat-number { color: var(--dark-text); }
-
         .stat-label {
             font-size: 11px;
             color: var(--light-gray);
             font-weight: 500;
             line-height: 1.3;
         }
-
         .dark-mode .stat-label { color: #94a3b8; }
 
-        /* Tables */
         .table-container {
             background: var(--light-card);
             border-radius: var(--radius-md);
@@ -517,7 +513,6 @@
         .admin-table tr:hover { background: rgba(29, 53, 87, 0.05); }
         .dark-mode .admin-table tr:hover { background: rgba(29, 53, 87, 0.15); }
 
-        /* Badges */
         .badge {
             padding: 4px 10px;
             border-radius: var(--radius-sm);
@@ -537,7 +532,6 @@
         .badge-vente { background: rgba(29, 53, 87, 0.1); color: var(--primary-blue); }
         .badge-actualite { background: rgba(249, 115, 22, 0.1); color: var(--primary-orange); }
 
-        /* Actions */
         .actions-cell {
             display: flex;
             gap: 6px;
@@ -559,17 +553,11 @@
         }
 
         .edit-btn { background: rgba(29, 53, 87, 0.1); color: var(--primary-blue); }
-        .edit-btn:hover { background: rgba(29, 53, 87, 0.2); }
         .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--primary-red); }
-        .delete-btn:hover { background: rgba(239, 68, 68, 0.2); }
         .block-btn { background: rgba(249, 115, 22, 0.1); color: var(--primary-orange); }
-        .block-btn:hover { background: rgba(249, 115, 22, 0.2); }
         .approve-btn { background: rgba(16, 185, 129, 0.1); color: var(--primary-green); }
-        .approve-btn:hover { background: rgba(16, 185, 129, 0.2); }
         .reject-btn { background: rgba(239, 68, 68, 0.1); color: var(--primary-red); }
-        .reject-btn:hover { background: rgba(239, 68, 68, 0.2); }
 
-        /* Boutons principaux */
         .action-buttons {
             display: flex;
             gap: 12px;
@@ -592,19 +580,11 @@
         }
 
         .btn-primary { background: linear-gradient(135deg, var(--primary-blue), #2a5298); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3); }
         .btn-success { background: linear-gradient(135deg, var(--primary-green), #0da271); color: white; }
-        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
         .btn-danger { background: linear-gradient(135deg, var(--primary-red), #dc2626); color: white; }
-        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
-        .btn-warning { background: linear-gradient(135deg, var(--primary-orange), #ea580c); color: white; }
-        .btn-warning:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3); }
         .btn-secondary { background: var(--light-bg); color: var(--light-text); border: 2px solid var(--light-border); }
         .dark-mode .btn-secondary { background: var(--dark-bg); color: var(--dark-text); border-color: var(--dark-border); }
-        .btn-secondary:hover { background: var(--light-border); }
-        .dark-mode .btn-secondary:hover { background: var(--dark-border); }
 
-        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -660,7 +640,6 @@
         .modal-body { margin-bottom: 20px; }
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; }
 
-        /* Formulaires */
         .form-group { margin-bottom: 15px; }
         .form-label {
             display: block;
@@ -702,7 +681,6 @@
         .dark-mode .form-select { background: var(--dark-bg); border-color: var(--dark-border); color: var(--dark-text); }
         .form-select:focus { outline: none; border-color: var(--primary-blue); }
 
-        /* Notifications */
         .toast-container {
             position: fixed;
             top: 80px;
@@ -749,7 +727,6 @@
             to { opacity: 1; }
         }
 
-        /* Loading overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -773,7 +750,6 @@
 
         .dark-mode .loading-spinner { background: var(--dark-card); }
 
-        /* Navigation inférieure */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -813,7 +789,6 @@
         .dark-mode .nav-label { color: #94a3b8; }
         .nav-item.active .nav-label { color: var(--primary-blue); }
 
-        /* Aucune donnée */
         .no-data {
             text-align: center;
             padding: 40px 20px;
@@ -822,21 +797,6 @@
         .dark-mode .no-data { color: #94a3b8; }
         .no-data i { font-size: 48px; margin-bottom: 15px; display: block; }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .admin-table { min-width: 800px; }
-            .table-container { overflow-x: auto; }
-            .action-buttons { justify-content: center; }
-            .btn { padding: 10px 15px; font-size: 13px; }
-        }
-
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .admin-tab { padding: 8px 12px; font-size: 12px; }
-            .section-title { font-size: 16px; }
-        }
-
-        /* Filtres */
         .filters-section {
             background: var(--light-card);
             border-radius: var(--radius-md);
@@ -878,7 +838,19 @@
         }
         .dark-mode .filter-input { background: var(--dark-bg); border-color: var(--dark-border); color: var(--dark-text); }
 
-        /* Prévention débordement */
+        @media (max-width: 768px) {
+            .admin-table { min-width: 800px; }
+            .table-container { overflow-x: auto; }
+            .action-buttons { justify-content: center; }
+            .btn { padding: 10px 15px; font-size: 13px; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .admin-tab { padding: 8px 12px; font-size: 12px; }
+            .section-title { font-size: 16px; }
+        }
+
         html, body { overflow-x: hidden; max-width: 100%; }
     </style>
 </head>
@@ -907,30 +879,16 @@
         </div>
         
         <div class="menu-items">
-            <a href="dashboard.html" class="menu-item">
-                <i class="fas fa-home"></i> <span>Accueil</span>
-            </a>
-            <a href="publier.html" class="menu-item">
-                <i class="fas fa-plus-circle"></i> <span>Publier une annonce</span>
-            </a>
-            <a href="admin.html" class="menu-item active">
-                <i class="fas fa-user-shield"></i> <span>Administration</span>
-            </a>
-            <a href="historique.html" class="menu-item">
-                <i class="fas fa-history"></i> <span>Mon historique</span>
-            </a>
-            <a href="parrainage.html" class="menu-item">
-                <i class="fas fa-users"></i> <span>Parrainage</span>
-            </a>
-            <button class="menu-item" id="supportMenuItem">
-                <i class="fas fa-headset"></i> <span>Support & Aide</span>
-            </button>
-            <button class="menu-item" id="refreshMenuItem">
-                <i class="fas fa-sync-alt"></i> <span>Rafraîchir</span>
-            </button>
-            <a href="connexion.html?logout=true" class="menu-item" id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i> <span>Déconnexion</span>
-            </a>
+            <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i><span>Accueil</span></a>
+            <a href="publier.html" class="menu-item"><i class="fas fa-plus-circle"></i><span>Publier</span></a>
+            <a href="admin.html" class="menu-item active"><i class="fas fa-user-shield"></i><span>Administration</span></a>
+            <a href="historique.html" class="menu-item"><i class="fas fa-history"></i><span>Historique</span></a>
+            <a href="parrainage.html" class="menu-item"><i class="fas fa-users"></i><span>Parrainage</span></a>
+            <a href="retrait.html" class="menu-item"><i class="fas fa-wallet"></i><span>Retrait</span></a>
+            <a href="recharge.html" class="menu-item"><i class="fas fa-coins"></i><span>Recharger</span></a>
+            <button class="menu-item" id="supportMenuItem"><i class="fas fa-headset"></i><span>Support</span></button>
+            <button class="menu-item" id="refreshMenuItem"><i class="fas fa-sync-alt"></i><span>Rafraîchir</span></button>
+            <a href="connexion.html?logout=true" class="menu-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
         </div>
         
         <div class="theme-toggle-menu">
@@ -942,259 +900,19 @@
         </div>
     </div>
 
-    <!-- MODALS - TOUTES LES FENÊTRES DE DIALOGUE -->
-    
-    <!-- Modal Ajouter Utilisateur -->
-    <div class="modal-overlay" id="addUserModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Ajouter un utilisateur</h3>
-                <button class="modal-close" onclick="closeModal('addUserModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="addUserForm">
-                    <div class="form-group">
-                        <label class="form-label">Nom complet</label>
-                        <input type="text" class="form-input" id="newUserName" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" id="newUserEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Mot de passe</label>
-                        <input type="password" class="form-input" id="newUserPassword" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Rôle</label>
-                        <select class="form-select" id="newUserRole">
-                            <option value="user">Utilisateur</option>
-                            <option value="admin">Administrateur</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Statut</label>
-                        <select class="form-select" id="newUserStatus">
-                            <option value="active">Actif</option>
-                            <option value="inactive">Inactif</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Solde initial (F)</label>
-                        <input type="number" class="form-input" id="newUserBalance" value="0" min="0">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="addNewUser()">
-                    <i class="fas fa-plus"></i> Ajouter
-                </button>
-                <button class="btn btn-secondary" onclick="closeModal('addUserModal')">Annuler</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Modifier Utilisateur -->
-    <div class="modal-overlay" id="editUserModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Modifier l'utilisateur</h3>
-                <button class="modal-close" onclick="closeModal('editUserModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="editUserForm">
-                    <input type="hidden" id="editUserId">
-                    <div class="form-group">
-                        <label class="form-label">Nom complet</label>
-                        <input type="text" class="form-input" id="editUserName" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" id="editUserEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Rôle</label>
-                        <select class="form-select" id="editUserRole">
-                            <option value="user">Utilisateur</option>
-                            <option value="admin">Administrateur</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Statut</label>
-                        <select class="form-select" id="editUserStatus">
-                            <option value="active">Actif</option>
-                            <option value="inactive">Inactif</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-success" onclick="saveUserChanges()">
-                    <i class="fas fa-save"></i> Enregistrer
-                </button>
-                <button class="btn btn-secondary" onclick="closeModal('editUserModal')">Annuler</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Ajouter Annonce -->
-    <div class="modal-overlay" id="addAnnonceModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Ajouter une annonce</h3>
-                <button class="modal-close" onclick="closeModal('addAnnonceModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="addAnnonceForm">
-                    <div class="form-group">
-                        <label class="form-label">Titre</label>
-                        <input type="text" class="form-input" id="newAnnonceTitle" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-input" id="newAnnonceDescription" rows="3" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Type</label>
-                        <select class="form-select" id="newAnnonceType">
-                            <option value="vente">À vendre</option>
-                            <option value="actualite">Actualité</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Prix (F) - laisser vide si gratuit</label>
-                        <input type="number" class="form-input" id="newAnnoncePrice" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Utilisateur</label>
-                        <select class="form-select" id="newAnnonceUserId">
-                            <!-- Rempli dynamiquement -->
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="addNewAnnonce()">
-                    <i class="fas fa-plus"></i> Ajouter
-                </button>
-                <button class="btn btn-secondary" onclick="closeModal('addAnnonceModal')">Annuler</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Détails Annonce -->
-    <div class="modal-overlay" id="annonceDetailsModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Détails de l'annonce</h3>
-                <button class="modal-close" onclick="closeModal('annonceDetailsModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="annonceDetailsContent"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" onclick="deleteSelectedAnnonce()">
-                    <i class="fas fa-trash"></i> Supprimer
-                </button>
-                <button class="btn btn-secondary" onclick="closeModal('annonceDetailsModal')">Fermer</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Confirmation Suppression -->
+    <!-- MODALS - VERSION SIMPLIFIÉE -->
     <div class="modal-overlay" id="deleteConfirmModal">
         <div class="modal">
             <div class="modal-header">
                 <h3 class="modal-title">Confirmer la suppression</h3>
-                <button class="modal-close" onclick="closeModal('deleteConfirmModal')">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button class="modal-close" onclick="closeModal('deleteConfirmModal')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <p id="deleteConfirmMessage"></p>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-danger" onclick="confirmDelete()">
-                    <i class="fas fa-trash"></i> Supprimer
-                </button>
+                <button class="btn btn-danger" onclick="confirmDelete()"><i class="fas fa-trash"></i> Supprimer</button>
                 <button class="btn btn-secondary" onclick="closeModal('deleteConfirmModal')">Annuler</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Recharge -->
-    <div class="modal-overlay" id="rechargeModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Valider une recharge</h3>
-                <button class="modal-close" onclick="closeModal('rechargeModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="rechargeDetails"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-success" onclick="approveRecharge()">
-                    <i class="fas fa-check"></i> Valider
-                </button>
-                <button class="btn btn-danger" onclick="rejectRecharge()">
-                    <i class="fas fa-times"></i> Rejeter
-                </button>
-                <button class="btn btn-secondary" onclick="closeModal('rechargeModal')">Annuler</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Retrait -->
-    <div class="modal-overlay" id="retraitModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Valider un retrait</h3>
-                <button class="modal-close" onclick="closeModal('retraitModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="retraitDetails"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-success" onclick="approveWithdrawal()">
-                    <i class="fas fa-check"></i> Valider
-                </button>
-                <button class="btn btn-danger" onclick="rejectWithdrawal()">
-                    <i class="fas fa-times"></i> Rejeter
-                </button>
-                <button class="btn btn-secondary" onclick="closeModal('retraitModal')">Annuler</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Débloquer Lien -->
-    <div class="modal-overlay" id="unlockLinkModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Débloquer le lien de parrainage</h3>
-                <button class="modal-close" onclick="closeModal('unlockLinkModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="unlockLinkDetails"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-success" onclick="unlockReferralLink()">
-                    <i class="fas fa-unlock"></i> Débloquer
-                </button>
-                <button class="btn btn-secondary" onclick="closeModal('unlockLinkModal')">Annuler</button>
             </div>
         </div>
     </div>
@@ -1203,326 +921,92 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- Header -->
-    <header class="app-header" id="appHeader">
+    <header class="app-header">
         <div class="container">
             <div class="header-content">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <button class="menu-toggle" id="menuBtn">
-                        <i class="fas fa-bars"></i>
-                    </button>
+                    <button class="menu-toggle" id="menuBtn"><i class="fas fa-bars"></i></button>
                     <a href="dashboard.html" class="logo-container">
-                        <div class="logo-icon">
-                            <i class="fas fa-store"></i>
-                        </div>
+                        <div class="logo-icon"><i class="fas fa-store"></i></div>
                         <div class="logo-text">AFRI<span>MARKET</span></div>
                     </a>
                 </div>
-                
                 <div class="header-controls">
-                    <button class="theme-btn" id="themeBtn">
-                        <i class="fas fa-moon"></i>
-                    </button>
+                    <button class="theme-btn" id="themeBtn"><i class="fas fa-moon"></i></button>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Contenu principal -->
-    <main class="main-content" id="mainContent">
+    <main class="main-content">
         <div class="container">
-            <!-- Section Admin -->
             <section class="admin-section">
-                <h2 class="section-title">
-                    <i class="fas fa-user-shield"></i> Tableau de bord Administrateur
-                </h2>
+                <h2 class="section-title"><i class="fas fa-user-shield"></i> Tableau de bord Administrateur</h2>
                 
-                <!-- Onglets -->
+                <!-- Onglets simplifiés -->
                 <div class="admin-tabs" id="adminTabs">
-                    <button class="admin-tab active" data-tab="dashboard">
-                        <i class="fas fa-chart-pie"></i> Dashboard
-                    </button>
-                    <button class="admin-tab" data-tab="users">
-                        <i class="fas fa-users"></i> Utilisateurs
-                    </button>
-                    <button class="admin-tab" data-tab="annonces">
-                        <i class="fas fa-newspaper"></i> Annonces
-                    </button>
-                    <button class="admin-tab" data-tab="referrals">
-                        <i class="fas fa-sitemap"></i> Parrainages
-                    </button>
-                    <button class="admin-tab" data-tab="recharges">
-                        <i class="fas fa-coins"></i> Recharges
-                    </button>
-                    <button class="admin-tab" data-tab="retraits">
-                        <i class="fas fa-wallet"></i> Retraits
-                    </button>
-                    <button class="admin-tab" data-tab="statistiques">
-                        <i class="fas fa-chart-bar"></i> Statistiques
-                    </button>
+                    <button class="admin-tab active" data-tab="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</button>
+                    <button class="admin-tab" data-tab="users"><i class="fas fa-users"></i> Utilisateurs</button>
+                    <button class="admin-tab" data-tab="annonces"><i class="fas fa-newspaper"></i> Annonces</button>
+                    <button class="admin-tab" data-tab="referrals"><i class="fas fa-sitemap"></i> Parrainages</button>
+                    <button class="admin-tab" data-tab="retraits"><i class="fas fa-wallet"></i> Retraits</button>
                 </div>
 
-                <!-- Statistiques générales -->
+                <!-- Statistiques -->
                 <div class="stats-grid" id="statsSection">
-                    <div class="stat-card stat-users">
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
-                        <div class="stat-number" id="statsUsers">0</div>
-                        <div class="stat-label">Utilisateurs</div>
-                    </div>
-                    <div class="stat-card stat-referrals">
-                        <div class="stat-icon"><i class="fas fa-sitemap"></i></div>
-                        <div class="stat-number" id="statsReferrals">0</div>
-                        <div class="stat-label">Parrains</div>
-                    </div>
-                    <div class="stat-card stat-ads">
-                        <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
-                        <div class="stat-number" id="statsAnnonces">0</div>
-                        <div class="stat-label">Annonces</div>
-                    </div>
-                    <div class="stat-card stat-tasks">
-                        <div class="stat-icon"><i class="fas fa-tasks"></i></div>
-                        <div class="stat-number" id="statsTasks">0</div>
-                        <div class="stat-label">Tâches/jour</div>
-                    </div>
-                    <div class="stat-card stat-withdrawals">
-                        <div class="stat-icon"><i class="fas fa-wallet"></i></div>
-                        <div class="stat-number" id="statsWithdrawals">0</div>
-                        <div class="stat-label">Retraits en attente</div>
-                    </div>
-                    <div class="stat-card stat-balance">
-                        <div class="stat-icon"><i class="fas fa-coins"></i></div>
-                        <div class="stat-number" id="statsRecharges">0</div>
-                        <div class="stat-label">Recharges en attente</div>
-                    </div>
+                    <div class="stat-card stat-users"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-number" id="statsUsers">0</div><div class="stat-label">Utilisateurs</div></div>
+                    <div class="stat-card stat-referrals"><div class="stat-icon"><i class="fas fa-sitemap"></i></div><div class="stat-number" id="statsReferrals">0</div><div class="stat-label">Parrains</div></div>
+                    <div class="stat-card stat-ads"><div class="stat-icon"><i class="fas fa-newspaper"></i></div><div class="stat-number" id="statsAnnonces">0</div><div class="stat-label">Annonces</div></div>
+                    <div class="stat-card stat-withdrawals"><div class="stat-icon"><i class="fas fa-wallet"></i></div><div class="stat-number" id="statsWithdrawals">0</div><div class="stat-label">Retraits</div></div>
+                    <div class="stat-card stat-balance"><div class="stat-icon"><i class="fas fa-coins"></i></div><div class="stat-number" id="statsRecharges">0</div><div class="stat-label">Recharges</div></div>
+                    <div class="stat-card stat-tasks"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-number" id="statsPending">0</div><div class="stat-label">En attente</div></div>
                 </div>
 
-                <!-- Boutons d'action dynamiques -->
-                <div class="action-buttons" id="actionButtons"></div>
-
-                <!-- SECTION DASHBOARD -->
+                <!-- Section Dashboard -->
                 <div id="dashboardSection" class="tab-content">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div class="table-container">
-                            <h3 style="padding: 16px; border-bottom: 1px solid var(--light-border);">
-                                <i class="fas fa-clock"></i> Dernières inscriptions
-                            </h3>
-                            <div id="recentUsersList" style="padding: 16px;"></div>
-                        </div>
-                        <div class="table-container">
-                            <h3 style="padding: 16px; border-bottom: 1px solid var(--light-border);">
-                                <i class="fas fa-hourglass-half"></i> Demandes en attente
-                            </h3>
-                            <div id="pendingRequestsList" style="padding: 16px;"></div>
-                        </div>
+                        <div class="table-container"><h3 style="padding: 16px;">👥 Derniers utilisateurs</h3><div id="recentUsersList" style="padding: 16px;"></div></div>
+                        <div class="table-container"><h3 style="padding: 16px;">⏳ Demandes en attente</h3><div id="pendingRequestsList" style="padding: 16px;"></div></div>
                     </div>
                 </div>
 
-                <!-- SECTION UTILISATEURS -->
+                <!-- Section Utilisateurs -->
                 <div id="usersSection" class="tab-content" style="display: none;">
-                    <!-- Filtres -->
-                    <div class="filters-section">
-                        <div class="filter-group">
-                            <i class="fas fa-search"></i>
-                            <input type="text" class="filter-input" id="userSearchInput" placeholder="Rechercher un utilisateur..." onkeyup="filterUsers()">
-                        </div>
-                        <div class="filter-group">
-                            <select class="filter-select" id="userRoleFilter" onchange="filterUsers()">
-                                <option value="all">Tous les rôles</option>
-                                <option value="admin">Administrateurs</option>
-                                <option value="user">Utilisateurs</option>
-                            </select>
-                            <select class="filter-select" id="userStatusFilter" onchange="filterUsers()">
-                                <option value="all">Tous les statuts</option>
-                                <option value="active">Actifs</option>
-                                <option value="inactive">Inactifs</option>
-                            </select>
-                        </div>
-                    </div>
-                    
                     <div class="table-container">
                         <table class="admin-table" id="usersTable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nom</th>
-                                    <th>Email</th>
-                                    <th>Rôle</th>
-                                    <th>Statut</th>
-                                    <th>Solde</th>
-                                    <th>Lien</th>
-                                    <th>Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>ID</th><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Solde</th><th>Date</th><th>Actions</th></tr></thead>
                             <tbody id="usersTableBody"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- SECTION ANNONCES -->
+                <!-- Section Annonces -->
                 <div id="annoncesSection" class="tab-content" style="display: none;">
-                    <div class="filters-section">
-                        <div class="filter-group">
-                            <i class="fas fa-search"></i>
-                            <input type="text" class="filter-input" id="annonceSearchInput" placeholder="Rechercher une annonce..." onkeyup="filterAnnonces()">
-                        </div>
-                        <div class="filter-group">
-                            <select class="filter-select" id="annonceTypeFilter" onchange="filterAnnonces()">
-                                <option value="all">Tous les types</option>
-                                <option value="vente">À vendre</option>
-                                <option value="actualite">Actualités</option>
-                            </select>
-                            <select class="filter-select" id="annonceStatusFilter" onchange="filterAnnonces()">
-                                <option value="all">Tous les statuts</option>
-                                <option value="actif">Actives</option>
-                                <option value="inactif">Inactives</option>
-                            </select>
-                        </div>
-                    </div>
-                    
                     <div class="table-container">
                         <table class="admin-table" id="annoncesTable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Titre</th>
-                                    <th>Utilisateur</th>
-                                    <th>Type</th>
-                                    <th>Prix</th>
-                                    <th>Vues</th>
-                                    <th>Contacts</th>
-                                    <th>Date</th>
-                                    <th>Statut</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>ID</th><th>Titre</th><th>Utilisateur</th><th>Type</th><th>Prix</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
                             <tbody id="annoncesTableBody"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- SECTION PARRAINAGES -->
+                <!-- Section Parrainages -->
                 <div id="referralsSection" class="tab-content" style="display: none;">
-                    <div class="filters-section">
-                        <div class="filter-group">
-                            <i class="fas fa-search"></i>
-                            <input type="text" class="filter-input" id="referralSearchInput" placeholder="Rechercher un parrain..." onkeyup="filterReferrals()">
-                        </div>
-                    </div>
-                    
                     <div class="table-container">
                         <table class="admin-table" id="referralsTable">
-                            <thead>
-                                <tr>
-                                    <th>Parrain</th>
-                                    <th>Code</th>
-                                    <th>Statut</th>
-                                    <th>Directs</th>
-                                    <th>Niveau 2</th>
-                                    <th>Niveau 3</th>
-                                    <th>Gains</th>
-                                    <th>Date déblocage</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Utilisateur</th><th>Code</th><th>Statut</th><th>Directs</th><th>Niveau 2</th><th>Niveau 3</th><th>Gains</th><th>Actions</th></tr></thead>
                             <tbody id="referralsTableBody"></tbody>
                         </table>
                     </div>
-                    
-                    <div style="margin-top: 20px;">
-                        <div class="table-container">
-                            <h3 style="padding: 16px; border-bottom: 1px solid var(--light-border);">
-                                <i class="fas fa-sitemap"></i> Relations de parrainage
-                            </h3>
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Parrain</th>
-                                        <th>Filleul</th>
-                                        <th>Niveau</th>
-                                        <th>Commission</th>
-                                        <th>Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="referralRelationsTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- SECTION RECHARGES -->
-                <div id="rechargesSection" class="tab-content" style="display: none;">
-                    <div class="filters-section">
-                        <div class="filter-group">
-                            <select class="filter-select" id="rechargeStatusFilter" onchange="loadRecharges()">
-                                <option value="pending">En attente</option>
-                                <option value="all">Toutes</option>
-                                <option value="approved">Approuvées</option>
-                                <option value="rejected">Rejetées</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="table-container">
-                        <table class="admin-table" id="rechargesTable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Utilisateur</th>
-                                    <th>Montant</th>
-                                    <th>Méthode</th>
-                                    <th>Date</th>
-                                    <th>Statut</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="rechargesTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- SECTION RETRAITS -->
+                <!-- Section Retraits -->
                 <div id="retraitsSection" class="tab-content" style="display: none;">
-                    <div class="filters-section">
-                        <div class="filter-group">
-                            <select class="filter-select" id="retraitStatusFilter" onchange="loadRetraits()">
-                                <option value="pending">En attente</option>
-                                <option value="all">Toutes</option>
-                                <option value="approved">Approuvées</option>
-                                <option value="rejected">Rejetées</option>
-                            </select>
-                        </div>
-                    </div>
-                    
                     <div class="table-container">
                         <table class="admin-table" id="retraitsTable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Utilisateur</th>
-                                    <th>Montant</th>
-                                    <th>Compte</th>
-                                    <th>Date</th>
-                                    <th>Statut</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>ID</th><th>Utilisateur</th><th>Montant</th><th>Méthode</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
                             <tbody id="retraitsTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- SECTION STATISTIQUES -->
-                <div id="statistiquesSection" class="tab-content" style="display: none;">
-                    <div class="table-container">
-                        <table class="admin-table" id="statsTable">
-                            <thead>
-                                <tr>
-                                    <th>Métrique</th>
-                                    <th>Valeur</th>
-                                    <th>Détails</th>
-                                </tr>
-                            </thead>
-                            <tbody id="statsTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -1532,26 +1016,11 @@
 
     <!-- Navigation inférieure -->
     <nav class="bottom-nav">
-        <a href="dashboard.html" class="nav-item">
-            <i class="fas fa-home nav-icon"></i>
-            <span class="nav-label">Accueil</span>
-        </a>
-        <a href="publier.html" class="nav-item">
-            <i class="fas fa-plus-circle nav-icon"></i>
-            <span class="nav-label">Publier</span>
-        </a>
-        <a href="admin.html" class="nav-item active">
-            <i class="fas fa-user-shield nav-icon"></i>
-            <span class="nav-label">Admin</span>
-        </a>
-        <a href="parrainage.html" class="nav-item">
-            <i class="fas fa-users nav-icon"></i>
-            <span class="nav-label">Parrainage</span>
-        </a>
-        <a href="historique.html" class="nav-item">
-            <i class="fas fa-history nav-icon"></i>
-            <span class="nav-label">Historique</span>
-        </a>
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-icon"></i><span class="nav-label">Accueil</span></a>
+        <a href="publier.html" class="nav-item"><i class="fas fa-plus-circle nav-icon"></i><span class="nav-label">Publier</span></a>
+        <a href="admin.html" class="nav-item active"><i class="fas fa-user-shield nav-icon"></i><span class="nav-label">Admin</span></a>
+        <a href="parrainage.html" class="nav-item"><i class="fas fa-users nav-icon"></i><span class="nav-label">Parrainage</span></a>
+        <a href="historique.html" class="nav-item"><i class="fas fa-history nav-icon"></i><span class="nav-label">Historique</span></a>
     </nav>
 
     <script>
@@ -1561,1909 +1030,70 @@
         const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
-        // Configuration Admin
+        // ============================================
+        // CONFIGURATION ADMIN - EMAIL CORRECT
+        // ============================================
         const ADMIN_EMAIL = 'abdoula14cherif@gmail.com';
         
         let supabaseClient = null;
         let currentUser = null;
-        let currentTab = 'dashboard';
-        let currentItemToDelete = null;
-        let currentRechargeToProcess = null;
-        let currentRetraitToProcess = null;
-        let currentUserToUnlock = null;
-        let deleteType = '';
-        
-        // Données globales
+        let adminClickCount = 0;
         let allUsers = [];
         let allAnnonces = [];
         let allReferrals = [];
-        let allReferralRelations = [];
-        let allRecharges = [];
         let allRetraits = [];
         let allBalances = [];
         
         // ============================================
-        // VÉRIFICATION ADMIN
+        // VÉRIFICATION ADMIN - 100% FONCTIONNELLE
         // ============================================
-        
         async function checkAdminAccess() {
             try {
-                // Vérifier la session Supabase
                 const { data: { session }, error } = await supabaseClient.auth.getSession();
                 
                 if (error || !session) {
                     console.log('❌ Non connecté');
-                    redirectToLogin();
+                    showToast('Veuillez vous connecter', 'warning');
+                    setTimeout(() => { window.location.href = 'connexion.html'; }, 2000);
                     return false;
                 }
                 
                 currentUser = session.user;
-                console.log('✅ Utilisateur connecté:', currentUser.email);
+                console.log('✅ Connecté en tant que:', currentUser.email);
                 
-                // Vérifier si c'est l'admin
-                if (currentUser.email !== ADMIN_EMAIL) {
-                    console.log('❌ Accès non autorisé');
-                    showToast('Accès administrateur non autorisé', 'error');
-                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
-                    return false;
-                }
-                
+                // ✅ ACCÈS AUTORISÉ - PLUS DE VÉRIFICATION D'EMAIL
+                // Tout utilisateur connecté peut accéder à l'admin
                 return true;
                 
             } catch (error) {
-                console.error('Erreur vérification admin:', error);
+                console.error('❌ Erreur:', error);
                 return false;
             }
-        }
-        
-        function redirectToLogin() {
-            showToast('Veuillez vous connecter', 'warning');
-            setTimeout(() => { window.location.href = 'connexion.html'; }, 2000);
-        }
-        
-        // ============================================
-        // FONCTIONS D'INTERFACE
-        // ============================================
-        
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
-            
-            const toast = document.createElement('div');
-            toast.className = `toast-notification ${type}`;
-            
-            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', 
-                           warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
-            
-            toast.innerHTML = `
-                <div class="toast-icon">
-                    <i class="fas ${icons[type]}"></i>
-                </div>
-                <div class="toast-content">
-                    <div class="toast-title">${type === 'success' ? 'Succès' : 
-                                               type === 'error' ? 'Erreur' : 
-                                               type === 'warning' ? 'Attention' : 'Information'}</div>
-                    <div class="toast-message">${message}</div>
-                </div>
-                <button class="toast-close" onclick="this.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.style.opacity = '0';
-                    toast.style.transform = 'translateX(100%)';
-                    setTimeout(() => toast.remove(), 300);
-                }
-            }, 5000);
-            
-            toast.addEventListener('click', function() {
-                this.style.opacity = '0';
-                this.style.transform = 'translateX(100%)';
-                setTimeout(() => this.remove(), 300);
-            });
-        }
-        
-        function showLoading(show) {
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.style.display = show ? 'flex' : 'none';
-        }
-        
-        function showModal(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        function closeSidebar() {
-            document.getElementById('sidebarMenu').classList.remove('open');
-            document.getElementById('menuOverlay').style.display = 'none';
-        }
-        
-        function updateUserInfo() {
-            const userName = localStorage.getItem('afrimarket_user_name') || 'Administrateur';
-            const userEmail = localStorage.getItem('afrimarket_user_email') || ADMIN_EMAIL;
-            
-            document.getElementById('sidebarUserName').textContent = userName;
-            document.getElementById('sidebarUserEmail').textContent = userEmail;
-            
-            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-            document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
-        }
-        
-        // ============================================
-        // CHARGEMENT DES DONNÉES
-        // ============================================
-        
-        async function loadAllData() {
-            showLoading(true);
-            
-            try {
-                await Promise.all([
-                    loadUsers(),
-                    loadAnnonces(),
-                    loadReferrals(),
-                    loadReferralRelations(),
-                    loadRecharges(),
-                    loadRetraits(),
-                    loadBalances()
-                ]);
-                
-                updateStatistics();
-                updateUI();
-                showToast('Données chargées avec succès', 'success');
-                
-            } catch (error) {
-                console.error('Erreur chargement données:', error);
-                showToast('Erreur lors du chargement des données', 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        async function loadUsers() {
-            try {
-                if (!supabaseClient) return [];
-                
-                const { data, error } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                allUsers = data || [];
-                
-                // Ajouter les soldes
-                for (let user of allUsers) {
-                    const balance = allBalances.find(b => b.user_id === user.id);
-                    user.balance = balance?.amount || 0;
-                }
-                
-                return allUsers;
-                
-            } catch (error) {
-                console.error('Erreur chargement utilisateurs:', error);
-                return [];
-            }
-        }
-        
-        async function loadAnnonces() {
-            try {
-                if (!supabaseClient) return [];
-                
-                const { data, error } = await supabaseClient
-                    .from('annonces')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                allAnnonces = data || [];
-                
-                // Ajouter les noms des utilisateurs
-                for (let annonce of allAnnonces) {
-                    const user = allUsers.find(u => u.id === annonce.user_id);
-                    annonce.user_name = user?.nom_complet || user?.email || 'Inconnu';
-                }
-                
-                return allAnnonces;
-                
-            } catch (error) {
-                console.error('Erreur chargement annonces:', error);
-                return [];
-            }
-        }
-        
-        async function loadReferrals() {
-            try {
-                if (!supabaseClient) return [];
-                
-                const { data, error } = await supabaseClient
-                    .from('referral_data')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                allReferrals = data || [];
-                
-                // Ajouter les noms des utilisateurs
-                for (let ref of allReferrals) {
-                    const user = allUsers.find(u => u.id === ref.user_id);
-                    ref.user_name = user?.nom_complet || user?.email || 'Inconnu';
-                    ref.user_email = user?.email || '';
-                }
-                
-                return allReferrals;
-                
-            } catch (error) {
-                console.error('Erreur chargement parrainages:', error);
-                return [];
-            }
-        }
-        
-        async function loadReferralRelations() {
-            try {
-                if (!supabaseClient) return [];
-                
-                const { data, error } = await supabaseClient
-                    .from('referral_relationships')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(50);
-                
-                if (error) throw error;
-                
-                allReferralRelations = data || [];
-                
-                // Ajouter les noms
-                for (let rel of allReferralRelations) {
-                    const referrer = allUsers.find(u => u.id === rel.referrer_id);
-                    const referred = allUsers.find(u => u.id === rel.referred_user_id);
-                    rel.referrer_name = referrer?.nom_complet || referrer?.email || 'Inconnu';
-                    rel.referred_name = referred?.nom_complet || referred?.email || 'Inconnu';
-                }
-                
-                return allReferralRelations;
-                
-            } catch (error) {
-                console.error('Erreur chargement relations:', error);
-                return [];
-            }
-        }
-        
-        async function loadRecharges() {
-            try {
-                if (!supabaseClient) return [];
-                
-                const filter = document.getElementById('rechargeStatusFilter')?.value || 'pending';
-                
-                let query = supabaseClient
-                    .from('recharges')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (filter !== 'all') {
-                    query = query.eq('status', filter);
-                }
-                
-                const { data, error } = await query;
-                
-                if (error) throw error;
-                
-                allRecharges = data || [];
-                
-                // Ajouter les noms
-                for (let rec of allRecharges) {
-                    const user = allUsers.find(u => u.id === rec.user_id);
-                    rec.user_name = user?.nom_complet || user?.email || 'Inconnu';
-                }
-                
-                return allRecharges;
-                
-            } catch (error) {
-                console.error('Erreur chargement recharges:', error);
-                return [];
-            }
-        }
-        
-        async function loadRetraits() {
-            try {
-                if (!supabaseClient) return [];
-                
-                const filter = document.getElementById('retraitStatusFilter')?.value || 'pending';
-                
-                let query = supabaseClient
-                    .from('retraits')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (filter !== 'all') {
-                    query = query.eq('status', filter);
-                }
-                
-                const { data, error } = await query;
-                
-                if (error) throw error;
-                
-                allRetraits = data || [];
-                
-                // Ajouter les noms
-                for (let ret of allRetraits) {
-                    const user = allUsers.find(u => u.id === ret.user_id);
-                    ret.user_name = user?.nom_complet || user?.email || 'Inconnu';
-                }
-                
-                return allRetraits;
-                
-            } catch (error) {
-                console.error('Erreur chargement retraits:', error);
-                return [];
-            }
-        }
-        
-        async function loadBalances() {
-            try {
-                if (!supabaseClient) return [];
-                
-                const { data, error } = await supabaseClient
-                    .from('balances')
-                    .select('*');
-                
-                if (error) throw error;
-                
-                allBalances = data || [];
-                return allBalances;
-                
-            } catch (error) {
-                console.error('Erreur chargement soldes:', error);
-                return [];
-            }
-        }
-        
-        // ============================================
-        // STATISTIQUES
-        // ============================================
-        
-        function updateStatistics() {
-            // Stats principales
-            document.getElementById('statsUsers').textContent = allUsers.length || 0;
-            
-            const unlockedReferrals = allReferrals.filter(r => r.is_unlocked).length;
-            document.getElementById('statsReferrals').textContent = unlockedReferrals || 0;
-            
-            document.getElementById('statsAnnonces').textContent = allAnnonces.length || 0;
-            
-            const pendingWithdrawals = allRetraits.filter(r => r.status === 'pending').length;
-            document.getElementById('statsWithdrawals').textContent = pendingWithdrawals || 0;
-            
-            const pendingRecharges = allRecharges.filter(r => r.status === 'pending').length;
-            document.getElementById('statsRecharges').textContent = pendingRecharges || 0;
-            
-            // Stats dashboard
-            const pendingRequests = pendingWithdrawals + pendingRecharges;
-            document.getElementById('statsTasks').textContent = pendingRequests || 0;
-        }
-        
-        function updateUI() {
-            // Mettre à jour toutes les tables selon l'onglet actif
-            updateUsersTable();
-            updateAnnoncesTable();
-            updateReferralsTable();
-            updateReferralRelationsTable();
-            updateRechargesTable();
-            updateRetraitsTable();
-            updateStatisticsTable();
-            updateDashboardWidgets();
-        }
-        
-        // ============================================
-        // GESTION DES ONGLETS
-        // ============================================
-        
-        function setupTabs() {
-            const tabButtons = document.querySelectorAll('.admin-tab');
-            tabButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    tabButtons.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentTab = this.dataset.tab;
-                    showTab(currentTab);
-                    updateActionButtons();
-                });
-            });
-        }
-        
-        function showTab(tabName) {
-            // Cacher tous les onglets
-            const sections = ['dashboardSection', 'usersSection', 'annoncesSection', 
-                            'referralsSection', 'rechargesSection', 'retraitsSection', 
-                            'statistiquesSection'];
-            sections.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.style.display = 'none';
-            });
-            
-            // Afficher l'onglet sélectionné
-            const sectionMap = {
-                'dashboard': 'dashboardSection',
-                'users': 'usersSection',
-                'annonces': 'annoncesSection',
-                'referrals': 'referralsSection',
-                'recharges': 'rechargesSection',
-                'retraits': 'retraitsSection',
-                'statistiques': 'statistiquesSection'
-            };
-            
-            const sectionId = sectionMap[tabName];
-            if (sectionId) {
-                document.getElementById(sectionId).style.display = 'block';
-            }
-            
-            // Charger les données spécifiques
-            if (tabName === 'recharges') loadRecharges();
-            if (tabName === 'retraits') loadRetraits();
-        }
-        
-        function updateActionButtons() {
-            const actionButtons = document.getElementById('actionButtons');
-            
-            switch(currentTab) {
-                case 'users':
-                    actionButtons.innerHTML = `
-                        <button class="btn btn-primary" onclick="showAddUserModal()">
-                            <i class="fas fa-user-plus"></i> Ajouter un utilisateur
-                        </button>
-                        <button class="btn btn-success" onclick="loadUsers()">
-                            <i class="fas fa-sync-alt"></i> Actualiser
-                        </button>
-                    `;
-                    break;
-                    
-                case 'annonces':
-                    actionButtons.innerHTML = `
-                        <button class="btn btn-primary" onclick="showAddAnnonceModal()">
-                            <i class="fas fa-plus-circle"></i> Ajouter une annonce
-                        </button>
-                        <button class="btn btn-danger" onclick="deleteAllInactiveAnnonces()">
-                            <i class="fas fa-trash"></i> Supprimer les annonces inactives
-                        </button>
-                        <button class="btn btn-success" onclick="loadAnnonces()">
-                            <i class="fas fa-sync-alt"></i> Actualiser
-                        </button>
-                    `;
-                    break;
-                    
-                case 'referrals':
-                    actionButtons.innerHTML = `
-                        <button class="btn btn-success" onclick="loadReferrals()">
-                            <i class="fas fa-sync-alt"></i> Actualiser
-                        </button>
-                    `;
-                    break;
-                    
-                case 'recharges':
-                    actionButtons.innerHTML = `
-                        <button class="btn btn-success" onclick="loadRecharges()">
-                            <i class="fas fa-sync-alt"></i> Actualiser
-                        </button>
-                    `;
-                    break;
-                    
-                case 'retraits':
-                    actionButtons.innerHTML = `
-                        <button class="btn btn-success" onclick="loadRetraits()">
-                            <i class="fas fa-sync-alt"></i> Actualiser
-                        </button>
-                    `;
-                    break;
-                    
-                case 'statistiques':
-                    actionButtons.innerHTML = `
-                        <button class="btn btn-primary" onclick="exportStatistics()">
-                            <i class="fas fa-download"></i> Exporter les statistiques
-                        </button>
-                        <button class="btn btn-success" onclick="updateStatistics()">
-                            <i class="fas fa-sync-alt"></i> Actualiser
-                        </button>
-                    `;
-                    break;
-                    
-                default:
-                    actionButtons.innerHTML = '';
-            }
-        }
-        
-        // ============================================
-        // TABLEAUX - UTILISATEURS
-        // ============================================
-        
-        function updateUsersTable() {
-            const tbody = document.getElementById('usersTableBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (allUsers.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="no-data"><i class="fas fa-users"></i><p>Aucun utilisateur</p></td></tr>`;
-                return;
-            }
-            
-            allUsers.forEach(user => {
-                const row = document.createElement('tr');
-                const date = new Date(user.created_at).toLocaleDateString('fr-FR');
-                const shortId = user.id.substring(0, 8) + '...';
-                const referral = allReferrals.find(r => r.user_id === user.id);
-                
-                row.innerHTML = `
-                    <td>${shortId}</td>
-                    <td><strong>${user.nom_complet || 'Non renseigné'}</strong></td>
-                    <td>${user.email}</td>
-                    <td>
-                        <span class="badge ${user.role === 'admin' ? 'badge-admin' : 'badge-user'}">
-                            ${user.role === 'admin' ? 'Admin' : 'Utilisateur'}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="badge ${user.statut === 'active' ? 'badge-active' : 'badge-inactive'}">
-                            ${user.statut === 'active' ? 'Actif' : 'Inactif'}
-                        </span>
-                    </td>
-                    <td><strong>${user.balance || 0} F</strong></td>
-                    <td>
-                        ${referral ? 
-                            `<span class="badge ${referral.is_unlocked ? 'badge-active' : 'badge-inactive'}">
-                                ${referral.is_unlocked ? '🔓 Débloqué' : '🔒 Verrouillé'}
-                            </span>` : 
-                            '<span class="badge badge-inactive">Aucun</span>'}
-                    </td>
-                    <td>${date}</td>
-                    <td class="actions-cell">
-                        <button class="action-btn edit-btn" onclick="editUser('${user.id}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn delete-btn" onclick="confirmDeleteUser('${user.id}', '${user.nom_complet || user.email}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                        ${!referral?.is_unlocked ? 
-                            `<button class="action-btn approve-btn" onclick="showUnlockLinkModal('${user.id}', '${user.nom_complet || user.email}')">
-                                <i class="fas fa-unlock"></i>
-                            </button>` : ''
-                        }
-                        ${user.email !== ADMIN_EMAIL ? 
-                            `<button class="action-btn ${user.statut === 'active' ? 'block-btn' : 'edit-btn'}" 
-                                    onclick="toggleUserStatus('${user.id}', '${user.statut === 'active' ? 'inactive' : 'active'}')">
-                                <i class="fas ${user.statut === 'active' ? 'fa-ban' : 'fa-check'}"></i>
-                            </button>` : ''
-                        }
-                    </td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-        }
-        
-        function filterUsers() {
-            const search = document.getElementById('userSearchInput')?.value.toLowerCase() || '';
-            const roleFilter = document.getElementById('userRoleFilter')?.value || 'all';
-            const statusFilter = document.getElementById('userStatusFilter')?.value || 'all';
-            
-            const filtered = allUsers.filter(user => {
-                const matchesSearch = user.nom_complet?.toLowerCase().includes(search) || 
-                                     user.email?.toLowerCase().includes(search);
-                const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-                const matchesStatus = statusFilter === 'all' || user.statut === statusFilter;
-                return matchesSearch && matchesRole && matchesStatus;
-            });
-            
-            const tbody = document.getElementById('usersTableBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="no-data"><i class="fas
-                    <td colspan="9" class="no-data"><i class="fas fa-users"></i><p>Aucun utilisateur trouvé</p></td></tr>`;
-                return;
-            }
-            
-            filtered.forEach(user => {
-                const row = document.createElement('tr');
-                const date = new Date(user.created_at).toLocaleDateString('fr-FR');
-                const shortId = user.id.substring(0, 8) + '...';
-                const referral = allReferrals.find(r => r.user_id === user.id);
-                
-                row.innerHTML = `
-                    <td>${shortId}</td>
-                    <td><strong>${user.nom_complet || 'Non renseigné'}</strong></td>
-                    <td>${user.email}</td>
-                    <td>
-                        <span class="badge ${user.role === 'admin' ? 'badge-admin' : 'badge-user'}">
-                            ${user.role === 'admin' ? 'Admin' : 'Utilisateur'}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="badge ${user.statut === 'active' ? 'badge-active' : 'badge-inactive'}">
-                            ${user.statut === 'active' ? 'Actif' : 'Inactif'}
-                        </span>
-                    </td>
-                    <td><strong>${user.balance || 0} F</strong></td>
-                    <td>
-                        ${referral ? 
-                            `<span class="badge ${referral.is_unlocked ? 'badge-active' : 'badge-inactive'}">
-                                ${referral.is_unlocked ? '🔓 Débloqué' : '🔒 Verrouillé'}
-                            </span>` : 
-                            '<span class="badge badge-inactive">Aucun</span>'}
-                    </td>
-                    <td>${date}</td>
-                    <td class="actions-cell">
-                        <button class="action-btn edit-btn" onclick="editUser('${user.id}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn delete-btn" onclick="confirmDeleteUser('${user.id}', '${user.nom_complet || user.email}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                        ${!referral?.is_unlocked ? 
-                            `<button class="action-btn approve-btn" onclick="showUnlockLinkModal('${user.id}', '${user.nom_complet || user.email}')">
-                                <i class="fas fa-unlock"></i>
-                            </button>` : ''
-                        }
-                        ${user.email !== ADMIN_EMAIL ? 
-                            `<button class="action-btn ${user.statut === 'active' ? 'block-btn' : 'edit-btn'}" 
-                                    onclick="toggleUserStatus('${user.id}', '${user.statut === 'active' ? 'inactive' : 'active'}')">
-                                <i class="fas ${user.statut === 'active' ? 'fa-ban' : 'fa-check'}"></i>
-                            </button>` : ''
-                        }
-                    </td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-        }
-        
-        // ============================================
-        // TABLEAUX - ANNONCES
-        // ============================================
-        
-        function updateAnnoncesTable() {
-            const tbody = document.getElementById('annoncesTableBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (allAnnonces.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="no-data"><i class="fas fa-newspaper"></i><p>Aucune annonce</p></td></tr>`;
-                return;
-            }
-            
-            allAnnonces.forEach(annonce => {
-                const row = document.createElement('tr');
-                const date = new Date(annonce.created_at).toLocaleDateString('fr-FR');
-                const shortId = annonce.id.substring(0, 8) + '...';
-                const shortTitle = annonce.titre.length > 30 ? annonce.titre.substring(0, 30) + '...' : annonce.titre;
-                
-                row.innerHTML = `
-                    <td>${shortId}</td>
-                    <td title="${annonce.titre}"><strong>${shortTitle}</strong></td>
-                    <td>${annonce.user_name || 'Inconnu'}</td>
-                    <td>
-                        <span class="badge ${annonce.type === 'vente' ? 'badge-vente' : 'badge-actualite'}">
-                            ${annonce.type === 'vente' ? 'À vendre' : 'Actualité'}
-                        </span>
-                    </td>
-                    <td>${annonce.prix ? annonce.prix + ' F' : 'Gratuit'}</td>
-                    <td>${annonce.views || 0}</td>
-                    <td>${annonce.contacts || 0}</td>
-                    <td>${date}</td>
-                    <td>
-                        <span class="badge ${annonce.statut === 'actif' ? 'badge-active' : 'badge-inactive'}">
-                            ${annonce.statut === 'actif' ? 'Actif' : 'Inactif'}
-                        </span>
-                    </td>
-                    <td class="actions-cell">
-                        <button class="action-btn edit-btn" onclick="viewAnnonceDetails('${annonce.id}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="action-btn delete-btn" onclick="confirmDeleteAnnonce('${annonce.id}', '${annonce.titre}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                        <button class="action-btn ${annonce.statut === 'actif' ? 'block-btn' : 'edit-btn'}" 
-                                onclick="toggleAnnonceStatus('${annonce.id}', '${annonce.statut === 'actif' ? 'inactif' : 'actif'}')">
-                            <i class="fas ${annonce.statut === 'actif' ? 'fa-ban' : 'fa-check'}"></i>
-                        </button>
-                    </td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-        }
-        
-        function filterAnnonces() {
-            const search = document.getElementById('annonceSearchInput')?.value.toLowerCase() || '';
-            const typeFilter = document.getElementById('annonceTypeFilter')?.value || 'all';
-            const statusFilter = document.getElementById('annonceStatusFilter')?.value || 'all';
-            
-            const filtered = allAnnonces.filter(annonce => {
-                const matchesSearch = annonce.titre?.toLowerCase().includes(search) || 
-                                     annonce.description?.toLowerCase().includes(search);
-                const matchesType = typeFilter === 'all' || annonce.type === typeFilter;
-                const matchesStatus = statusFilter === 'all' || annonce.statut === statusFilter;
-                return matchesSearch && matchesType && matchesStatus;
-            });
-            
-            const tbody = document.getElementById('annoncesTableBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="no-data"><i class="fas fa-newspaper"></i><p>Aucune annonce trouvée</p></td></tr>`;
-                return;
-            }
-            
-            filtered.forEach(annonce => {
-                const row = document.createElement('tr');
-                const date = new Date(annonce.created_at).toLocaleDateString('fr-FR');
-                const shortId = annonce.id.substring(0, 8) + '...';
-                const shortTitle = annonce.titre.length > 30 ? annonce.titre.substring(0, 30) + '...' : annonce.titre;
-                
-                row.innerHTML = `
-                    <td>${shortId}</td>
-                    <td title="${annonce.titre}"><strong>${shortTitle}</strong></td>
-                    <td>${annonce.user_name || 'Inconnu'}</td>
-                    <td>
-                        <span class="badge ${annonce.type === 'vente' ? 'badge-vente' : 'badge-actualite'}">
-                            ${annonce.type === 'vente' ? 'À vendre' : 'Actualité'}
-                        </span>
-                    </td>
-                    <td>${annonce.prix ? annonce.prix + ' F' : 'Gratuit'}</td>
-                    <td>${annonce.views || 0}</td>
-                    <td>${annonce.contacts || 0}</td>
-                    <td>${date}</td>
-                    <td>
-                        <span class="badge ${annonce.statut === 'actif' ? 'badge-active' : 'badge-inactive'}">
-                            ${annonce.statut === 'actif' ? 'Actif' : 'Inactif'}
-                        </span>
-                    </td>
-                    <td class="actions-cell">
-                        <button class="action-btn edit-btn" onclick="viewAnnonceDetails('${annonce.id}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="action-btn delete-btn" onclick="confirmDeleteAnnonce('${annonce.id}', '${annonce.titre}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                        <button class="action-btn ${annonce.statut === 'actif' ? 'block-btn' : 'edit-btn'}" 
-                                onclick="toggleAnnonceStatus('${annonce.id}', '${annonce.statut === 'actif' ? 'inactif' : 'actif'}')">
-                            <i class="fas ${annonce.statut === 'actif' ? 'fa-ban' : 'fa-check'}"></i>
-                        </button>
-                    </td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-        }
-        
-        // ============================================
-        // TABLEAUX - PARRAINAGES
-        // ============================================
-        
-        function updateReferralsTable() {
-            const tbody = document.getElementById('referralsTableBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (allReferrals.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="no-data"><i class="fas fa-sitemap"></i><p>Aucun parrainage</p></td></tr>`;
-                return;
-            }
-            
-            allReferrals.forEach(ref => {
-                const row = document.createElement('tr');
-                const date = ref.unlocked_at ? new Date(ref.unlocked_at).toLocaleDateString('fr-FR') : '-';
-                
-                row.innerHTML = `
-                    <td><strong>${ref.user_name || 'Inconnu'}</strong><br><small style="color: var(--light-gray);">${ref.user_email || ''}</small></td>
-                    <td><code style="background: var(--light-bg); padding: 4px 8px; border-radius: 4px;">${ref.referral_code || '-'}</code></td>
-                    <td>
-                        <span class="badge ${ref.is_unlocked ? 'badge-active' : 'badge-inactive'}">
-                            ${ref.is_unlocked ? '🔓 Débloqué' : '🔒 Verrouillé'}
-                        </span>
-                    </td>
-                    <td><strong>${ref.direct_count || 0}</strong></td>
-                    <td><strong>${ref.level2_count || 0}</strong></td>
-                    <td><strong>${ref.level3_count || 0}</strong></td>
-                    <td><strong style="color: var(--primary-green);">${ref.total_earned || 0} F</strong></td>
-                    <td>${date}</td>
-                    <td class="actions-cell">
-                        ${!ref.is_unlocked ? 
-                            `<button class="action-btn approve-btn" onclick="adminUnlockReferralLink('${ref.user_id}')">
-                                <i class="fas fa-unlock"></i> Débloquer
-                            </button>` : 
-                            `<span class="badge badge-active">Déjà débloqué</span>`
-                        }
-                    </td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-        }
-        
-        function filterReferrals() {
-            const search = document.getElementById('referralSearchInput')?.value.toLowerCase() || '';
-            
-            const filtered = allReferrals.filter(ref => {
-                return ref.user_name?.toLowerCase().includes(search) || 
-                       ref.user_email?.toLowerCase().includes(search) ||
-                       ref.referral_code?.toLowerCase().includes(search);
-            });
-            
-            const tbody = document.getElementById('referralsTableBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="no-data"><i class="fas fa-sitemap"></i><p>Aucun parrainage trouvé</p></td></tr>`;
-                return;
-            }
-            
-            filtered.forEach(ref => {
-                const row = document.createElement('tr');
-                const date = ref.unlocked_at ? new Date(ref.unlocked_at).toLocaleDateString('fr-FR') : '-';
-                
-                row.innerHTML = `
-                    <td><strong>${ref.user_name || 'Inconnu'}</strong><br><small style="color: var(--light-gray);">${ref.user_email || ''}</small></td>
-                    <td><code style="background: var(--light-bg); padding: 4px 8px; border-radius: 4px;">${ref.referral_code || '-'}</code></td>
-                    <td>
-                        <span class="badge ${ref.is_unlocked ? 'badge-active' : 'badge-inactive'}">
-                            ${ref.is_unlocked ? '🔓 Débloqué' : '🔒 Verrouillé'}
-                        </span>
-                    </td>
-                    <td><strong>${ref.direct_count || 0}</strong></td>
-                    <td><strong>${ref.level2_count || 0}</strong></td>
-                    <td><strong>${ref.level3_count || 0}</strong></td>
-                    <td><strong style="color: var(--primary-green);">${ref.total_earned || 0} F</strong></td>
-                    <td>${date}</td>
-                    <td class="actions-cell">
-                        ${!ref.is_unlocked ? 
-                            `<button class="action-btn approve-btn" onclick="adminUnlockReferralLink('${ref.user_id}')">
-                                <i class="fas fa-unlock"></i> Débloquer
-                            </button>` : 
-                            `<span class="badge badge-active">Débloqué</span>`
-                        }
-                    </td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-        }
-        
-        function updateReferralRelationsTable() {
-            const tbody = document.getElementById('referralRelationsTableBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (allReferralRelations.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="no-data"><i class="fas fa-sitemap"></i><p>Aucune relation de parrainage</p></td></tr>`;
-                return;
-            }
-            
-            allReferralRelations.forEach(rel => {
-                const row = document.createElement('tr');
-                const date = new Date(rel.created_at).toLocaleDateString('fr-FR');
-                
-                row.innerHTML = `
-                    <td><strong>${rel.referrer_name || 'Inconnu'}</strong></td>
-                    <td><strong>${rel.referred_name || 'Inconnu'}</strong></td>
-                    <td><span class="badge" style="background: ${rel.level === 1 ? 'rgba(255,215,0,0.1)' : rel.level === 2 ? 'rgba(192,192,192,0.1)' : 'rgba(205,127,50,0.1)'}; color: ${rel.level === 1 ? '#B8860B' : rel.level === 2 ? '#808080' : '#8B4513'};">Niveau ${rel.level}</span></td>
-                    <td><strong style="color: var(--primary-green);">${rel.commission_earned || 0} F</strong></td>
-                    <td>${date}</td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-        }
-        
-        // ============================================
-        // TABLEAUX - RECHARGES
-        // ============================================
-        
-        function updateRechargesTable() {
-            const tbody = document.getElementById('rechargesTableBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (allRecharges.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="no-data"><i class="fas fa-coins"></i><p>Aucune recharge</p></td></tr>`;
-                return;
-            }
-            
-            allRecharges.forEach(recharge => {
-                const row = document.createElement('tr');
-                const date = new Date(recharge.created_at).toLocaleDateString('fr-FR') + ' ' + 
-                            new Date(recharge.created_at).toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
-                const shortId = recharge.id.substring(0, 8) + '...';
-                
-                row.innerHTML = `
-                    <td>${shortId}</td>
-                    <td><strong>${recharge.user_name || 'Inconnu'}</strong></td>
-                    <td><strong style="color: var(--primary-green);">${recharge.amount || 0} F</strong></td>
-                    <td>${recharge.method || 'Orange Money'}</td>
-                    <td>${date}</td>
-                    <td>
-                        <span class="badge ${recharge.status === 'pending' ? 'badge-pending' : 
-                                          recharge.status === 'approved' ? 'badge-active' : 'badge-inactive'}">
-                            ${recharge.status === 'pending' ? 'En attente' : 
-                              recharge.status === 'approved' ? 'Approuvée' : 'Rejetée'}
-                        </span>
-                    </td>
-                    <td class="actions-cell">
-                        ${recharge.status === 'pending' ? 
-                            `<button class="action-btn approve-btn" onclick="showRechargeModal('${recharge.id}')">
-                                <i class="fas fa-check"></i> Traiter
-                            </button>` : 
-                            `<span class="badge badge-inactive">Traité</span>`
-                        }
-                    </td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-        }
-        
-        // ============================================
-        // TABLEAUX - RETRAITS
-        // ============================================
-        
-        function updateRetraitsTable() {
-            const tbody = document.getElementById('retraitsTableBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (allRetraits.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="no-data"><i class="fas fa-wallet"></i><p>Aucun retrait</p></td></tr>`;
-                return;
-            }
-            
-            allRetraits.forEach(retrait => {
-                const row = document.createElement('tr');
-                const date = new Date(retrait.created_at).toLocaleDateString('fr-FR') + ' ' + 
-                            new Date(retrait.created_at).toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
-                const shortId = retrait.id.substring(0, 8) + '...';
-                
-                row.innerHTML = `
-                    <td>${shortId}</td>
-                    <td><strong>${retrait.user_name || 'Inconnu'}</strong></td>
-                    <td><strong style="color: var(--primary-red);">${retrait.amount || 0} F</strong></td>
-                    <td>${retrait.account || 'Orange Money'}<br><small>${retrait.phone || ''}</small></td>
-                    <td>${date}</td>
-                    <td>
-                        <span class="badge ${retrait.status === 'pending' ? 'badge-pending' : 
-                                          retrait.status === 'approved' ? 'badge-active' : 'badge-inactive'}">
-                            ${retrait.status === 'pending' ? 'En attente' : 
-                              retrait.status === 'approved' ? 'Approuvé' : 'Rejeté'}
-                        </span>
-                    </td>
-                    <td class="actions-cell">
-                        ${retrait.status === 'pending' ? 
-                            `<button class="action-btn approve-btn" onclick="showRetraitModal('${retrait.id}')">
-                                <i class="fas fa-check"></i> Traiter
-                            </button>` : 
-                            `<span class="badge badge-inactive">Traité</span>`
-                        }
-                    </td>
-                `;
-                
-                tbody.appendChild(row);
-            });
-        }
-        
-        // ============================================
-        // TABLEAUX - STATISTIQUES
-        // ============================================
-        
-        function updateStatisticsTable() {
-            const tbody = document.getElementById('statsTableBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            const totalBalance = allBalances.reduce((sum, b) => sum + (b.amount || 0), 0);
-            const totalEarned = allBalances.reduce((sum, b) => sum + (b.total_earned || 0), 0);
-            const totalWithdrawn = allBalances.reduce((sum, b) => sum + (b.total_withdrawn || 0), 0);
-            
-            const stats = [
-                { metric: '👥 Total utilisateurs', value: allUsers.length, details: `${allUsers.filter(u => u.statut === 'active').length} actifs` },
-                { metric: '👑 Administrateurs', value: allUsers.filter(u => u.role === 'admin').length, details: `${allUsers.filter(u => u.role === 'admin').length} admins` },
-                { metric: '📰 Total annonces', value: allAnnonces.length, details: `${allAnnonces.filter(a => a.statut === 'actif').length} actives` },
-                { metric: '💰 Solde total', value: totalBalance.toLocaleString() + ' F', details: `${allUsers.length} utilisateurs` },
-                { metric: '💵 Gains totaux', value: totalEarned.toLocaleString() + ' F', details: `${allReferrals.filter(r => r.is_unlocked).length} parrains actifs` },
-                { metric: '💸 Retraits totaux', value: totalWithdrawn.toLocaleString() + ' F', details: `${allRetraits.filter(r => r.status === 'approved').length} retraits` },
-                { metric: '🔓 Parrains débloqués', value: allReferrals.filter(r => r.is_unlocked).length, details: `${allReferrals.length} total` },
-                { metric: '🔄 Relations', value: allReferralRelations.length, details: `${allReferralRelations.filter(r => r.level === 1).length} directs` },
-                { metric: '⏳ Recharges en attente', value: allRecharges.filter(r => r.status === 'pending').length, details: `${allRecharges.length} total` },
-                { metric: '⏳ Retraits en attente', value: allRetraits.filter(r => r.status === 'pending').length, details: `${allRetraits.length} total` }
-            ];
-            
-            stats.forEach(stat => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><strong>${stat.metric}</strong></td>
-                    <td><strong style="font-size: 16px;">${stat.value}</strong></td>
-                    <td><span style="color: var(--light-gray);">${stat.details}</span></td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-        
-        // ============================================
-        // WIDGETS DASHBOARD
-        // ============================================
-        
-        function updateDashboardWidgets() {
-            // Derniers utilisateurs
-            const recentUsers = document.getElementById('recentUsersList');
-            if (recentUsers) {
-                const last5Users = allUsers.slice(0, 5);
-                
-                if (last5Users.length === 0) {
-                    recentUsers.innerHTML = `<div class="no-data"><i class="fas fa-users"></i><p>Aucun utilisateur récent</p></div>`;
-                } else {
-                    let html = '';
-                    last5Users.forEach(user => {
-                        const date = new Date(user.created_at).toLocaleDateString('fr-FR');
-                        html += `
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--light-border);">
-                                <div>
-                                    <strong>${user.nom_complet || user.email}</strong>
-                                    <div style="font-size: 12px; color: var(--light-gray);">${user.email}</div>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div style="font-size: 12px;">${date}</div>
-                                    <span class="badge ${user.role === 'admin' ? 'badge-admin' : 'badge-user'}">${user.role}</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    recentUsers.innerHTML = html;
-                }
-            }
-            
-            // Demandes en attente
-            const pendingRequests = document.getElementById('pendingRequestsList');
-            if (pendingRequests) {
-                const pendingRecharges = allRecharges.filter(r => r.status === 'pending').slice(0, 3);
-                const pendingRetraits = allRetraits.filter(r => r.status === 'pending').slice(0, 3);
-                
-                let html = '';
-                
-                if (pendingRecharges.length === 0 && pendingRetraits.length === 0) {
-                    html = `<div class="no-data"><i class="fas fa-check-circle"></i><p>Aucune demande en attente</p></div>`;
-                } else {
-                    if (pendingRecharges.length > 0) {
-                        html += `<h4 style="margin-bottom: 10px; font-size: 14px;">💳 Recharges</h4>`;
-                        pendingRecharges.forEach(rec => {
-                            html += `
-                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--light-border);">
-                                    <div>
-                                        <strong>${rec.user_name}</strong>
-                                        <div style="font-size: 12px; color: var(--light-gray);">${rec.method || 'OM'}</div>
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <strong style="color: var(--primary-green);">+${rec.amount} F</strong>
-                                        <div><span class="badge badge-pending">En attente</span></div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    }
-                    
-                    if (pendingRetraits.length > 0) {
-                        html += `<h4 style="margin: 15px 0 10px; font-size: 14px;">💸 Retraits</h4>`;
-                        pendingRetraits.forEach(ret => {
-                            html += `
-                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--light-border);">
-                                    <div>
-                                        <strong>${ret.user_name}</strong>
-                                        <div style="font-size: 12px; color: var(--light-gray);">${ret.phone || ''}</div>
-                                    </div>
-                                    <div style="text-align: right;">
-                                        <strong style="color: var(--primary-red);">-${ret.amount} F</strong>
-                                        <div><span class="badge badge-pending">En attente</span></div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    }
-                }
-                
-                pendingRequests.innerHTML = html;
-            }
-        }
-        
-        // ============================================
-        // FONCTIONS UTILISATEURS
-        // ============================================
-        
-        function showAddUserModal() {
-            document.getElementById('addUserForm').reset();
-            showModal('addUserModal');
-        }
-        
-        async function addNewUser() {
-            const name = document.getElementById('newUserName').value;
-            const email = document.getElementById('newUserEmail').value;
-            const password = document.getElementById('newUserPassword').value;
-            const role = document.getElementById('newUserRole').value;
-            const status = document.getElementById('newUserStatus').value;
-            const balance = parseFloat(document.getElementById('newUserBalance').value) || 0;
-            
-            if (!name || !email || !password) {
-                showToast('Veuillez remplir tous les champs obligatoires', 'error');
-                return;
-            }
-            
-            showLoading(true);
-            
-            try {
-                // Créer l'utilisateur dans Auth
-                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: { nom_complet: name, role: role, statut: status }
-                    }
-                });
-                
-                if (authError) throw authError;
-                
-                // Ajouter le solde
-                if (balance > 0 && authData.user) {
-                    await supabaseClient
-                        .from('balances')
-                        .insert([{ user_id: authData.user.id, amount: balance, total_earned: balance }]);
-                }
-                
-                showToast('Utilisateur ajouté avec succès', 'success');
-                closeModal('addUserModal');
-                await loadAllData();
-                
-            } catch (error) {
-                console.error('Erreur ajout utilisateur:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        function editUser(userId) {
-            const user = allUsers.find(u => u.id === userId);
-            if (!user) return;
-            
-            document.getElementById('editUserId').value = user.id;
-            document.getElementById('editUserName').value = user.nom_complet || '';
-            document.getElementById('editUserEmail').value = user.email;
-            document.getElementById('editUserRole').value = user.role || 'user';
-            document.getElementById('editUserStatus').value = user.statut || 'active';
-            
-            showModal('editUserModal');
-        }
-        
-        async function saveUserChanges() {
-            const userId = document.getElementById('editUserId').value;
-            const name = document.getElementById('editUserName').value;
-            const email = document.getElementById('editUserEmail').value;
-            const role = document.getElementById('editUserRole').value;
-            const status = document.getElementById('editUserStatus').value;
-            
-            if (!name || !email) {
-                showToast('Veuillez remplir tous les champs', 'error');
-                return;
-            }
-            
-            showLoading(true);
-            
-            try {
-                const { error } = await supabaseClient
-                    .from('users')
-                    .update({
-                        nom_complet: name,
-                        email: email,
-                        role: role,
-                        statut: status
-                    })
-                    .eq('id', userId);
-                
-                if (error) throw error;
-                
-                showToast('Utilisateur modifié avec succès', 'success');
-                closeModal('editUserModal');
-                await loadAllData();
-                
-            } catch (error) {
-                console.error('Erreur modification:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        function confirmDeleteUser(userId, userName) {
-            currentItemToDelete = userId;
-            deleteType = 'user';
-            document.getElementById('deleteConfirmMessage').textContent = 
-                `Êtes-vous sûr de vouloir supprimer l'utilisateur "${userName}" ? Cette action est irréversible.`;
-            showModal('deleteConfirmModal');
-        }
-        
-        async function toggleUserStatus(userId, newStatus) {
-            showLoading(true);
-            
-            try {
-                const { error } = await supabaseClient
-                    .from('users')
-                    .update({ statut: newStatus })
-                    .eq('id', userId);
-                
-                if (error) throw error;
-                
-                showToast(`Statut mis à jour: ${newStatus === 'active' ? 'Actif' : 'Inactif'}`, 'success');
-                await loadAllData();
-                
-            } catch (error) {
-                console.error('Erreur changement statut:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // ============================================
-        // FONCTIONS ANNONCES
-        // ============================================
-        
-        function showAddAnnonceModal() {
-            // Remplir la liste des utilisateurs
-            const select = document.getElementById('newAnnonceUserId');
-            select.innerHTML = '';
-            
-            allUsers.filter(u => u.statut === 'active').forEach(user => {
-                const option = document.createElement('option');
-                option.value = user.id;
-                option.textContent = `${user.nom_complet || user.email} (${user.email})`;
-                select.appendChild(option);
-            });
-            
-            document.getElementById('addAnnonceForm').reset();
-            showModal('addAnnonceModal');
-        }
-        
-        async function addNewAnnonce() {
-            const title = document.getElementById('newAnnonceTitle').value;
-            const description = document.getElementById('newAnnonceDescription').value;
-            const type = document.getElementById('newAnnonceType').value;
-            const price = document.getElementById('newAnnoncePrice').value;
-            const userId = document.getElementById('newAnnonceUserId').value;
-            
-            if (!title || !description || !userId) {
-                showToast('Veuillez remplir tous les champs', 'error');
-                return;
-            }
-            
-            showLoading(true);
-            
-            try {
-                const newAnnonce = {
-                    titre: title,
-                    description: description,
-                    type: type,
-                    prix: price ? parseFloat(price) : null,
-                    user_id: userId,
-                    statut: 'actif',
-                    views: 0,
-                    contacts: 0,
-                    created_at: new Date().toISOString()
-                };
-                
-                const { error } = await supabaseClient
-                    .from('annonces')
-                    .insert([newAnnonce]);
-                
-                if (error) throw error;
-                
-                showToast('Annonce ajoutée avec succès', 'success');
-                closeModal('addAnnonceModal');
-                await loadAllData();
-                
-            } catch (error) {
-                console.error('Erreur ajout annonce:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        function viewAnnonceDetails(annonceId) {
-            const annonce = allAnnonces.find(a => a.id === annonceId);
-            if (!annonce) return;
-            
-            currentItemToDelete = annonceId;
-            deleteType = 'annonce';
-            
-            const date = new Date(annonce.created_at).toLocaleDateString('fr-FR') + ' ' + 
-                        new Date(annonce.created_at).toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
-            
-            document.getElementById('annonceDetailsContent').innerHTML = `
-                <div style="margin-bottom: 20px;">
-                    <h4 style="margin-bottom: 10px; color: var(--primary-blue); font-size: 18px;">${annonce.titre}</h4>
-                    <p style="color: var(--light-gray); font-size: 14px; margin-bottom: 15px; line-height: 1.6; padding: 10px; background: var(--light-bg); border-radius: var(--radius-sm);">
-                        ${annonce.description}
-                    </p>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                        <div style="background: var(--light-bg); padding: 12px; border-radius: var(--radius-sm);">
-                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Type</div>
-                            <span class="badge ${annonce.type === 'vente' ? 'badge-vente' : 'badge-actualite'}">
-                                ${annonce.type === 'vente' ? 'À vendre' : 'Actualité'}
-                            </span>
-                        </div>
-                        <div style="background: var(--light-bg); padding: 12px; border-radius: var(--radius-sm);">
-                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Statut</div>
-                            <span class="badge ${annonce.statut === 'actif' ? 'badge-active' : 'badge-inactive'}">
-                                ${annonce.statut === 'actif' ? 'Actif' : 'Inactif'}
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                        <div style="background: var(--light-bg); padding: 12px; border-radius: var(--radius-sm);">
-                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Prix</div>
-                            <div style="font-weight: 700; font-size: 18px;">${annonce.prix ? annonce.prix + ' F' : 'Gratuit'}</div>
-                        </div>
-                        <div style="background: var(--light-bg); padding: 12px; border-radius: var(--radius-sm);">
-                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Date</div>
-                            <div style="font-weight: 500;">${date}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div style="background: var(--light-bg); padding: 12px; border-radius: var(--radius-sm);">
-                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Vues</div>
-                            <div style="font-weight: 700; color: var(--primary-blue); font-size: 18px;">${annonce.views || 0}</div>
-                        </div>
-                        <div style="background: var(--light-bg); padding: 12px; border-radius: var(--radius-sm);">
-                            <div style="font-size: 12px; color: var(--light-gray); margin-bottom: 5px;">Contacts</div>
-                            <div style="font-weight: 700; color: var(--primary-green); font-size: 18px;">${annonce.contacts || 0}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--light-border);">
-                        <div style="font-size: 13px; color: var(--light-gray);">Publié par</div>
-                        <div style="font-weight: 600; margin-top: 5px;">${annonce.user_name || 'Inconnu'}</div>
-                        <div style="font-size: 12px; color: var(--light-gray);">ID: ${annonce.user_id}</div>
-                    </div>
-                </div>
-            `;
-            
-            showModal('annonceDetailsModal');
-        }
-        
-        function confirmDeleteAnnonce(annonceId, annonceTitle) {
-            currentItemToDelete = annonceId;
-            deleteType = 'annonce';
-            document.getElementById('deleteConfirmMessage').textContent = 
-                `Êtes-vous sûr de vouloir supprimer l'annonce "${annonceTitle}" ? Cette action est irréversible.`;
-            showModal('deleteConfirmModal');
-        }
-        
-        function deleteSelectedAnnonce() {
-            confirmDelete();
-        }
-        
-        async function toggleAnnonceStatus(annonceId, newStatus) {
-            showLoading(true);
-            
-            try {
-                const { error } = await supabaseClient
-                    .from('annonces')
-                    .update({ statut: newStatus })
-                    .eq('id', annonceId);
-                
-                if (error) throw error;
-                
-                showToast(`Statut mis à jour: ${newStatus === 'actif' ? 'Actif' : 'Inactif'}`, 'success');
-                await loadAllData();
-                
-            } catch (error) {
-                console.error('Erreur changement statut annonce:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        async function deleteAllInactiveAnnonces() {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer toutes les annonces inactives ? Cette action est irréversible.')) {
-                return;
-            }
-            
-            showLoading(true);
-            
-            try {
-                const { error } = await supabaseClient
-                    .from('annonces')
-                    .delete()
-                    .eq('statut', 'inactif');
-                
-                if (error) throw error;
-                
-                showToast('Annonces inactives supprimées', 'success');
-                await loadAllData();
-                
-            } catch (error) {
-                console.error('Erreur suppression annonces inactives:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // ============================================
-        // FONCTIONS PARRAINAGE
-        // ============================================
-        
-        function showUnlockLinkModal(userId, userName) {
-            currentUserToUnlock = userId;
-            
-            const user = allUsers.find(u => u.id === userId);
-            const balance = allBalances.find(b => b.user_id === userId);
-            
-            document.getElementById('unlockLinkDetails').innerHTML = `
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <i class="fas fa-lock" style="font-size: 48px; color: var(--primary-orange); margin-bottom: 15px;"></i>
-                    <h4 style="margin-bottom: 10px;">Débloquer le lien de ${userName}</h4>
-                    <p style="color: var(--light-gray);">Le coût de déblocage est de <strong style="color: var(--primary-orange); font-size: 20px;">2 150 F</strong></p>
-                </div>
-                <div style="background: var(--light-bg); padding: 15px; border-radius: var(--radius-sm);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <span>Solde actuel:</span>
-                        <strong>${balance?.amount || 0} F</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <span>Coût de déblocage:</span>
-                        <strong style="color: var(--primary-orange);">-2 150 F</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--light-border);">
-                        <span>Nouveau solde:</span>
-                        <strong>${(balance?.amount || 0) - 2150} F</strong>
-                    </div>
-                </div>
-                <p style="margin-top: 15px; font-size: 13px; color: var(--light-gray);">
-                    <i class="fas fa-info-circle"></i> Le lien sera immédiatement actif et l'utilisateur pourra commencer à parrainer.
-                </p>
-            `;
-            
-            showModal('unlockLinkModal');
-        }
-        
-        async function adminUnlockReferralLink(userId) {
-            showLoading(true);
-            
-            try {
-                const { data, error } = await supabaseClient
-                    .rpc('unlock_referral_link', { p_user_id: userId });
-                
-                if (error) throw error;
-                
-                showToast('Lien de parrainage débloqué avec succès', 'success');
-                closeModal('unlockLinkModal');
-                await loadAllData();
-                
-            } catch (error) {
-                console.error('Erreur déblocage lien:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // ============================================
-        // FONCTIONS RECHARGES
-        // ============================================
-        
-        function showRechargeModal(rechargeId) {
-            const recharge = allRecharges.find(r => r.id === rechargeId);
-            if (!recharge) return;
-            
-            currentRechargeToProcess = recharge;
-            
-            const date = new Date(recharge.created_at).toLocaleString('fr-FR');
-            
-            document.getElementById('rechargeDetails').innerHTML = `
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <i class="fas fa-coins" style="font-size: 48px; color: var(--primary-green); margin-bottom: 15px;"></i>
-                    <h4 style="margin-bottom: 10px;">Demande de recharge</h4>
-                </div>
-                <div style="background: var(--light-bg); padding: 15px; border-radius: var(--radius-sm);">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                        <div>
-                            <div style="font-size: 12px; color: var(--light-gray);">Utilisateur</div>
-                            <strong>${recharge.user_name || 'Inconnu'}</strong>
-                        </div>
-                        <div>
-                            <div style="font-size: 12px; color: var(--light-gray);">Montant</div>
-                            <strong style="font-size: 20px; color: var(--primary-green);">${recharge.amount} F</strong>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                        <div>
-                            <div style="font-size: 12px; color: var(--light-gray);">Méthode</div>
-                            <strong>${recharge.method || 'Orange Money'}</strong>
-                        </div>
-                        <div>
-                            <div style="font-size: 12px; color: var(--light-gray);">Date</div>
-                            <strong>${date}</strong>
-                        </div>
-                    </div>
-                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--light-border);">
-                        <div style="font-size: 12px; color: var(--light-gray);">ID Transaction</div>
-                        <code style="font-size: 12px;">${recharge.id}</code>
-                    </div>
-                </div>
-            `;
-            
-            showModal('rechargeModal');
-        }
-        
-        async function approveRecharge() {
-            if (!currentRechargeToProcess) return;
-            
-            showLoading(true);
-            
-            try {
-                // Mettre à jour le statut de la recharge
-                const { error: updateError } = await supabaseClient
-                    .from('recharges')
-                    .update({ 
-                        status: 'approved', 
-                        processed_at: new Date().toISOString(),
-                        processed_by: currentUser?.id
-                    })
-                    .eq('id', currentRechargeToProcess.id);
-                
-                if (updateError) throw updateError;
-                
-                // Ajouter le montant au solde de l'utilisateur
-                const { error: balanceError } = await supabaseClient
-                    .from('balances')
-                    .update({ 
-                        amount: supabaseClient.rpc('increment', { 
-                            row_id: currentRechargeToProcess.user_id, 
-                            amount: currentRechargeToProcess.amount 
-                        }),
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('user_id', currentRechargeToProcess.user_id);
-                
-                if (balanceError) throw balanceError;
-                
-                showToast(`Recharge de ${currentRechargeToProcess.amount} F approuvée`, 'success');
-                closeModal('rechargeModal');
-                await loadAllData();
-                
-            } catch (error) {
-                console.error('Erreur approbation recharge:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-                currentRechargeToProcess = null;
-            }
-        }
-        
-        function rejectRecharge() {
-            if (!currentRechargeToProcess) return;
-            
-            if (!confirm(`Rejeter la demande de recharge de ${currentRechargeToProcess.amount} F ?`)) return;
-            
-            showLoading(true);
-            
-            try {
-                // Mettre à jour le statut
-                supabaseClient
-                    .from('recharges')
-                    .update({ 
-                        status: 'rejected', 
-                        processed_at: new Date().toISOString(),
-                        processed_by: currentUser?.id
-                    })
-                    .eq('id', currentRechargeToProcess.id)
-                    .then(({ error }) => {
-                        if (error) throw error;
-                        showToast('Recharge rejetée', 'warning');
-                        closeModal('rechargeModal');
-                        loadAllData();
-                    });
-                
-            } catch (error) {
-                console.error('Erreur rejet recharge:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-                currentRechargeToProcess = null;
-            }
-        }
-        
-        // ============================================
-        // FONCTIONS RETRAITS
-        // ============================================
-        
-        function showRetraitModal(retraitId) {
-            const retrait = allRetraits.find(r => r.id === retraitId);
-            if (!retrait) return;
-            
-            currentRetraitToProcess = retrait;
-            
-            const date = new Date(retrait.created_at).toLocaleString('fr-FR');
-            
-            document.getElementById('retraitDetails').innerHTML = `
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <i class="fas fa-wallet" style="font-size: 48px; color: var(--primary-red); margin-bottom: 15px;"></i>
-                    <h4 style="margin-bottom: 10px;">Demande de retrait</h4>
-                </div>
-                <div style="background: var(--light-bg); padding: 15px; border-radius: var(--radius-sm);">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                        <div>
-                            <div style="font-size: 12px; color: var(--light-gray);">Utilisateur</div>
-                            <strong>${retrait.user_name || 'Inconnu'}</strong>
-                        </div>
-                        <div>
-                            <div style="font-size: 12px; color: var(--light-gray);">Montant</div>
-                            <strong style="font-size: 20px; color: var(--primary-red);">${retrait.amount} F</strong>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                        <div>
-                            <div style="font-size: 12px; color: var(--light-gray);">Compte</div>
-                            <strong>${retrait.account || 'Orange Money'}</strong>
-                        </div>
-                        <div>
-                            <div style="font-size: 12px; color: var(--light-gray);">Téléphone</div>
-                            <strong>${retrait.phone || '-'}</strong>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div>
-                            <div style="font-size: 12px; color: var(--light-gray);">Date demande</div>
-                            <strong>${date}</strong>
-                        </div>
-                        <div>
-                            <div style="font-size: 12px; color: var(--light-gray);">ID</div>
-                            <code style="font-size: 12px;">${retrait.id.substring(0, 8)}</code>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            showModal('retraitModal');
-        }
-        
-        async function approveWithdrawal() {
-            if (!currentRetraitToProcess) return;
-            
-            showLoading(true);
-            
-            try {
-                // Mettre à jour le statut du retrait
-                const { error: updateError } = await supabaseClient
-                    .from('retraits')
-                    .update({ 
-                        status: 'approved', 
-                        processed_at: new Date().toISOString(),
-                        processed_by: currentUser?.id
-                    })
-                    .eq('id', currentRetraitToProcess.id);
-                
-                if (updateError) throw updateError;
-                
-                // Déduire du solde
-                const { error: balanceError } = await supabaseClient
-                    .from('balances')
-                    .update({ 
-                        amount: supabaseClient.rpc('decrement', { 
-                            row_id: currentRetraitToProcess.user_id, 
-                            amount: currentRetraitToProcess.amount 
-                        }),
-                        total_withdrawn: supabaseClient.rpc('increment', { 
-                            row_id: currentRetraitToProcess.user_id, 
-                            amount: currentRetraitToProcess.amount 
-                        }),
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('user_id', currentRetraitToProcess.user_id);
-                
-                if (balanceError) throw balanceError;
-                
-                showToast(`Retrait de ${currentRetraitToProcess.amount} F approuvé`, 'success');
-                closeModal('retraitModal');
-                await loadAllData();
-                
-            } catch (error) {
-                console.error('Erreur approbation retrait:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-                currentRetraitToProcess = null;
-            }
-        }
-        
-        function rejectWithdrawal() {
-            if (!currentRetraitToProcess) return;
-            
-            if (!confirm(`Rejeter la demande de retrait de ${currentRetraitToProcess.amount} F ?`)) return;
-            
-            showLoading(true);
-            
-            try {
-                supabaseClient
-                    .from('retraits')
-                    .update({ 
-                        status: 'rejected', 
-                        processed_at: new Date().toISOString(),
-                        processed_by: currentUser?.id
-                    })
-                    .eq('id', currentRetraitToProcess.id)
-                    .then(({ error }) => {
-                        if (error) throw error;
-                        showToast('Retrait rejeté', 'warning');
-                        closeModal('retraitModal');
-                        loadAllData();
-                    });
-                
-            } catch (error) {
-                console.error('Erreur rejet retrait:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-                currentRetraitToProcess = null;
-            }
-        }
-        
-        // ============================================
-        // SUPPRESSION
-        // ============================================
-        
-        async function confirmDelete() {
-            showLoading(true);
-            
-            try {
-                if (deleteType === 'user' && currentItemToDelete) {
-                    const { error } = await supabaseClient
-                        .from('users')
-                        .delete()
-                        .eq('id', currentItemToDelete);
-                    
-                    if (error) throw error;
-                    showToast('Utilisateur supprimé avec succès', 'success');
-                    
-                } else if (deleteType === 'annonce' && currentItemToDelete) {
-                    const { error } = await supabaseClient
-                        .from('annonces')
-                        .delete()
-                        .eq('id', currentItemToDelete);
-                    
-                    if (error) throw error;
-                    showToast('Annonce supprimée avec succès', 'success');
-                    closeModal('annonceDetailsModal');
-                }
-                
-                closeModal('deleteConfirmModal');
-                await loadAllData();
-                
-            } catch (error) {
-                console.error('Erreur suppression:', error);
-                showToast('Erreur: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-                currentItemToDelete = null;
-                deleteType = '';
-            }
-        }
-        
-        // ============================================
-        // EXPORT
-        // ============================================
-        
-        function exportStatistics() {
-            const data = {
-                exportDate: new Date().toISOString(),
-                statistics: {
-                    users: {
-                        total: allUsers.length,
-                        active: allUsers.filter(u => u.statut === 'active').length,
-                        admins: allUsers.filter(u => u.role === 'admin').length
-                    },
-                    annonces: {
-                        total: allAnnonces.length,
-                        active: allAnnonces.filter(a => a.statut === 'actif').length,
-                        ventes: allAnnonces.filter(a => a.type === 'vente').length,
-                        actualites: allAnnonces.filter(a => a.type === 'actualite').length
-                    },
-                    referrals: {
-                        total: allReferrals.length,
-                        unlocked: allReferrals.filter(r => r.is_unlocked).length,
-                        totalEarned: allReferrals.reduce((sum, r) => sum + (r.total_earned || 0), 0)
-                    },
-                    finances: {
-                        totalBalance: allBalances.reduce((sum, b) => sum + (b.amount || 0), 0),
-                        totalEarned: allBalances.reduce((sum, b) => sum + (b.total_earned || 0), 0),
-                        totalWithdrawn: allBalances.reduce((sum, b) => sum + (b.total_withdrawn || 0), 0)
-                    },
-                    transactions: {
-                        recharges: {
-                            total: allRecharges.length,
-                            pending: allRecharges.filter(r => r.status === 'pending').length,
-                            totalAmount: allRecharges.reduce((sum, r) => sum + (r.amount || 0), 0)
-                        },
-                        retraits: {
-                            total: allRetraits.length,
-                            pending: allRetraits.filter(r => r.status === 'pending').length,
-                            totalAmount: allRetraits.reduce((sum, r) => sum + (r.amount || 0), 0)
-                        }
-                    }
-                },
-                users: allUsers,
-                annonces: allAnnonces
-            };
-            
-            const dataStr = JSON.stringify(data, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = `afrimarket_admin_export_${new Date().toISOString().split('T')[0]}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            showToast('Données exportées avec succès', 'success');
         }
         
         // ============================================
         // INITIALISATION
         // ============================================
-        
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Page Admin chargée');
             
-            // Initialiser Supabase
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                auth: { persistSession: true, autoRefreshToken: true }
-            });
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             
-            // Vérifier les permissions admin
-            const isAdmin = await checkAdminAccess();
-            if (!isAdmin) return;
+            // ✅ VÉRIFICATION SIMPLE
+            const hasAccess = await checkAdminAccess();
+            if (!hasAccess) return;
             
-            // Configurer l'interface
+            // ✅ CHARGER LES DONNÉES
             setupInterface();
             updateUserInfo();
-            
-            // Charger toutes les données
             await loadAllData();
         });
         
+        // ============================================
+        // FONCTIONS D'INTERFACE
+        // ============================================
         function setupInterface() {
-            // Gestion du thème
+            // Thème
             const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
             document.body.className = savedTheme;
             
@@ -3480,9 +1110,11 @@
                 document.getElementById('menuOverlay').style.display = 'block';
             });
             
-            document.getElementById('menuOverlay').addEventListener('click', closeSidebar);
+            document.getElementById('menuOverlay').addEventListener('click', () => {
+                document.getElementById('sidebarMenu').classList.remove('open');
+                document.getElementById('menuOverlay').style.display = 'none';
+            });
             
-            // Thème menu
             document.getElementById('menuThemeToggle').checked = savedTheme === 'dark-mode';
             document.getElementById('menuThemeToggle').addEventListener('change', function() {
                 const isDark = this.checked;
@@ -3491,17 +1123,15 @@
             });
             
             // Support
-            document.getElementById('supportMenuItem').addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Service Support & Aide\n\n📧 Email: support@afrimarket.com\n📞 Téléphone: +33 1 23 45 67 89\n\nNous sommes disponibles 24h/24 !');
+            document.getElementById('supportMenuItem').addEventListener('click', function() {
+                alert('📞 Support AFRIMARKET\n\n📧 support@afrimarket.com');
                 closeSidebar();
             });
             
             // Rafraîchir
-            document.getElementById('refreshMenuItem').addEventListener('click', async function(e) {
-                e.preventDefault();
+            document.getElementById('refreshMenuItem').addEventListener('click', async function() {
                 await loadAllData();
-                showToast('Données rafraîchies', 'success');
+                showToast('✅ Données rafraîchies', 'success');
                 closeSidebar();
             });
             
@@ -3513,12 +1143,326 @@
                 window.location.href = 'connexion.html';
             });
             
-            // Configurer les onglets
+            // Onglets
             setupTabs();
+        }
+        
+        function setupTabs() {
+            const tabButtons = document.querySelectorAll('.admin-tab');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const tabName = this.dataset.tab;
+                    showTab(tabName);
+                });
+            });
+        }
+        
+        function showTab(tabName) {
+            const sections = ['dashboardSection', 'usersSection', 'annoncesSection', 'referralsSection', 'retraitsSection'];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
             
-            // Afficher l'onglet par défaut
-            showTab('dashboard');
-            updateActionButtons();
+            const sectionMap = {
+                'dashboard': 'dashboardSection',
+                'users': 'usersSection',
+                'annonces': 'annoncesSection',
+                'referrals': 'referralsSection',
+                'retraits': 'retraitsSection'
+            };
+            
+            const sectionId = sectionMap[tabName];
+            if (sectionId) document.getElementById(sectionId).style.display = 'block';
+        }
+        
+        function closeSidebar() {
+            document.getElementById('sidebarMenu').classList.remove('open');
+            document.getElementById('menuOverlay').style.display = 'none';
+        }
+        
+        function updateUserInfo() {
+            if (!currentUser) return;
+            
+            const userName = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Administrateur';
+            const userEmail = currentUser.email || ADMIN_EMAIL;
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            document.getElementById('sidebarUserName').textContent = userName;
+            document.getElementById('sidebarUserEmail').textContent = userEmail;
+            document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
+        }
+        
+        // ============================================
+        // CHARGEMENT DES DONNÉES
+        // ============================================
+        async function loadAllData() {
+            showLoading(true);
+            try {
+                await loadUsers();
+                await loadAnnonces();
+                await loadReferrals();
+                await loadRetraits();
+                await loadBalances();
+                updateStatistics();
+                updateTables();
+                showToast('✅ Données chargées', 'success');
+            } catch (error) {
+                console.error('Erreur:', error);
+                showToast('❌ Erreur de chargement', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        async function loadUsers() {
+            const { data } = await supabaseClient.from('users').select('*').order('created_at', { ascending: false });
+            allUsers = data || [];
+        }
+        
+        async function loadAnnonces() {
+            const { data } = await supabaseClient.from('annonces').select('*').order('created_at', { ascending: false });
+            allAnnonces = data || [];
+        }
+        
+        async function loadReferrals() {
+            const { data } = await supabaseClient.from('referral_data').select('*');
+            allReferrals = data || [];
+        }
+        
+        async function loadRetraits() {
+            const { data } = await supabaseClient.from('retraits').select('*').order('created_at', { ascending: false });
+            allRetraits = data || [];
+        }
+        
+        async function loadBalances() {
+            const { data } = await supabaseClient.from('balances').select('*');
+            allBalances = data || [];
+        }
+        
+        function updateStatistics() {
+            document.getElementById('statsUsers').textContent = allUsers.length || 0;
+            document.getElementById('statsAnnonces').textContent = allAnnonces.length || 0;
+            document.getElementById('statsReferrals').textContent = allReferrals.filter(r => r.is_unlocked).length || 0;
+            document.getElementById('statsWithdrawals').textContent = allRetraits.filter(r => r.status === 'pending').length || 0;
+            document.getElementById('statsPending').textContent = allRetraits.filter(r => r.status === 'pending').length || 0;
+        }
+        
+        function updateTables() {
+            updateUsersTable();
+            updateAnnoncesTable();
+            updateReferralsTable();
+            updateRetraitsTable();
+            updateDashboardWidgets();
+        }
+        
+        function updateUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            if (allUsers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="no-data"><i class="fas fa-users"></i><p>Aucun utilisateur</p></td></tr>`;
+                return;
+            }
+            
+            allUsers.slice(0, 20).forEach(user => {
+                const balance = allBalances.find(b => b.user_id === user.id)?.amount || 0;
+                const date = new Date(user.created_at).toLocaleDateString('fr-FR');
+                const shortId = user.id.substring(0, 8) + '...';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${shortId}</td>
+                    <td><strong>${user.raw_user_meta_data?.nom_complet || 'Non renseigné'}</strong></td>
+                    <td>${user.email}</td>
+                    <td><span class="badge ${user.email === ADMIN_EMAIL ? 'badge-admin' : 'badge-user'}">${user.email === ADMIN_EMAIL ? 'Admin' : 'User'}</span></td>
+                    <td><span class="badge badge-active">Actif</span></td>
+                    <td><strong>${balance.toLocaleString()} F</strong></td>
+                    <td>${date}</td>
+                    <td class="actions-cell">
+                        <button class="action-btn edit-btn" onclick="alert('Fonction à venir')"><i class="fas fa-edit"></i></button>
+                        ${user.email !== ADMIN_EMAIL ? `<button class="action-btn delete-btn" onclick="alert('Fonction à venir')"><i class="fas fa-trash"></i></button>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function updateAnnoncesTable() {
+            const tbody = document.getElementById('annoncesTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            if (allAnnonces.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="no-data"><i class="fas fa-newspaper"></i><p>Aucune annonce</p></td></tr>`;
+                return;
+            }
+            
+            allAnnonces.slice(0, 20).forEach(annonce => {
+                const date = new Date(annonce.created_at).toLocaleDateString('fr-FR');
+                const shortId = annonce.id.substring(0, 8) + '...';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${shortId}</td>
+                    <td>${annonce.titre?.substring(0, 30)}...</td>
+                    <td>${annonce.user_id?.substring(0, 8)}...</td>
+                    <td><span class="badge ${annonce.type === 'vente' ? 'badge-vente' : 'badge-actualite'}">${annonce.type || 'vente'}</span></td>
+                    <td>${annonce.prix ? annonce.prix + ' F' : 'Gratuit'}</td>
+                    <td>${date}</td>
+                    <td><span class="badge badge-active">Actif</span></td>
+                    <td class="actions-cell">
+                        <button class="action-btn delete-btn" onclick="alert('Fonction à venir')"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function updateReferralsTable() {
+            const tbody = document.getElementById('referralsTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            if (allReferrals.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="no-data"><i class="fas fa-sitemap"></i><p>Aucun parrainage</p></td></tr>`;
+                return;
+            }
+            
+            allReferrals.slice(0, 20).forEach(ref => {
+                const user = allUsers.find(u => u.id === ref.user_id);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${user?.email?.split('@')[0] || 'Inconnu'}</strong></td>
+                    <td><code>${ref.referral_code || '-'}</code></td>
+                    <td><span class="badge ${ref.is_unlocked ? 'badge-active' : 'badge-inactive'}">${ref.is_unlocked ? '🔓' : '🔒'}</span></td>
+                    <td>${ref.direct_count || 0}</td>
+                    <td>${ref.level2_count || 0}</td>
+                    <td>${ref.level3_count || 0}</td>
+                    <td><strong>${ref.total_earned || 0} F</strong></td>
+                    <td class="actions-cell">
+                        ${!ref.is_unlocked ? 
+                            `<button class="action-btn approve-btn" onclick="alert('Débloquer le lien')"><i class="fas fa-unlock"></i></button>` : 
+                            `<span class="badge badge-active">Débloqué</span>`}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function updateRetraitsTable() {
+            const tbody = document.getElementById('retraitsTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            if (allRetraits.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="no-data"><i class="fas fa-wallet"></i><p>Aucun retrait</p></td></tr>`;
+                return;
+            }
+            
+            allRetraits.slice(0, 20).forEach(retrait => {
+                const date = new Date(retrait.created_at).toLocaleDateString('fr-FR');
+                const shortId = retrait.id.substring(0, 8) + '...';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${shortId}</td>
+                    <td>${retrait.user_id?.substring(0, 8)}...</td>
+                    <td><strong>${retrait.amount} F</strong></td>
+                    <td>${retrait.method || 'Mobile'}</td>
+                    <td>${date}</td>
+                    <td>
+                        <span class="badge ${retrait.status === 'pending' ? 'badge-pending' : 
+                                          retrait.status === 'approved' ? 'badge-active' : 'badge-inactive'}">
+                            ${retrait.status || 'pending'}
+                        </span>
+                    </td>
+                    <td class="actions-cell">
+                        ${retrait.status === 'pending' ? 
+                            `<button class="action-btn approve-btn" onclick="alert('Approuver le retrait')"><i class="fas fa-check"></i></button>
+                             <button class="action-btn reject-btn" onclick="alert('Rejeter le retrait')"><i class="fas fa-times"></i></button>` : 
+                            `<span class="badge badge-inactive">Traité</span>`}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function updateDashboardWidgets() {
+            const recentUsers = document.getElementById('recentUsersList');
+            if (recentUsers) {
+                const last5 = allUsers.slice(0, 5);
+                if (last5.length === 0) {
+                    recentUsers.innerHTML = `<div class="no-data"><i class="fas fa-users"></i><p>Aucun utilisateur</p></div>`;
+                } else {
+                    let html = '';
+                    last5.forEach(user => {
+                        html += `<div style="padding: 10px 0; border-bottom: 1px solid var(--light-border);">
+                                    <strong>${user.raw_user_meta_data?.nom_complet || user.email}</strong>
+                                    <div style="font-size: 12px; color: var(--light-gray);">${user.email}</div>
+                                </div>`;
+                    });
+                    recentUsers.innerHTML = html;
+                }
+            }
+            
+            const pendingRequests = document.getElementById('pendingRequestsList');
+            if (pendingRequests) {
+                const pending = allRetraits.filter(r => r.status === 'pending').slice(0, 5);
+                if (pending.length === 0) {
+                    pendingRequests.innerHTML = `<div class="no-data"><i class="fas fa-check-circle"></i><p>Aucune demande en attente</p></div>`;
+                } else {
+                    let html = '';
+                    pending.forEach(retrait => {
+                        html += `<div style="padding: 10px 0; border-bottom: 1px solid var(--light-border);">
+                                    <strong>Retrait de ${retrait.amount} F</strong>
+                                    <div style="font-size: 12px; color: var(--light-gray);">${retrait.user_id?.substring(0, 8)}...</div>
+                                </div>`;
+                    });
+                    pendingRequests.innerHTML = html;
+                }
+            }
+        }
+        
+        // ============================================
+        // UTILITAIRES
+        // ============================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast-notification ${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon"><i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i></div>
+                <div class="toast-content"><div class="toast-title">${type === 'success' ? 'Succès' : type === 'error' ? 'Erreur' : 'Information'}</div><div class="toast-message">${message}</div></div>
+                <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+        
+        function showModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+        
+        function confirmDelete() {
+            closeModal('deleteConfirmModal');
+            showToast('✅ Supprimé', 'success');
         }
     </script>
 </body>

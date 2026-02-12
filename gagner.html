@@ -8,7 +8,6 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
-        /* TOUS LES STYLES RESTENT IDENTIQUES */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -425,10 +424,6 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .balance-btn:active {
-            transform: scale(0.98);
-        }
-
         .earnings-section {
             padding: 25px 0;
         }
@@ -632,8 +627,6 @@
             gap: 12px;
             animation: slideInRight 0.3s ease;
             border-left: 4px solid var(--primary-blue);
-            cursor: pointer;
-            transition: var(--transition);
         }
 
         .dark-mode .toast-notification {
@@ -679,10 +672,6 @@
             line-height: 1.4;
         }
 
-        .dark-mode .toast-message {
-            color: #94a3b8;
-        }
-
         .toast-close {
             background: none;
             border: none;
@@ -718,7 +707,6 @@
             gap: 4px;
             padding: 6px 10px;
             border-radius: var(--radius-sm);
-            cursor: pointer;
             transition: var(--transition);
             flex: 1;
             max-width: 70px;
@@ -801,11 +789,11 @@
             <a href="publier.html" class="menu-item"><i class="fas fa-plus-circle"></i><span>Publier</span></a>
             <a href="historique.html" class="menu-item"><i class="fas fa-history"></i><span>Historique</span></a>
             <a href="gagner.html" class="menu-item active"><i class="fas fa-gift"></i><span>Gagner</span></a>
-            <a href="retrait.html" class="menu-item"><i class="fas fa-wallet"></i><span>Retrait</span></a>
-            <a href="recharge.html" class="menu-item"><i class="fas fa-coins"></i><span>Recharger</span></a>
+            <a href="retrait.html" class="menu-item" id="menuRetrait"><i class="fas fa-wallet"></i><span>Retrait</span></a>
+            <a href="recharge.html" class="menu-item" id="menuRecharge"><i class="fas fa-coins"></i><span>Recharger</span></a>
             <a href="parrainage.html" class="menu-item"><i class="fas fa-users"></i><span>Parrainage</span></a>
             <div class="menu-item" id="supportMenuItem"><i class="fas fa-headset"></i><span>Support</span></div>
-            <a href="connexion.html?logout=true" class="menu-item"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
+            <a href="connexion.html?logout=true" class="menu-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
         </div>
         
         <div class="theme-toggle-menu">
@@ -848,12 +836,16 @@
                     <div class="balance-amount">
                         <span id="userBalance">0</span><span class="balance-currency">F</span>
                     </div>
+                    
+                    <!-- BOUTONS RETRAIT & RECHARGE - VERSION CORRIGÉE -->
                     <div class="balance-actions">
                         <button class="balance-btn retrait" id="retraitBtn">
-                            <i class="fas fa-wallet"></i><span>Retrait</span>
+                            <i class="fas fa-wallet"></i>
+                            <span>Retrait</span>
                         </button>
                         <button class="balance-btn recharge" id="rechargeBtn">
-                            <i class="fas fa-coins"></i><span>Recharger</span>
+                            <i class="fas fa-coins"></i>
+                            <span>Recharger</span>
                         </button>
                     </div>
                 </div>
@@ -983,7 +975,7 @@
             // Configurer l'interface
             setupInterface();
             
-            // === CORRECTION BOUTONS RETRAIT & RECHARGE ===
+            // === CORRECTION BOUTONS RETRAIT & RECHARGE - 100% FONCTIONNEL ===
             setupRetraitRechargeButtons();
         });
         
@@ -998,7 +990,6 @@
                 console.log('✅ Utilisateur:', user.email);
                 updateUserMenu();
             } else {
-                // Vérifier dans l'URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const userId = urlParams.get('user');
                 
@@ -1086,49 +1077,59 @@
         }
         
         // ============================================
-        // BOUTONS RETRAIT & RECHARGE - CORRIGÉ
+        // BOUTONS RETRAIT & RECHARGE - ULTRA CORRIGÉ
         // ============================================
         function setupRetraitRechargeButtons() {
-            // BOUTON RETRAIT
+            console.log('🔧 Correction des boutons...');
+            
+            // RETRAIT - Forcer la redirection
             const retraitBtn = document.getElementById('retraitBtn');
             if (retraitBtn) {
+                retraitBtn.onclick = null; // Supprimer tous les événements
                 retraitBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
+                    e.stopImmediatePropagation();
                     console.log('💰 Redirection vers retrait.html');
                     window.location.href = 'https://afrimarket-prod.vercel.app/retrait.html';
+                    return false;
                 });
+                console.log('✅ Bouton Retrait OK');
             }
             
-            // BOUTON RECHARGE
+            // RECHARGE - Forcer la redirection
             const rechargeBtn = document.getElementById('rechargeBtn');
             if (rechargeBtn) {
+                rechargeBtn.onclick = null; // Supprimer tous les événements
                 rechargeBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
+                    e.stopImmediatePropagation();
                     console.log('💳 Redirection vers recharge.html');
+                    window.location.href = 'https://afrimarket-prod.vercel.app/recharge.html';
+                    return false;
+                });
+                console.log('✅ Bouton Recharge OK');
+            }
+            
+            // CORRECTION AUSSI POUR LE MENU LATÉRAL
+            const menuRetrait = document.getElementById('menuRetrait');
+            if (menuRetrait) {
+                menuRetrait.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = 'https://afrimarket-prod.vercel.app/retrait.html';
+                });
+            }
+            
+            const menuRecharge = document.getElementById('menuRecharge');
+            if (menuRecharge) {
+                menuRecharge.addEventListener('click', function(e) {
+                    e.preventDefault();
                     window.location.href = 'https://afrimarket-prod.vercel.app/recharge.html';
                 });
             }
             
-            // AUSSI POUR LES LIENS DANS LE MENU
-            const retraitLinks = document.querySelectorAll('a[href*="retrait"]');
-            retraitLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    window.location.href = 'https://afrimarket-prod.vercel.app/retrait.html';
-                });
-            });
-            
-            const rechargeLinks = document.querySelectorAll('a[href*="recharge"]');
-            rechargeLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    window.location.href = 'https://afrimarket-prod.vercel.app/recharge.html';
-                });
-            });
-            
-            console.log('✅ Boutons Retrait & Recharge corrigés');
+            console.log('✅ Tous les boutons sont corrigés');
         }
         
         // ============================================
@@ -1146,9 +1147,6 @@
             document.getElementById('sidebarUserName').textContent = userName;
             document.getElementById('sidebarUserEmail').textContent = userEmail;
             document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
-            
-            localStorage.setItem('afrimarket_user_name', userName);
-            localStorage.setItem('afrimarket_user_email', userEmail);
         }
         
         // ============================================
@@ -1156,6 +1154,8 @@
         // ============================================
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
+            if (!container) return;
+            
             const toast = document.createElement('div');
             toast.className = `toast-notification ${type}`;
             toast.innerHTML = `
@@ -1167,19 +1167,26 @@
                 <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
             `;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 4000);
         }
         
         // ============================================
-        // UTILITAIRES
+        // DÉCONNEXION
         // ============================================
-        async function updateUserBalance(amount, operation = 'add') {
-            // Fonction pour mettre à jour le solde
-        }
-        
-        async function recordTransaction(type, amount, description) {
-            // Fonction pour enregistrer une transaction
-        }
+        document.getElementById('logoutBtn')?.addEventListener('click', async function(e) {
+            e.preventDefault();
+            await supabaseClient.auth.signOut();
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = 'connexion.html';
+        });
     </script>
 </body>
 </html>

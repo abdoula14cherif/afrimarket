@@ -95,7 +95,7 @@
             
             <input type="email" id="email" placeholder="Email" required>
             
-            <input type="password" id="password" placeholder="Mot de passe (6 caractères)" minlength="6" required>
+            <input type="password" id="password" placeholder="Mot de passe" required>
             
             <input type="password" id="confirmPassword" placeholder="Confirmer le mot de passe" required>
             
@@ -139,7 +139,7 @@
         }
 
         // ============================================
-        // INSCRIPTION
+        // INSCRIPTION - SANS CONTRAINTE
         // ============================================
         async function inscrireUtilisateur(userData) {
             try {
@@ -150,7 +150,7 @@
                 // 2. GÉNÉRER UN CODE DE PARRAINAGE
                 const refCode = Math.random().toString(36).substring(2, 8).toUpperCase();
                 
-                // 3. INSÉRER DANS users
+                // 3. INSÉRER DIRECTEMENT DANS users (PLUS DE CONTRAINTE !)
                 console.log('📦 Insertion users...');
                 const { error: userError } = await supabase
                     .from('users')
@@ -217,11 +217,6 @@
                 
                 if (password !== confirm) {
                     document.getElementById('message').innerHTML = '<div class="message error">❌ Les mots de passe ne correspondent pas</div>';
-                    return;
-                }
-                
-                if (password.length < 6) {
-                    document.getElementById('message').innerHTML = '<div class="message error">❌ Mot de passe trop court</div>';
                     return;
                 }
                 

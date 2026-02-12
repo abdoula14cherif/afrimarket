@@ -64,24 +64,29 @@ async function checkSession() {
     if (isLoggedIn && userEmail === ADMIN_EMAIL) {
         console.log('✅ Admin connecté via localStorage');
         
-        // Forcer le rôle admin
-        if (userRole !== 'admin') {
-            localStorage.setItem('afrimarket_user_role', 'admin');
-        }
-        
-        currentUser = {
-            id: userId || 'admin-' + Date.now(),
-            email: userEmail,
-            user_metadata: {
-                nom_complet: userName || 'Abdoula Cherif',
-                role: 'admin'
-            }
-        };
-        
-        document.getElementById('adminEmail').textContent = `(${userEmail})`;
-        updateSidebarInfo();
-        return currentUser;
+       // Forcer le rôle admin
+if (userRole !== 'admin') {
+    localStorage.setItem('afrimarket_user_role', 'admin');
+}
+
+// ✅ CORRECTION - UUID VALIDE
+const ADMIN_UUID = '00000000-0000-0000-0000-000000000001';
+const validUserId = (userId && userId.includes('-') && userId.length === 36) 
+    ? userId 
+    : ADMIN_UUID;
+
+currentUser = {
+    id: validUserId,  // ← ICI, UN SEUL ID, PAS DE MÉLANGE
+    email: userEmail,
+    user_metadata: {
+        nom_complet: userName || 'Abdoula Cherif',
+        role: 'admin'
     }
+};
+
+document.getElementById('adminEmail').textContent = `(${userEmail})`;
+updateSidebarInfo();
+return currentUser;
     
     // 3. UTILISATEUR NORMAL
     if (isLoggedIn && userEmail) {

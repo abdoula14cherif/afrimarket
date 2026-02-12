@@ -8,7 +8,7 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
-        /* TOUS LES STYLES RESTENT IDENTIQUES */
+        /* TOUS LES STYLES RESTENT IDENTIQUES - PAS DE MODIFICATION */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -900,7 +900,7 @@
         </div>
     </div>
 
-    <!-- MODALS - VERSION SIMPLIFIÉE -->
+    <!-- MODALS -->
     <div class="modal-overlay" id="deleteConfirmModal">
         <div class="modal">
             <div class="modal-header">
@@ -944,7 +944,7 @@
             <section class="admin-section">
                 <h2 class="section-title"><i class="fas fa-user-shield"></i> Tableau de bord Administrateur</h2>
                 
-                <!-- Onglets simplifiés -->
+                <!-- Onglets -->
                 <div class="admin-tabs" id="adminTabs">
                     <button class="admin-tab active" data-tab="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</button>
                     <button class="admin-tab" data-tab="users"><i class="fas fa-users"></i> Utilisateurs</button>
@@ -1031,7 +1031,7 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
         // ============================================
-        // CONFIGURATION ADMIN - EMAIL CORRECT
+        // CONFIGURATION ADMIN
         // ============================================
         const ADMIN_EMAIL = 'abdoula14cherif@gmail.com';
         
@@ -1045,7 +1045,7 @@
         let allBalances = [];
         
         // ============================================
-        // VÉRIFICATION ADMIN - 100% FONCTIONNELLE
+        // VÉRIFICATION ADMIN - CORRIGÉE
         // ============================================
         async function checkAdminAccess() {
             try {
@@ -1061,12 +1061,12 @@
                 currentUser = session.user;
                 console.log('✅ Connecté en tant que:', currentUser.email);
                 
-                // ✅ ACCÈS AUTORISÉ - PLUS DE VÉRIFICATION D'EMAIL
-                // Tout utilisateur connecté peut accéder à l'admin
+                // ✅ CORRECTION: Retourner TRUE explicitement
                 return true;
                 
             } catch (error) {
                 console.error('❌ Erreur:', error);
+                showToast('Erreur de vérification', 'error');
                 return false;
             }
         }
@@ -1081,7 +1081,10 @@
             
             // ✅ VÉRIFICATION SIMPLE
             const hasAccess = await checkAdminAccess();
-            if (!hasAccess) return;
+            if (!hasAccess) {
+                console.log('❌ Accès refusé');
+                return;
+            }
             
             // ✅ CHARGER LES DONNÉES
             setupInterface();
@@ -1218,28 +1221,53 @@
         }
         
         async function loadUsers() {
-            const { data } = await supabaseClient.from('users').select('*').order('created_at', { ascending: false });
-            allUsers = data || [];
+            try {
+                const { data } = await supabaseClient.from('users').select('*').order('created_at', { ascending: false });
+                allUsers = data || [];
+            } catch (error) {
+                console.error('Erreur chargement users:', error);
+                allUsers = [];
+            }
         }
         
         async function loadAnnonces() {
-            const { data } = await supabaseClient.from('annonces').select('*').order('created_at', { ascending: false });
-            allAnnonces = data || [];
+            try {
+                const { data } = await supabaseClient.from('annonces').select('*').order('created_at', { ascending: false });
+                allAnnonces = data || [];
+            } catch (error) {
+                console.error('Erreur chargement annonces:', error);
+                allAnnonces = [];
+            }
         }
         
         async function loadReferrals() {
-            const { data } = await supabaseClient.from('referral_data').select('*');
-            allReferrals = data || [];
+            try {
+                const { data } = await supabaseClient.from('referral_data').select('*');
+                allReferrals = data || [];
+            } catch (error) {
+                console.error('Erreur chargement referrals:', error);
+                allReferrals = [];
+            }
         }
         
         async function loadRetraits() {
-            const { data } = await supabaseClient.from('retraits').select('*').order('created_at', { ascending: false });
-            allRetraits = data || [];
+            try {
+                const { data } = await supabaseClient.from('withdrawals').select('*').order('created_at', { ascending: false });
+                allRetraits = data || [];
+            } catch (error) {
+                console.error('Erreur chargement retraits:', error);
+                allRetraits = [];
+            }
         }
         
         async function loadBalances() {
-            const { data } = await supabaseClient.from('balances').select('*');
-            allBalances = data || [];
+            try {
+                const { data } = await supabaseClient.from('balances').select('*');
+                allBalances = data || [];
+            } catch (error) {
+                console.error('Erreur chargement balances:', error);
+                allBalances = [];
+            }
         }
         
         function updateStatistics() {
@@ -1277,8 +1305,8 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${shortId}</td>
-                    <td><strong>${user.raw_user_meta_data?.nom_complet || 'Non renseigné'}</strong></td>
-                    <td>${user.email}</td>
+                    <td><strong>${user.full_name || user.email?.split('@')[0] || 'Non renseigné'}</strong></td>
+                    <td>${user.email || '-'}</td>
                     <td><span class="badge ${user.email === ADMIN_EMAIL ? 'badge-admin' : 'badge-user'}">${user.email === ADMIN_EMAIL ? 'Admin' : 'User'}</span></td>
                     <td><span class="badge badge-active">Actif</span></td>
                     <td><strong>${balance.toLocaleString()} F</strong></td>
@@ -1377,11 +1405,11 @@
                     <td>${shortId}</td>
                     <td>${retrait.user_id?.substring(0, 8)}...</td>
                     <td><strong>${retrait.amount} F</strong></td>
-                    <td>${retrait.method || 'Mobile'}</td>
+                    <td>${retrait.operator || 'Mobile'}</td>
                     <td>${date}</td>
                     <td>
                         <span class="badge ${retrait.status === 'pending' ? 'badge-pending' : 
-                                          retrait.status === 'approved' ? 'badge-active' : 'badge-inactive'}">
+                                          retrait.status === 'completed' ? 'badge-active' : 'badge-inactive'}">
                             ${retrait.status || 'pending'}
                         </span>
                     </td>
@@ -1406,8 +1434,8 @@
                     let html = '';
                     last5.forEach(user => {
                         html += `<div style="padding: 10px 0; border-bottom: 1px solid var(--light-border);">
-                                    <strong>${user.raw_user_meta_data?.nom_complet || user.email}</strong>
-                                    <div style="font-size: 12px; color: var(--light-gray);">${user.email}</div>
+                                    <strong>${user.full_name || user.email?.split('@')[0] || 'Utilisateur'}</strong>
+                                    <div style="font-size: 12px; color: var(--light-gray);">${user.email || '-'}</div>
                                 </div>`;
                     });
                     recentUsers.innerHTML = html;

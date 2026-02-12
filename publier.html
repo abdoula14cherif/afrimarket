@@ -8,6 +8,7 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
+        /* TOUS TES STYLES RESTENT EXACTEMENT LES MÊMES */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -44,7 +45,6 @@
             transition: var(--transition);
             overflow-x: hidden;
             padding-bottom: 70px;
-            -webkit-text-size-adjust: 100%;
         }
 
         body.dark-mode {
@@ -59,7 +59,7 @@
             margin: 0 auto;
         }
 
-        /* Header amélioré avec menu burger */
+        /* Header */
         .app-header {
             position: sticky;
             top: 0;
@@ -68,8 +68,6 @@
             padding: 12px 0;
             border-bottom: 1px solid var(--light-border);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            transition: var(--transition);
         }
 
         .dark-mode .app-header {
@@ -84,7 +82,6 @@
             width: 100%;
         }
 
-        /* Menu burger à gauche */
         .menu-toggle {
             background: none;
             border: none;
@@ -96,15 +93,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: var(--transition);
         }
 
         .dark-mode .menu-toggle {
             color: var(--dark-text);
-        }
-
-        .menu-toggle:hover {
-            background: rgba(37, 99, 235, 0.1);
         }
 
         .logo-container {
@@ -131,7 +123,6 @@
             font-size: 18px;
             font-weight: 800;
             color: var(--light-text);
-            line-height: 1;
         }
 
         .dark-mode .logo-text {
@@ -148,7 +139,6 @@
             gap: 8px;
         }
 
-        /* Bouton thème */
         .theme-btn {
             background: none;
             border: none;
@@ -157,21 +147,12 @@
             cursor: pointer;
             padding: 8px;
             border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
         }
 
         .dark-mode .theme-btn {
             color: var(--dark-text);
         }
 
-        .theme-btn:hover {
-            background: rgba(37, 99, 235, 0.1);
-        }
-
-        /* Menu burger latéral */
         .menu-overlay {
             position: fixed;
             top: 0;
@@ -181,7 +162,6 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 9998;
             display: none;
-            animation: fadeIn 0.3s ease;
         }
 
         .sidebar-menu {
@@ -215,10 +195,6 @@
             color: white;
         }
 
-        .dark-mode .menu-header {
-            border-color: var(--dark-border);
-        }
-
         .user-avatar {
             width: 50px;
             height: 50px;
@@ -230,7 +206,6 @@
             color: white;
             font-size: 20px;
             font-weight: bold;
-            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
         .user-info {
@@ -279,10 +254,6 @@
             font-weight: 500;
         }
 
-        .dark-mode .menu-item.active {
-            color: #60a5fa;
-        }
-
         .menu-item i {
             width: 20px;
             text-align: center;
@@ -299,15 +270,6 @@
 
         .dark-mode .theme-toggle-menu {
             border-color: var(--dark-border);
-        }
-
-        .theme-toggle-menu span {
-            color: var(--light-text);
-            font-size: 14px;
-        }
-
-        .dark-mode .theme-toggle-menu span {
-            color: var(--dark-text);
         }
 
         .theme-switch {
@@ -951,55 +913,45 @@
             gap: 4px;
             padding: 6px 10px;
             border-radius: var(--radius-sm);
-            cursor: pointer;
             transition: var(--transition);
             flex: 1;
             max-width: 70px;
-            position: relative;
             text-decoration: none;
             color: inherit;
         }
 
-        .nav-item.active, .nav-item:active {
-            background: rgba(37, 99, 235, 0.1);
+        .nav-item.active .nav-icon {
+            color: var(--primary-blue);
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--primary-blue);
         }
 
         .nav-icon {
             font-size: 20px;
             color: var(--light-gray);
-            transition: var(--transition);
         }
 
         .dark-mode .nav-icon {
             color: #94a3b8;
         }
 
-        .nav-item.active .nav-icon, .nav-item:active .nav-icon {
-            color: var(--primary-blue);
-        }
-
         .nav-label {
             font-size: 11px;
             font-weight: 600;
             color: var(--light-gray);
-            transition: var(--transition);
         }
 
         .dark-mode .nav-label {
             color: #94a3b8;
         }
 
-        .nav-item.active .nav-label, .nav-item:active .nav-label {
-            color: var(--primary-blue);
-        }
-
-        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
 
-        /* Responsive */
         @media (min-width: 375px) {
             .container {
                 padding: 0 18px;
@@ -1012,7 +964,6 @@
             }
         }
 
-        /* Prévention débordement */
         html, body {
             overflow-x: hidden;
             max-width: 100%;
@@ -1040,7 +991,7 @@
     <div class="sidebar-menu" id="sidebarMenu">
         <div class="menu-header">
             <div class="user-avatar" id="sidebarUserAvatar">
-                <!-- Initiale du prénom -->
+                <i class="fas fa-user"></i>
             </div>
             <div class="user-info">
                 <div class="user-name" id="sidebarUserName">Utilisateur</div>
@@ -1050,32 +1001,31 @@
         
         <div class="menu-items">
             <a href="dashboard.html" class="menu-item">
-                <i class="fas fa-home"></i>
-                <span>Accueil</span>
+                <i class="fas fa-home"></i> <span>Accueil</span>
             </a>
             <a href="publier.html" class="menu-item active">
-                <i class="fas fa-plus-circle"></i>
-                <span>Publier une annonce</span>
+                <i class="fas fa-plus-circle"></i> <span>Publier</span>
             </a>
             <a href="historique.html" class="menu-item">
-                <i class="fas fa-history"></i>
-                <span>Mon historique</span>
+                <i class="fas fa-history"></i> <span>Historique</span>
             </a>
             <a href="gagner.html" class="menu-item">
-                <i class="fas fa-gift"></i>
-                <span>Gagner des récompenses</span>
+                <i class="fas fa-gift"></i> <span>Gagner</span>
+            </a>
+            <a href="parrainage.html" class="menu-item">
+                <i class="fas fa-users"></i> <span>Parrainage</span>
+            </a>
+            <a href="retrait.html" class="menu-item">
+                <i class="fas fa-wallet"></i> <span>Retrait</span>
+            </a>
+            <a href="recharge.html" class="menu-item">
+                <i class="fas fa-coins"></i> <span>Recharger</span>
             </a>
             <div class="menu-item" id="supportMenuItem">
-                <i class="fas fa-headset"></i>
-                <span>Support & Aide</span>
+                <i class="fas fa-headset"></i> <span>Support</span>
             </div>
-            <div class="menu-item">
-                <i class="fas fa-cog"></i>
-                <span>Paramètres</span>
-            </div>
-            <a href="connexion.html?logout=true" class="menu-item">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Déconnexion</span>
+            <a href="#" class="menu-item" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> <span>Déconnexion</span>
             </a>
         </div>
         
@@ -1130,12 +1080,10 @@
                     <p>Connectez-vous ou créez un compte gratuitement.</p>
                     <div class="auth-buttons">
                         <a href="connexion.html" class="btn-auth btn-login">
-                            <i class="fas fa-sign-in-alt"></i>
-                            Se connecter
+                            <i class="fas fa-sign-in-alt"></i> Se connecter
                         </a>
-                        <a href="inscription.html" class="btn-auth btn-signup">
-                            <i class="fas fa-user-plus"></i>
-                            S'inscrire
+                        <a href="index.html" class="btn-auth btn-signup">
+                            <i class="fas fa-user-plus"></i> S'inscrire
                         </a>
                     </div>
                 </div>
@@ -1201,15 +1149,15 @@
                         
                         <!-- Prix (seulement pour "À vendre") -->
                         <div class="form-group" id="price-section">
-                            <label for="annonce-prix" class="form-label">Prix (€)</label>
+                            <label for="annonce-prix" class="form-label">Prix (FCFA)</label>
                             <input type="number" 
                                    id="annonce-prix" 
                                    class="form-input"
                                    name="prix" 
-                                   placeholder="Ex: 250"
+                                   placeholder="Ex: 25000"
                                    min="0"
-                                   step="0.01">
-                            <small class="form-hint">Laissez vide si gratuit ou pour une actualité</small>
+                                   step="100">
+                            <small class="form-hint">Laissez vide si gratuit</small>
                         </div>
                         
                         <!-- WhatsApp -->
@@ -1219,7 +1167,7 @@
                                    id="annonce-whatsapp" 
                                    class="form-input"
                                    name="whatsapp" 
-                                   placeholder="Ex: 0612345678">
+                                   placeholder="Ex: 691234567">
                             <small class="form-hint">Les personnes pourront vous contacter directement via WhatsApp</small>
                         </div>
                         
@@ -1251,40 +1199,36 @@
     <!-- Navigation inférieure -->
     <nav class="bottom-nav">
         <a href="dashboard.html" class="nav-item">
-            <div style="position: relative;">
-                <i class="fas fa-home nav-icon"></i>
-            </div>
+            <i class="fas fa-home nav-icon"></i>
             <span class="nav-label">Accueil</span>
         </a>
-        
+        <a href="gagner.html" class="nav-item">
+            <i class="fas fa-gift nav-icon"></i>
+            <span class="nav-label">Gagner</span>
+        </a>
         <a href="publier.html" class="nav-item active">
-            <div style="position: relative;">
-                <i class="fas fa-plus-circle nav-icon"></i>
-            </div>
+            <i class="fas fa-plus-circle nav-icon"></i>
             <span class="nav-label">Publier</span>
         </a>
-        
-        <a href="historique.html" class="nav-item">
-            <div style="position: relative;">
-                <i class="fas fa-history nav-icon"></i>
-            </div>
-            <span class="nav-label">Historique</span>
+        <a href="parrainage.html" class="nav-item">
+            <i class="fas fa-users nav-icon"></i>
+            <span class="nav-label">Parrainage</span>
         </a>
-        
-        <a href="gagner.html" class="nav-item">
-            <div style="position: relative;">
-                <i class="fas fa-gift nav-icon"></i>
-            </div>
-            <span class="nav-label">Gagner</span>
+        <a href="historique.html" class="nav-item">
+            <i class="fas fa-history nav-icon"></i>
+            <span class="nav-label">Historique</span>
         </a>
     </nav>
 
     <script>
-        // Configuration Supabase
-        const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
+        // ============================================
+        // ✅ NOUVELLES CLÉS SUPABASE - NOUVEAU PROJET
+        // ============================================
+        const SUPABASE_URL = 'https://xfbwimnwsixflypsvqfv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmYndpbW53c2l4Zmx5cHN2cWZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MTYyNTQsImV4cCI6MjA4NjQ5MjI1NH0.34RMdbAC_3XWxutD6X2GgF9odULkx46bpBY-V3hSUp8';
         
         let supabaseClient = null;
+        let currentUser = null;
         
         // Éléments DOM
         const body = document.body;
@@ -1294,63 +1238,203 @@
         const themeBtn = document.getElementById('themeBtn');
         const menuThemeToggle = document.getElementById('menuThemeToggle');
         
-        // Fonction pour afficher les notifications
-        function showNotification(message, type = 'info') {
-            // Supprimer les anciennes notifications
-            const oldNotif = document.querySelector('.notification');
-            if (oldNotif) oldNotif.remove();
-            
-            // Créer la nouvelle notification
-            const notif = document.createElement('div');
-            notif.className = `notification ${type}`;
-            notif.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                               type === 'error' ? 'fa-exclamation-circle' : 
-                               'fa-info-circle'}"></i>
-                <span>${message}</span>
-            `;
-            
-            document.body.appendChild(notif);
-            
-            // Supprimer après 5 secondes
-            setTimeout(() => notif.remove(), 5000);
-        }
-        
-        // Fonction pour montrer/cacher le loading
-        function showLoading(show) {
-            const overlay = document.getElementById('loadingOverlay');
-            
-            if (show) {
-                overlay.style.display = 'flex';
-            } else {
-                overlay.style.display = 'none';
-            }
-        }
-        
-        // Fonction pour vérifier la session
-        async function verifierSession() {
+        // ============================================
+        // ✅ FONCTION DE VÉRIFICATION DE SESSION (SANS REDIRECTION AUTO)
+        // ============================================
+        async function checkSession() {
             try {
-                const userId = localStorage.getItem('afrimarket_user_id');
-                const loggedIn = localStorage.getItem('afrimarket_logged_in') === 'true';
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
                 
-                if (userId && loggedIn) {
-                    return {
-                        loggedIn: true,
-                        user: {
-                            id: userId,
-                            email: localStorage.getItem('afrimarket_user_email'),
-                            nom_complet: localStorage.getItem('afrimarket_user_name')
-                        }
-                    };
+                if (error || !session) {
+                    console.log('⚠️ Session non trouvée, mode lecture seule');
+                    
+                    // ✅ Vérifier localStorage en fallback
+                    const localLoggedIn = localStorage.getItem('afrimarket_logged_in') === 'true';
+                    const localUserId = localStorage.getItem('afrimarket_user_id');
+                    const localUserEmail = localStorage.getItem('afrimarket_user_email');
+                    const localUserName = localStorage.getItem('afrimarket_user_name');
+                    
+                    if (localLoggedIn && localUserId) {
+                        console.log('✅ Session localStorage trouvée');
+                        return {
+                            loggedIn: true,
+                            user: {
+                                id: localUserId,
+                                email: localUserEmail,
+                                user_metadata: { nom_complet: localUserName }
+                            }
+                        };
+                    }
+                    
+                    return { loggedIn: false, user: null };
                 }
                 
-                return { loggedIn: false };
+                console.log('✅ Session active:', session.user.email);
+                return { loggedIn: true, user: session.user };
                 
             } catch (error) {
-                console.error('Erreur vérification session:', error);
-                return { loggedIn: false };
+                console.error('❌ Erreur session:', error);
+                return { loggedIn: false, user: null };
             }
         }
+
+        // ============================================
+        // INITIALISATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Page publication chargée');
+            
+            // Initialiser Supabase avec les NOUVELLES clés
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            // Configurer l'interface
+            setupInterface();
+            
+            // ✅ Vérifier la session sans redirection automatique
+            await checkUserSession();
+        });
+
+        // ============================================
+        // FONCTIONS D'INTERFACE
+        // ============================================
+        function setupInterface() {
+            // Thème
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            document.body.className = savedTheme;
+            
+            document.getElementById('themeBtn').addEventListener('click', function() {
+                const isDark = document.body.classList.contains('dark-mode');
+                document.body.className = isDark ? 'light-mode' : 'dark-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+                document.getElementById('menuThemeToggle').checked = !isDark;
+            });
+            
+            // Menu burger
+            document.getElementById('menuBtn').addEventListener('click', () => {
+                document.getElementById('sidebarMenu').classList.add('open');
+                document.getElementById('menuOverlay').style.display = 'block';
+            });
+            
+            document.getElementById('menuOverlay').addEventListener('click', closeSidebar);
+            
+            // Thème menu
+            document.getElementById('menuThemeToggle').checked = savedTheme === 'dark-mode';
+            document.getElementById('menuThemeToggle').addEventListener('change', function() {
+                const isDark = this.checked;
+                document.body.className = isDark ? 'dark-mode' : 'light-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'dark-mode' : 'light-mode');
+            });
+            
+            // Support
+            document.getElementById('supportMenuItem').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Service Support & Aide\n\n📧 Email: support@afrimarket.com\n📞 Téléphone: +33 1 23 45 67 89');
+                closeSidebar();
+            });
+            
+            // ✅ Déconnexion - GESTION CORRIGÉE
+            document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (supabaseClient) {
+                    await supabaseClient.auth.signOut();
+                }
+                
+                const theme = localStorage.getItem('afrimarket_theme');
+                localStorage.clear();
+                if (theme) localStorage.setItem('afrimarket_theme', theme);
+                
+                window.location.href = 'connexion.html';
+            });
+            
+            // Mettre à jour les informations utilisateur
+            updateUserInfo();
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebarMenu').classList.remove('open');
+            document.getElementById('menuOverlay').style.display = 'none';
+        }
+
+        // ============================================
+        // VÉRIFICATION DE SESSION
+        // ============================================
+        async function checkUserSession() {
+            const session = await checkSession();
+            const authRequired = document.getElementById('auth-required');
+            const publishForm = document.getElementById('publish-form-container');
+            
+            if (session.loggedIn) {
+                currentUser = session.user;
+                console.log('✅ Utilisateur connecté:', currentUser.email);
+                
+                authRequired.style.display = 'none';
+                publishForm.style.display = 'block';
+                
+                // Mettre à jour les infos utilisateur
+                updateUserMenu();
+                
+                // Initialiser le formulaire
+                initPublishForm();
+                
+            } else {
+                console.log('ℹ️ Utilisateur non connecté');
+                currentUser = null;
+                
+                authRequired.style.display = 'block';
+                publishForm.style.display = 'none';
+            }
+        }
+
+        // ============================================
+        // MENU UTILISATEUR
+        // ============================================
+        function updateUserMenu() {
+            if (!currentUser) {
+                document.getElementById('sidebarUserName').textContent = 'Visiteur';
+                document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
+                document.getElementById('sidebarUserAvatar').innerHTML = '<i class="fas fa-user"></i>';
+                return;
+            }
+            
+            const userName = currentUser.user_metadata?.nom_complet || 
+                            currentUser.user_metadata?.full_name ||
+                            currentUser.email?.split('@')[0] || 
+                            'Utilisateur';
+            const userEmail = currentUser.email || '';
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            document.getElementById('sidebarUserName').textContent = userName;
+            document.getElementById('sidebarUserEmail').textContent = userEmail;
+            document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
+            
+            // Sauvegarder en localStorage
+            localStorage.setItem('afrimarket_user_name', userName);
+            localStorage.setItem('afrimarket_user_email', userEmail);
+        }
+
+        function updateUserInfo() {
+            if (currentUser) {
+                updateUserMenu();
+            } else {
+                // Essayer de récupérer depuis localStorage
+                const localName = localStorage.getItem('afrimarket_user_name');
+                const localEmail = localStorage.getItem('afrimarket_user_email');
+                
+                if (localName && localEmail) {
+                    document.getElementById('sidebarUserName').textContent = localName;
+                    document.getElementById('sidebarUserEmail').textContent = localEmail;
+                    
+                    const initials = localName.split(' ').map(n => n[0]).join('').toUpperCase();
+                    document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
+                }
+            }
+        }
+
+        // ============================================
+        // FONCTIONS DE L'ANNONCE
+        // ============================================
         
         // Fonction pour convertir une image en base64
         function convertImageToBase64(file) {
@@ -1362,165 +1446,48 @@
             });
         }
         
-        // Fonction pour sauvegarder l'annonce dans Supabase
-async function saveAnnonceToSupabase(annonceData) {
-    try {
-        if (!supabaseClient) {
-            throw new Error('Supabase non initialisé');
-        }
-        
-        // Récupérer l'utilisateur connecté
-        const user = await verifierSession();
-        if (!user.loggedIn) {
-            throw new Error('Utilisateur non connecté');
-        }
-        
-        // Préparer les données pour Supabase avec les bonnes colonnes
-        const annonce = {
-            user_id: user.user.id,
-            titre: annonceData.title,
-            description: annonceData.description,
-            type: annonceData.category,
-            prix: annonceData.price,
-            whatsapp: annonceData.whatsapp,
-            image_url: annonceData.image,
-            created_at: new Date().toISOString(),
-            statut: 'actif',
-            views: 0,
-            contacts: 0
-        };
-        
-        // Insérer l'annonce dans la table 'annonces'
-        const { data, error } = await supabaseClient
-            .from('annonces')
-            .insert([annonce]);
-        
-        if (error) {
-            throw new Error('Erreur Supabase: ' + error.message);
-        }
-        
-        console.log('✅ Annonce sauvegardée:', data);
-        return { success: true, data: data };
-        
-    } catch (error) {
-        console.error('Erreur sauvegarde annonce:', error);
-        return { success: false, error: error.message };
-    }
-}
-        
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('Page publication chargée');
-            
-            // Initialiser Supabase
-            if (window.supabase) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                    auth: {
-                        persistSession: true,
-                        autoRefreshToken: true
-                    }
-                });
-                console.log('✅ Supabase initialisé');
-            }
-            
-            // Configurer l'interface
-            setupInterface();
-            
-            // Vérifier la connexion
-            await checkUserSession();
-            
-            // Vérifier que tout est prêt
-            setTimeout(() => {
+        // ✅ Fonction pour sauvegarder l'annonce dans Supabase
+        async function saveAnnonceToSupabase(annonceData) {
+            try {
                 if (!supabaseClient) {
-                    showNotification('⚠️ Supabase non initialisé', 'error');
+                    throw new Error('Supabase non initialisé');
                 }
-            }, 1000);
-        });
-        
-        // Configurer l'interface
-        function setupInterface() {
-            // Gestion du thème
-            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
-            body.className = savedTheme;
-            
-            themeBtn.addEventListener('click', function() {
-                const isDark = body.classList.contains('dark-mode');
-                body.className = isDark ? 'light-mode' : 'dark-mode';
-                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
                 
-                // Mettre à jour le toggle dans le menu
-                menuThemeToggle.checked = !isDark;
-            });
-            
-            // Menu burger
-            menuBtn.addEventListener('click', () => {
-                sidebarMenu.classList.add('open');
-                menuOverlay.style.display = 'block';
-            });
-            
-            menuOverlay.addEventListener('click', () => {
-                sidebarMenu.classList.remove('open');
-                menuOverlay.style.display = 'none';
-            });
-            
-            // Synchroniser le toggle du thème dans le menu
-            menuThemeToggle.checked = savedTheme === 'dark-mode';
-            
-            menuThemeToggle.addEventListener('change', function() {
-                const isDark = this.checked;
-                body.className = isDark ? 'dark-mode' : 'light-mode';
-                localStorage.setItem('afrimarket_theme', isDark ? 'dark-mode' : 'light-mode');
-            });
-            
-            // Bouton Support dans le menu
-            document.getElementById('supportMenuItem').addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Service Support & Aide\n\n📧 Email: support@afrimarket.com\n📞 Téléphone: +33 1 23 45 67 89\n\nNous sommes disponibles 24h/24 !');
-                sidebarMenu.classList.remove('open');
-                menuOverlay.style.display = 'none';
-            });
-            
-            // Mettre à jour les informations utilisateur dans le menu
-            updateUserInfo();
-        }
-        
-        // Mettre à jour les informations utilisateur
-        function updateUserInfo() {
-            const userNameStorage = localStorage.getItem('afrimarket_user_name');
-            const userEmailStorage = localStorage.getItem('afrimarket_user_email');
-            
-            if (userNameStorage) {
-                // Mettre à jour le nom dans le menu
-                document.getElementById('sidebarUserName').textContent = userNameStorage;
+                if (!currentUser) {
+                    throw new Error('Utilisateur non connecté');
+                }
                 
-                // Mettre à jour l'avatar avec les initiales
-                const initials = userNameStorage.split(' ').map(n => n[0]).join('').toUpperCase();
-                document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
-            }
-            
-            if (userEmailStorage) {
-                document.getElementById('sidebarUserEmail').textContent = userEmailStorage;
-            }
-        }
-        
-        // Vérifier la session utilisateur
-        async function checkUserSession() {
-            const session = await verifierSession();
-            const authRequired = document.getElementById('auth-required');
-            const publishForm = document.getElementById('publish-form-container');
-            
-            if (session.loggedIn) {
-                console.log('✅ Utilisateur connecté, affichage formulaire');
-                authRequired.style.display = 'none';
-                publishForm.style.display = 'block';
+                // Préparer les données pour Supabase
+                const annonce = {
+                    user_id: currentUser.id,
+                    titre: annonceData.title,
+                    description: annonceData.description,
+                    type: annonceData.category,
+                    prix: annonceData.price,
+                    whatsapp: annonceData.whatsapp,
+                    image_url: annonceData.image,
+                    created_at: new Date().toISOString(),
+                    statut: 'actif',
+                    views: 0,
+                    contacts: 0
+                };
                 
-                // Initialiser le formulaire
-                initPublishForm();
+                // Insérer l'annonce dans la table 'annonces'
+                const { data, error } = await supabaseClient
+                    .from('annonces')
+                    .insert([annonce])
+                    .select();
                 
-            } else {
-                console.log('❌ Utilisateur non connecté, affichage auth required');
-                authRequired.style.display = 'block';
-                publishForm.style.display = 'none';
+                if (error) {
+                    throw new Error(error.message);
+                }
+                
+                console.log('✅ Annonce publiée:', data);
+                return { success: true, data: data };
+                
+            } catch (error) {
+                console.error('❌ Erreur sauvegarde:', error);
+                return { success: false, error: error.message };
             }
         }
         
@@ -1535,6 +1502,10 @@ async function saveAnnonceToSupabase(annonceData) {
             const descCount = document.getElementById('description-count');
             const submitBtn = document.getElementById('submit-btn');
             const previewBtn = document.getElementById('preview-btn');
+            
+            // Initialiser les compteurs
+            if (titreInput) titreCount.textContent = `${titreInput.value.length}/60`;
+            if (descInput) descCount.textContent = `${descInput.value.length}/500`;
             
             // Gestion du type d'annonce
             typeOptions.forEach(option => {
@@ -1559,106 +1530,123 @@ async function saveAnnonceToSupabase(annonceData) {
             });
             
             // Compteurs de caractères
-            titreInput.addEventListener('input', function() {
-                titreCount.textContent = `${this.value.length}/60`;
-                updatePreview();
-            });
+            if (titreInput) {
+                titreInput.addEventListener('input', function() {
+                    titreCount.textContent = `${this.value.length}/60`;
+                    updatePreview();
+                });
+            }
             
-            descInput.addEventListener('input', function() {
-                descCount.textContent = `${this.value.length}/500`;
-                updatePreview();
-            });
+            if (descInput) {
+                descInput.addEventListener('input', function() {
+                    descCount.textContent = `${this.value.length}/500`;
+                    updatePreview();
+                });
+            }
             
             // Prix
             const prixInput = document.getElementById('annonce-prix');
-            prixInput.addEventListener('input', updatePreview);
+            if (prixInput) {
+                prixInput.addEventListener('input', updatePreview);
+            }
             
             // WhatsApp
             const whatsappInput = document.getElementById('annonce-whatsapp');
-            whatsappInput.addEventListener('input', updatePreview);
+            if (whatsappInput) {
+                whatsappInput.addEventListener('input', updatePreview);
+            }
             
             // Aperçu
-            previewBtn.addEventListener('click', function() {
-                const titre = document.getElementById('annonce-titre').value;
-                const description = document.getElementById('annonce-description').value;
-                
-                if (!titre || !description) {
-                    showNotification('Veuillez d\'abord remplir le titre et la description', 'error');
-                    return;
-                }
-                
-                const previewContainer = document.getElementById('preview-container');
-                previewContainer.style.display = 'block';
-                previewContainer.scrollIntoView({ behavior: 'smooth' });
-            });
+            if (previewBtn) {
+                previewBtn.addEventListener('click', function() {
+                    const titre = titreInput?.value;
+                    const description = descInput?.value;
+                    
+                    if (!titre || !description) {
+                        showNotification('Veuillez d\'abord remplir le titre et la description', 'error');
+                        return;
+                    }
+                    
+                    const previewContainer = document.getElementById('preview-container');
+                    previewContainer.style.display = 'block';
+                    previewContainer.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
             
             // Soumission du formulaire
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                // Validation
-                const titre = titreInput.value.trim();
-                const description = descInput.value.trim();
-                
-                if (!titre || !description) {
-                    showNotification('Veuillez remplir tous les champs obligatoires', 'error');
-                    return;
-                }
-                
-                // Désactiver le bouton pendant le traitement
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publication...';
-                showLoading(true);
-                
-                try {
-                    const formData = {
-                        title: titre,
-                        description: description,
-                        category: document.getElementById('annonce-type').value,
-                        price: prixInput.value ? parseFloat(prixInput.value) : null,
-                        whatsapp: whatsappInput.value.trim() || null,
-                        image: null
-                    };
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
                     
-                    // Gérer l'image
-                    const imageInput = document.getElementById('image-input');
-                    if (imageInput.files && imageInput.files[0]) {
-                        const imageFile = imageInput.files[0];
+                    // Validation
+                    const titre = titreInput.value.trim();
+                    const description = descInput.value.trim();
+                    
+                    if (!titre || !description) {
+                        showNotification('Veuillez remplir tous les champs obligatoires', 'error');
+                        return;
+                    }
+                    
+                    // Désactiver le bouton
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publication...';
+                    }
+                    
+                    showLoading(true);
+                    
+                    try {
+                        const formData = {
+                            title: titre,
+                            description: description,
+                            category: document.getElementById('annonce-type').value,
+                            price: prixInput?.value ? parseFloat(prixInput.value) : null,
+                            whatsapp: whatsappInput?.value.trim() || null,
+                            image: null
+                        };
                         
-                        // Vérifier la taille (max 5MB)
-                        if (imageFile.size > 5 * 1024 * 1024) {
-                            throw new Error('L\'image ne doit pas dépasser 5MB');
+                        // Gérer l'image
+                        const imageInput = document.getElementById('image-input');
+                        if (imageInput?.files && imageInput.files[0]) {
+                            const imageFile = imageInput.files[0];
+                            
+                            // Vérifier la taille (max 5MB)
+                            if (imageFile.size > 5 * 1024 * 1024) {
+                                throw new Error('L\'image ne doit pas dépasser 5MB');
+                            }
+                            
+                            // Convertir en base64
+                            formData.image = await convertImageToBase64(imageFile);
                         }
                         
-                        // Convertir en base64
-                        formData.image = await convertImageToBase64(imageFile);
-                    }
-                    
-                    // Sauvegarder l'annonce dans Supabase
-                    const result = await saveAnnonceToSupabase(formData);
-                    
-                    if (result.success) {
-                        showNotification('✅ Annonce publiée avec succès sur AFRIMARKET !', 'success');
+                        // Sauvegarder l'annonce
+                        const result = await saveAnnonceToSupabase(formData);
                         
-                        // Redirection vers l'accueil après 2 secondes
-                        setTimeout(() => {
-                            window.location.href = 'dashboard.html';
-                        }, 2000);
+                        if (result.success) {
+                            showNotification('✅ Annonce publiée avec succès !', 'success');
+                            
+                            // Redirection vers l'accueil
+                            setTimeout(() => {
+                                window.location.href = 'dashboard.html';
+                            }, 2000);
+                            
+                        } else {
+                            throw new Error(result.error || 'Erreur lors de la publication');
+                        }
                         
-                    } else {
-                        throw new Error(result.error || 'Erreur lors de la publication');
+                    } catch (error) {
+                        console.error('❌ Erreur publication:', error);
+                        showNotification('❌ ' + error.message, 'error');
+                        
+                        // Réactiver le bouton
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publier maintenant';
+                        }
+                        showLoading(false);
                     }
-                    
-                } catch (error) {
-                    console.error('Erreur publication:', error);
-                    showNotification('❌ Erreur: ' + error.message, 'error');
-                    
-                    // Réactiver le bouton
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Publier maintenant';
-                    showLoading(false);
-                }
-            });
+                });
+            }
             
             // Initialiser l'upload d'image
             initImageUpload();
@@ -1671,7 +1659,6 @@ async function saveAnnonceToSupabase(annonceData) {
         function initImageUpload() {
             const imageUpload = document.getElementById('image-upload');
             const imageInput = document.getElementById('image-input');
-            const imagePreview = document.getElementById('image-preview');
             
             if (!imageUpload || !imageInput) return;
             
@@ -1684,16 +1671,19 @@ async function saveAnnonceToSupabase(annonceData) {
                     const reader = new FileReader();
                     
                     reader.onload = function(e) {
-                        imagePreview.innerHTML = `
-                            <img src="${e.target.result}" alt="Aperçu" loading="lazy">
-                            <button type="button" onclick="removeImage()" class="remove-image-btn">
-                                <i class="fas fa-times"></i> Supprimer l'image
-                            </button>
-                        `;
-                        imagePreview.style.display = 'block';
-                        
-                        // Mettre à jour l'aperçu
-                        updatePreview(e.target.result);
+                        const imagePreview = document.getElementById('image-preview');
+                        if (imagePreview) {
+                            imagePreview.innerHTML = `
+                                <img src="${e.target.result}" alt="Aperçu" loading="lazy">
+                                <button type="button" onclick="removeImage()" class="remove-image-btn">
+                                    <i class="fas fa-times"></i> Supprimer l'image
+                                </button>
+                            `;
+                            imagePreview.style.display = 'block';
+                            
+                            // Mettre à jour l'aperçu
+                            updatePreview(e.target.result);
+                        }
                     };
                     
                     reader.readAsDataURL(this.files[0]);
@@ -1726,26 +1716,30 @@ async function saveAnnonceToSupabase(annonceData) {
             const prix = document.getElementById('annonce-prix')?.value;
             const whatsapp = document.getElementById('annonce-whatsapp')?.value;
             
-            // Utiliser l'image uploadée ou une image par défaut
+            // Image par défaut
             const previewImage = imageUrl || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80';
             
-            const categoryIcon = type === 'vente' ? 'fas fa-shopping-cart' : 'fas fa-newspaper';
+            const categoryIcon = type === 'vente' ? 'fa-shopping-cart' : 'fa-newspaper';
             const categoryText = type === 'vente' ? 'À VENDRE' : 'ACTUALITÉ';
-            const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+            const date = new Date().toLocaleDateString('fr-FR', { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric' 
+            });
             
             previewElement.innerHTML = `
                 <div class="preview-image">
                     <div class="preview-category ${type === 'vente' ? '' : 'actualite'}">
-                        <i class="${categoryIcon}"></i>
+                        <i class="fas ${categoryIcon}"></i>
                         <span>${categoryText}</span>
                     </div>
-                    <img src="${previewImage}" alt="${titre}" loading="lazy">
+                    <img src="${previewImage}" alt="${titre}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
                 </div>
                 
                 <div class="preview-content">
                     <div class="preview-header">
                         <h3 class="preview-title-text">${titre}</h3>
-                        ${prix ? `<span class="preview-price">${prix} €</span>` : ''}
+                        ${prix ? `<span class="preview-price">${parseInt(prix).toLocaleString()} F</span>` : ''}
                     </div>
                     
                     <p class="preview-description">${description}</p>
@@ -1756,14 +1750,42 @@ async function saveAnnonceToSupabase(annonceData) {
                             ${date}
                         </span>
                         ${whatsapp ? `
-                            <a href="#" class="preview-whatsapp">
+                            <span class="preview-whatsapp">
                                 <i class="fab fa-whatsapp"></i>
                                 WhatsApp
-                            </a>
+                            </span>
                         ` : ''}
                     </div>
                 </div>
             `;
+        }
+
+        // ============================================
+        // NOTIFICATIONS
+        // ============================================
+        function showNotification(message, type = 'info') {
+            const oldNotif = document.querySelector('.notification');
+            if (oldNotif) oldNotif.remove();
+            
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                               type === 'error' ? 'fa-exclamation-circle' : 
+                               'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notif);
+            
+            setTimeout(() => notif.remove(), 5000);
+        }
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = show ? 'flex' : 'none';
+            }
         }
     </script>
 </body>

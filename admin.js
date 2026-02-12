@@ -1,6 +1,6 @@
 // ============================================
 // ADMIN.JS - Logique de l'administration AFRIMARKET
-// VERSION CORRIGÉE - SANS supabase.raw
+// VERSION FINALE - AVEC SUPPORT PARRAINAGE 3 NIVEAUX
 // ============================================
 
 // Configuration Supabase
@@ -11,6 +11,9 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 // VARIABLES GLOBALES
 // ============================================
 const ADMIN_EMAIL = 'abdoula14cherif@gmail.com';
+const ADMIN_UUID = '00000000-0000-0000-0000-000000000001';
+const DEFAULT_USER_UUID = '00000000-0000-0000-0000-000000000002';
+
 let supabaseClient = null;
 let currentUser = null;
 
@@ -21,6 +24,7 @@ let allReferrals = [];
 let allRetraits = [];
 let allRecharges = [];
 let allBalances = [];
+let allRelations = [];
 
 // État
 let currentTab = 'users';
@@ -34,50 +38,47 @@ let currentAnnonceId = null;
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Administration chargée');
     
-    // Initialiser Supabase
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
-    // Configurer l'interface
-    setupInterface();
-    
-    // Vérifier la session
-    await checkSession();
-    
-    // Charger les données
-    await loadAllData();
+    try {
+        // Initialiser Supabase
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Configurer l'interface
+        setupInterface();
+        
+        // Vérifier la session
+        await checkSession();
+        
+        // Charger les données
+        await loadAllData();
+        
+    } catch (error) {
+        console.error('❌ Erreur initialisation:', error);
+        showToast('Erreur de chargement', 'error');
+    }
 });
 
 // ============================================
-// VÉRIFICATION DE SESSION - CORRIGÉE
+// VÉRIFICATION DE SESSION - OPTIMISÉE
 // ============================================
 async function checkSession() {
-    // 1. VÉRIFIER DIRECTEMENT LOCALSTORAGE
     const isLoggedIn = localStorage.getItem('afrimarket_logged_in') === 'true';
     const userEmail = localStorage.getItem('afrimarket_user_email');
     const userRole = localStorage.getItem('afrimarket_user_role');
-    const userId = localStorage.getItem('afrimarket_user_id');
+    let userId = localStorage.getItem('afrimarket_user_id');
     const userName = localStorage.getItem('afrimarket_user_name');
     
     console.log('🔍 Vérification session:', { isLoggedIn, userEmail, userRole, userId });
     
-    // 2. ADMIN - TOUJOURS ACCEPTÉ
+    // ✅ ADMIN
     if (isLoggedIn && userEmail === ADMIN_EMAIL) {
-        console.log('✅ Admin connecté via localStorage');
+        console.log('✅ Admin connecté');
         
-        // Forcer le rôle admin
-        if (userRole !== 'admin') {
-            localStorage.setItem('afrimarket_user_role', 'admin');
-        }
+        localStorage.setItem('afrimarket_user_role', 'admin');
         
-        // ✅ UUID FIXE POUR L'ADMIN
-        const ADMIN_UUID = '00000000-0000-0000-0000-000000000001';
+        // Vérifier si l'ID est un UUID valide
+        const isValidUUID = userId && userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+        const validUserId = isValidUUID ? userId : ADMIN_UUID;
         
-        // ✅ VALIDATION DE L'ID
-        const validUserId = (userId && userId.includes('-') && userId.length === 36) 
-            ? userId 
-            : ADMIN_UUID;
-        
-        // ✅ SAUVEGARDER L'UUID VALIDE
         if (validUserId !== userId) {
             localStorage.setItem('afrimarket_user_id', validUserId);
         }
@@ -91,26 +92,18 @@ async function checkSession() {
             }
         };
         
-        const adminEmailElement = document.getElementById('adminEmail');
-        if (adminEmailElement) adminEmailElement.textContent = `(${userEmail})`;
-        
+        updateAdminEmail(userEmail);
         updateSidebarInfo();
         return currentUser;
     }
     
-    // 3. UTILISATEUR NORMAL
+    // ✅ UTILISATEUR NORMAL
     if (isLoggedIn && userEmail) {
-        console.log('✅ Utilisateur connecté via localStorage');
+        console.log('✅ Utilisateur connecté');
         
-        // ✅ UUID PAR DÉFAUT POUR LES UTILISATEURS
-        const DEFAULT_UUID = '00000000-0000-0000-0000-000000000002';
+        const isValidUUID = userId && userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+        const validUserId = isValidUUID ? userId : DEFAULT_USER_UUID;
         
-        // ✅ VALIDATION DE L'ID UTILISATEUR
-        const validUserId = (userId && userId.includes('-') && userId.length === 36) 
-            ? userId 
-            : DEFAULT_UUID;
-        
-        // ✅ SAUVEGARDER L'UUID VALIDE
         if (validUserId !== userId) {
             localStorage.setItem('afrimarket_user_id', validUserId);
         }
@@ -124,20 +117,21 @@ async function checkSession() {
             }
         };
         
-        const adminEmailElement = document.getElementById('adminEmail');
-        if (adminEmailElement) adminEmailElement.textContent = `(${userEmail})`;
-        
+        updateAdminEmail(userEmail);
         updateSidebarInfo();
         return currentUser;
     }
     
-    // 4. AUCUNE SESSION
-    console.log('ℹ️ Aucune session trouvée - Mode lecture seule');
-    const adminEmailElement = document.getElementById('adminEmail');
-    if (adminEmailElement) adminEmailElement.textContent = `(Non connecté - Mode lecture)`;
-    
+    // ✅ AUCUNE SESSION
+    console.log('ℹ️ Mode lecture seule');
+    updateAdminEmail('Non connecté - Mode lecture');
     updateSidebarInfo();
     return null;
+}
+
+function updateAdminEmail(text) {
+    const el = document.getElementById('adminEmail');
+    if (el) el.textContent = `(${text})`;
 }
 
 // ============================================
@@ -151,15 +145,11 @@ function setupForceAdminButton() {
         e.preventDefault();
         e.stopPropagation();
         
-        console.log('🔧 Activation du mode admin...');
+        console.log('🔧 Activation mode admin...');
         
-        // Sauvegarder le thème
         const theme = localStorage.getItem('afrimarket_theme');
         
-        // ✅ UUID VALIDE AU LIEU DE 'admin-' + Date.now()
-        const ADMIN_UUID = '00000000-0000-0000-0000-000000000001';
-        
-        // Forcer la connexion admin avec UUID valide
+        // Forcer avec UUID valide
         localStorage.setItem('afrimarket_logged_in', 'true');
         localStorage.setItem('afrimarket_user_email', ADMIN_EMAIL);
         localStorage.setItem('afrimarket_user_name', 'Abdoula Cherif');
@@ -168,9 +158,7 @@ function setupForceAdminButton() {
         
         if (theme) localStorage.setItem('afrimarket_theme', theme);
         
-        showToast('✅ Mode admin activé ! Rechargement...', 'success');
-        
-        // Recharger la page
+        showToast('✅ Mode admin activé !', 'success');
         setTimeout(() => window.location.reload(), 1000);
     });
 }
@@ -295,14 +283,11 @@ function updateSidebarInfo() {
 window.switchTab = function(tabName, event) {
     currentTab = tabName;
     
-    // Cacher tous les onglets
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     
-    // Afficher l'onglet sélectionné
     const tabElement = document.getElementById(`${tabName}-tab`);
     if (tabElement) tabElement.style.display = 'block';
     
-    // Mettre à jour les boutons
     document.querySelectorAll('.admin-tab').forEach(btn => btn.classList.remove('active'));
     if (event && event.currentTarget) {
         event.currentTarget.classList.add('active');
@@ -310,135 +295,116 @@ window.switchTab = function(tabName, event) {
 };
 
 // ============================================
-// CHARGEMENT DES DONNÉES
+// CHARGEMENT DES DONNÉES - OPTIMISÉ
 // ============================================
 async function loadAllData() {
     showLoading(true);
     
     try {
-        await Promise.all([
+        const [users, annonces, referrals, retraits, recharges, balances, relations] = await Promise.allSettled([
             loadUsers(),
             loadAnnonces(),
             loadReferrals(),
             loadRetraits(),
             loadRecharges(),
-            loadBalances()
+            loadBalances(),
+            loadRelations()
         ]);
+        
+        allUsers = users.status === 'fulfilled' ? users.value : [];
+        allAnnonces = annonces.status === 'fulfilled' ? annonces.value : [];
+        allReferrals = referrals.status === 'fulfilled' ? referrals.value : [];
+        allRetraits = retraits.status === 'fulfilled' ? retraits.value : [];
+        allRecharges = recharges.status === 'fulfilled' ? recharges.value : [];
+        allBalances = balances.status === 'fulfilled' ? balances.value : [];
+        allRelations = relations.status === 'fulfilled' ? relations.value : [];
         
         updateStatistics();
         updateAllTables();
         updatePendingBadges();
+        
         showToast('✅ Données chargées', 'success');
         
     } catch (error) {
         console.error('❌ Erreur chargement:', error);
-        showToast('❌ Erreur de chargement', 'error');
+        showToast('Erreur de chargement', 'error');
     } finally {
         showLoading(false);
     }
 }
 
 async function loadUsers() {
-    try {
-        const { data } = await supabaseClient
-            .from('users')
-            .select('*')
-            .order('created_at', { ascending: false });
-        allUsers = data || [];
-    } catch (e) {
-        console.error('⚠️ Erreur users:', e);
-        allUsers = [];
-    }
+    const { data } = await supabaseClient
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false });
+    return data || [];
 }
 
 async function loadAnnonces() {
-    try {
-        const { data } = await supabaseClient
-            .from('annonces')
-            .select('*')
-            .order('created_at', { ascending: false });
-        allAnnonces = data || [];
-    } catch (e) {
-        console.error('⚠️ Erreur annonces:', e);
-        allAnnonces = [];
-    }
+    const { data } = await supabaseClient
+        .from('annonces')
+        .select('*')
+        .order('created_at', { ascending: false });
+    return data || [];
 }
 
 async function loadReferrals() {
-    try {
-        const { data } = await supabaseClient
-            .from('referral_data')
-            .select('*');
-        allReferrals = data || [];
-    } catch (e) {
-        console.error('⚠️ Erreur referrals:', e);
-        allReferrals = [];
-    }
+    const { data } = await supabaseClient
+        .from('referral_data')
+        .select('*')
+        .order('created_at', { ascending: false });
+    return data || [];
 }
 
 async function loadRetraits() {
-    try {
-        const { data } = await supabaseClient
-            .from('retraits')
-            .select('*')
-            .order('created_at', { ascending: false });
-        allRetraits = data || [];
-    } catch (e) {
-        console.error('⚠️ Erreur retraits:', e);
-        allRetraits = [];
-    }
+    const { data } = await supabaseClient
+        .from('retraits')
+        .select('*')
+        .order('created_at', { ascending: false });
+    return data || [];
 }
 
 async function loadRecharges() {
-    try {
-        const { data } = await supabaseClient
-            .from('recharges')
-            .select('*')
-            .order('created_at', { ascending: false });
-        allRecharges = data || [];
-    } catch (e) {
-        console.error('⚠️ Erreur recharges:', e);
-        allRecharges = [];
-    }
+    const { data } = await supabaseClient
+        .from('recharges')
+        .select('*')
+        .order('created_at', { ascending: false });
+    return data || [];
 }
 
 async function loadBalances() {
-    try {
-        const { data } = await supabaseClient
-            .from('balances')
-            .select('*');
-        allBalances = data || [];
-    } catch (e) {
-        console.error('⚠️ Erreur balances:', e);
-        allBalances = [];
-    }
+    const { data } = await supabaseClient
+        .from('balances')
+        .select('*');
+    return data || [];
+}
+
+async function loadRelations() {
+    const { data } = await supabaseClient
+        .from('referral_relationships')
+        .select('*');
+    return data || [];
 }
 
 // ============================================
 // STATISTIQUES ET BADGES
 // ============================================
 function updateStatistics() {
-    const statsUsers = document.getElementById('statsUsers');
-    const statsAnnonces = document.getElementById('statsAnnonces');
-    const statsParrains = document.getElementById('statsParrains');
-    const statsRetraits = document.getElementById('statsRetraits');
-    const statsRecharges = document.getElementById('statsRecharges');
-    const statsTotalPending = document.getElementById('statsTotalPending');
+    const elements = {
+        statsUsers: allUsers.length,
+        statsAnnonces: allAnnonces.length,
+        statsParrains: allReferrals.filter(r => r.is_unlocked).length,
+        statsRetraits: allRetraits.filter(r => r.status === 'pending').length,
+        statsRecharges: allRecharges.filter(r => r.status === 'pending').length,
+        statsTotalPending: allRetraits.filter(r => r.status === 'pending').length + 
+                          allRecharges.filter(r => r.status === 'pending').length
+    };
     
-    if (statsUsers) statsUsers.textContent = allUsers.length || 0;
-    if (statsAnnonces) statsAnnonces.textContent = allAnnonces.length || 0;
-    
-    const parrainsActifs = allReferrals.filter(r => r.is_unlocked).length;
-    if (statsParrains) statsParrains.textContent = parrainsActifs || 0;
-    
-    const retraitsEnAttente = allRetraits.filter(r => r.status === 'pending').length;
-    if (statsRetraits) statsRetraits.textContent = retraitsEnAttente || 0;
-    
-    const rechargesEnAttente = allRecharges.filter(r => r.status === 'pending').length;
-    if (statsRecharges) statsRecharges.textContent = rechargesEnAttente || 0;
-    
-    if (statsTotalPending) statsTotalPending.textContent = 
-        (retraitsEnAttente + rechargesEnAttente) || 0;
+    Object.entries(elements).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value || 0;
+    });
 }
 
 function updatePendingBadges() {
@@ -450,12 +416,8 @@ function updatePendingBadges() {
     const pendingBadge = document.getElementById('pendingCountBadge');
     const pendingCount = document.getElementById('pendingCount');
     if (pendingBadge && pendingCount) {
-        if (totalEnAttente > 0) {
-            pendingBadge.style.display = 'inline-block';
-            pendingCount.textContent = totalEnAttente;
-        } else {
-            pendingBadge.style.display = 'none';
-        }
+        pendingBadge.style.display = totalEnAttente > 0 ? 'inline-block' : 'none';
+        pendingCount.textContent = totalEnAttente;
     }
     
     // Badge retraits
@@ -647,6 +609,7 @@ function updateReferralsTable(filteredReferrals = null) {
     referralsToShow.forEach(ref => {
         const user = allUsers.find(u => u.id === ref.user_id);
         const date = ref.unlocked_at ? new Date(ref.unlocked_at).toLocaleDateString('fr-FR') : '-';
+        const filleulsDirects = allRelations.filter(r => r.referrer_id === ref.user_id).length;
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -654,7 +617,7 @@ function updateReferralsTable(filteredReferrals = null) {
             <td>${user?.email || '-'}</td>
             <td><code>${ref.referral_code || '-'}</code></td>
             <td><span class="badge ${ref.is_unlocked ? 'badge-active' : 'badge-inactive'}">
-                ${ref.is_unlocked ? 'Débloqué' : 'Verrouillé'}</span></td>
+                ${ref.is_unlocked ? '🔓 Débloqué' : '🔒 Verrouillé'}</span></td>
             <td>${date}</td>
             <td><strong>${ref.direct_count || 0}</strong></td>
             <td><strong>${ref.level2_count || 0}</strong></td>
@@ -662,13 +625,13 @@ function updateReferralsTable(filteredReferrals = null) {
             <td>${(ref.direct_earnings || 0).toLocaleString()} F</td>
             <td>${(ref.level2_earnings || 0).toLocaleString()} F</td>
             <td>${(ref.level3_earnings || 0).toLocaleString()} F</td>
-            <td><strong>${(ref.total_earned || 0).toLocaleString()} F</strong></td>
+            <td><strong style="color: var(--primary-green);">${(ref.total_earned || 0).toLocaleString()} F</strong></td>
             <td class="actions-cell">
                 ${!ref.is_unlocked ? 
                     `<button class="action-btn unlock-btn" onclick="unlockReferral('${ref.user_id}')">
-                        <i class="fas fa-unlock"></i>
+                        <i class="fas fa-unlock"></i> Débloquer
                     </button>` : 
-                    `<span class="badge badge-active">Débloqué</span>`}
+                    `<span class="badge badge-active">✅ Débloqué</span>`}
             </td>
         `;
         tbody.appendChild(row);
@@ -729,8 +692,8 @@ function updateRetraitsTable(filteredRetraits = null) {
             <td>
                 <span class="badge ${retrait.status === 'pending' ? 'badge-pending' : 
                                   retrait.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">
-                    ${retrait.status === 'pending' ? 'En attente' : 
-                      retrait.status === 'approved' ? 'Approuvé' : 'Rejeté'}
+                    ${retrait.status === 'pending' ? '⏳ En attente' : 
+                      retrait.status === 'approved' ? '✅ Approuvé' : '❌ Rejeté'}
                 </span>
             </td>
             <td>${processedDate}</td>
@@ -740,10 +703,10 @@ function updateRetraitsTable(filteredRetraits = null) {
                 </button>
                 ${retrait.status === 'pending' && currentUser ? 
                     `<button class="action-btn approve-btn" onclick="approveRetrait('${retrait.id}')">
-                        <i class="fas fa-check"></i>
+                        <i class="fas fa-check"></i> Approuver
                     </button>
                     <button class="action-btn reject-btn" onclick="rejectRetrait('${retrait.id}')">
-                        <i class="fas fa-times"></i>
+                        <i class="fas fa-times"></i> Rejeter
                     </button>` : 
                     `<span class="badge badge-inactive">Traité</span>`}
             </td>
@@ -808,14 +771,14 @@ function updateRechargesTable(filteredRecharges = null) {
             <td>${date}</td>
             <td>
                 ${recharge.unlock_referral ? 
-                    `<span class="badge badge-pending"><i class="fas fa-unlock"></i> Oui</span>` : 
-                    `<span class="badge badge-inactive">Non</span>`}
+                    `<span class="badge badge-pending"><i class="fas fa-unlock"></i> 🔓 Oui</span>` : 
+                    `<span class="badge badge-inactive">🔒 Non</span>`}
             </td>
             <td>
                 <span class="badge ${recharge.status === 'pending' ? 'badge-pending' : 
                                   recharge.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">
-                    ${recharge.status === 'pending' ? 'En attente' : 
-                      recharge.status === 'approved' ? 'Approuvée' : 'Rejetée'}
+                    ${recharge.status === 'pending' ? '⏳ En attente' : 
+                      recharge.status === 'approved' ? '✅ Approuvée' : '❌ Rejetée'}
                 </span>
             </td>
             <td>${processedDate}</td>
@@ -825,10 +788,10 @@ function updateRechargesTable(filteredRecharges = null) {
                 </button>
                 ${recharge.status === 'pending' && currentUser ? 
                     `<button class="action-btn approve-btn" onclick="approveRecharge('${recharge.id}')">
-                        <i class="fas fa-check"></i>
+                        <i class="fas fa-check"></i> Approuver
                     </button>
                     <button class="action-btn reject-btn" onclick="rejectRecharge('${recharge.id}')">
-                        <i class="fas fa-times"></i>
+                        <i class="fas fa-times"></i> Rejeter
                     </button>` : 
                     `<span class="badge badge-inactive">Traité</span>`}
             </td>
@@ -868,19 +831,13 @@ window.showAddUserModal = function() {
         showToast('❌ Connexion requise', 'error');
         return;
     }
-    const userModalTitle = document.getElementById('userModalTitle');
-    const userId = document.getElementById('userId');
-    const userForm = document.getElementById('userForm');
-    const userPassword = document.getElementById('userPassword');
-    const passwordField = document.getElementById('passwordField');
-    const userBalance = document.getElementById('userBalance');
     
-    if (userModalTitle) userModalTitle.textContent = 'Ajouter un utilisateur';
-    if (userForm) userForm.reset();
-    if (userId) userId.value = '';
-    if (userPassword) userPassword.required = true;
-    if (passwordField) passwordField.style.display = 'block';
-    if (userBalance) userBalance.value = 0;
+    setModalValues('userModalTitle', 'Ajouter un utilisateur');
+    resetForm('userForm');
+    setValue('userId', '');
+    setRequired('userPassword', true);
+    setDisplay('passwordField', 'block');
+    setValue('userBalance', 0);
     
     showModal('userModal');
 };
@@ -890,30 +847,21 @@ window.editUser = function(userId) {
         showToast('❌ Connexion requise', 'error');
         return;
     }
+    
     const user = allUsers.find(u => u.id === userId);
     if (!user) return;
     
-    const userModalTitle = document.getElementById('userModalTitle');
-    const userIdInput = document.getElementById('userId');
-    const userName = document.getElementById('userName');
-    const userEmail = document.getElementById('userEmail');
-    const userRole = document.getElementById('userRole');
-    const userStatus = document.getElementById('userStatus');
-    const userPassword = document.getElementById('userPassword');
-    const passwordField = document.getElementById('passwordField');
-    const userBalance = document.getElementById('userBalance');
-    
-    if (userModalTitle) userModalTitle.textContent = 'Modifier l\'utilisateur';
-    if (userIdInput) userIdInput.value = user.id;
-    if (userName) userName.value = user.nom_complet || '';
-    if (userEmail) userEmail.value = user.email || '';
-    if (userRole) userRole.value = user.email === ADMIN_EMAIL ? 'admin' : 'user';
-    if (userStatus) userStatus.value = user.statut || 'active';
-    if (userPassword) userPassword.required = false;
-    if (passwordField) passwordField.style.display = 'none';
+    setModalValues('userModalTitle', 'Modifier l\'utilisateur');
+    setValue('userId', user.id);
+    setValue('userName', user.nom_complet || '');
+    setValue('userEmail', user.email || '');
+    setValue('userRole', user.email === ADMIN_EMAIL ? 'admin' : 'user');
+    setValue('userStatus', user.statut || 'active');
+    setRequired('userPassword', false);
+    setDisplay('passwordField', 'none');
     
     const balance = allBalances.find(b => b.user_id === user.id)?.amount || 0;
-    if (userBalance) userBalance.value = balance;
+    setValue('userBalance', balance);
     
     showModal('userModal');
 };
@@ -923,13 +871,14 @@ window.saveUser = async function() {
         showToast('❌ Connexion requise', 'error');
         return;
     }
-    const userId = document.getElementById('userId')?.value;
-    const name = document.getElementById('userName')?.value;
-    const email = document.getElementById('userEmail')?.value;
-    const password = document.getElementById('userPassword')?.value;
-    const role = document.getElementById('userRole')?.value;
-    const status = document.getElementById('userStatus')?.value;
-    const balance = parseFloat(document.getElementById('userBalance')?.value) || 0;
+    
+    const userId = getValue('userId');
+    const name = getValue('userName');
+    const email = getValue('userEmail');
+    const password = getValue('userPassword');
+    const role = getValue('userRole');
+    const status = getValue('userStatus');
+    const balance = parseFloat(getValue('userBalance')) || 0;
     
     if (!name || !email) {
         showToast('❌ Champs obligatoires', 'error');
@@ -955,28 +904,7 @@ window.saveUser = async function() {
             if (error) throw error;
             
             // Mettre à jour le solde
-            const existingBalance = allBalances.find(b => b.user_id === userId);
-            
-            if (existingBalance) {
-                await supabaseClient
-                    .from('balances')
-                    .update({ 
-                        amount: balance,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('user_id', userId);
-            } else {
-                await supabaseClient
-                    .from('balances')
-                    .insert({
-                        user_id: userId,
-                        amount: balance,
-                        total_earned: balance,
-                        currency: 'FCFA',
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    });
-            }
+            await upsertBalance(userId, balance);
             
             showToast('✅ Utilisateur modifié', 'success');
             
@@ -996,31 +924,9 @@ window.saveUser = async function() {
             if (error) throw error;
             
             if (data.user) {
-                // Créer l'utilisateur dans la table users
-                await supabaseClient
-                    .from('users')
-                    .insert({
-                        id: data.user.id,
-                        email: email,
-                        nom_complet: name,
-                        role: role,
-                        statut: 'active',
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    });
-                
-                // Créer le solde
+                await createUser(data.user.id, email, name, role);
                 if (balance > 0) {
-                    await supabaseClient
-                        .from('balances')
-                        .insert({
-                            user_id: data.user.id,
-                            amount: balance,
-                            total_earned: balance,
-                            currency: 'FCFA',
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString()
-                        });
+                    await createBalance(data.user.id, balance);
                 }
             }
             
@@ -1032,17 +938,97 @@ window.saveUser = async function() {
         
     } catch (error) {
         console.error('❌ Erreur:', error);
-        showToast('❌ ' + (error.message || 'Erreur lors de l\'opération'), 'error');
+        showToast('❌ ' + (error.message || 'Erreur'), 'error');
     } finally {
         showLoading(false);
     }
 };
+
+// Fonctions utilitaires pour les formulaires
+function setModalValues(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+}
+
+function resetForm(id) {
+    const el = document.getElementById(id);
+    if (el) el.reset();
+}
+
+function setValue(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.value = value;
+}
+
+function getValue(id) {
+    return document.getElementById(id)?.value || '';
+}
+
+function setRequired(id, required) {
+    const el = document.getElementById(id);
+    if (el) el.required = required;
+}
+
+function setDisplay(id, display) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = display;
+}
+
+async function upsertBalance(userId, amount) {
+    const existing = allBalances.find(b => b.user_id === userId);
+    
+    if (existing) {
+        await supabaseClient
+            .from('balances')
+            .update({ 
+                amount,
+                updated_at: new Date().toISOString()
+            })
+            .eq('user_id', userId);
+    } else {
+        await supabaseClient
+            .from('balances')
+            .insert(createBalanceObject(userId, amount));
+    }
+}
+
+async function createUser(id, email, name, role) {
+    await supabaseClient
+        .from('users')
+        .insert({
+            id,
+            email,
+            nom_complet: name,
+            role,
+            statut: 'active',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        });
+}
+
+async function createBalance(userId, amount) {
+    await supabaseClient
+        .from('balances')
+        .insert(createBalanceObject(userId, amount));
+}
+
+function createBalanceObject(userId, amount) {
+    return {
+        user_id: userId,
+        amount,
+        total_earned: amount,
+        currency: 'FCFA',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    };
+}
 
 window.toggleUserStatus = async function(userId, newStatus) {
     if (!currentUser) {
         showToast('❌ Connexion requise', 'error');
         return;
     }
+    
     showConfirm(
         `${newStatus === 'active' ? 'Activer' : 'Désactiver'} cet utilisateur ?`,
         async () => {
@@ -1060,7 +1046,6 @@ window.toggleUserStatus = async function(userId, newStatus) {
                 await loadUsers();
                 updateUsersTable();
             } catch (error) {
-                console.error('❌ Erreur:', error);
                 showToast('❌ Erreur', 'error');
             } finally {
                 showLoading(false);
@@ -1074,6 +1059,7 @@ window.deleteUser = async function(userId) {
         showToast('❌ Connexion requise', 'error');
         return;
     }
+    
     showConfirm(
         '⚠️ Supprimer cet utilisateur ? Cette action est irréversible.',
         async () => {
@@ -1087,7 +1073,6 @@ window.deleteUser = async function(userId) {
                 showToast('✅ Utilisateur supprimé', 'success');
                 await loadAllData();
             } catch (error) {
-                console.error('❌ Erreur:', error);
                 showToast('❌ Erreur', 'error');
             } finally {
                 showLoading(false);
@@ -1104,8 +1089,9 @@ window.unlockReferral = async function(userId) {
         showToast('❌ Connexion requise', 'error');
         return;
     }
+    
     showConfirm(
-        '🔓 Débloquer le lien de parrainage ?',
+        '🔓 Débloquer manuellement le lien de parrainage ?',
         async () => {
             showLoading(true);
             try {
@@ -1123,7 +1109,6 @@ window.unlockReferral = async function(userId) {
                 updateReferralsTable();
                 updateUsersTable();
             } catch (error) {
-                console.error('❌ Erreur:', error);
                 showToast('❌ Erreur', 'error');
             } finally {
                 showLoading(false);
@@ -1140,10 +1125,10 @@ window.showAddAnnonceModal = async function() {
         showToast('❌ Connexion requise', 'error');
         return;
     }
+    
     const select = document.getElementById('annonceUserId');
     if (select) {
         select.innerHTML = '';
-        
         allUsers.forEach(user => {
             const option = document.createElement('option');
             option.value = user.id;
@@ -1152,13 +1137,9 @@ window.showAddAnnonceModal = async function() {
         });
     }
     
-    const annonceModalTitle = document.getElementById('annonceModalTitle');
-    const annonceForm = document.getElementById('annonceForm');
-    const annonceId = document.getElementById('annonceId');
-    
-    if (annonceModalTitle) annonceModalTitle.textContent = 'Ajouter une annonce';
-    if (annonceForm) annonceForm.reset();
-    if (annonceId) annonceId.value = '';
+    setModalValues('annonceModalTitle', 'Ajouter une annonce');
+    resetForm('annonceForm');
+    setValue('annonceId', '');
     
     showModal('annonceModal');
 };
@@ -1168,6 +1149,7 @@ window.editAnnonce = function(annonceId) {
         showToast('❌ Connexion requise', 'error');
         return;
     }
+    
     const annonce = allAnnonces.find(a => a.id === annonceId);
     if (!annonce) return;
     
@@ -1183,19 +1165,12 @@ window.editAnnonce = function(annonceId) {
         });
     }
     
-    const annonceModalTitle = document.getElementById('annonceModalTitle');
-    const annonceIdInput = document.getElementById('annonceId');
-    const annonceTitre = document.getElementById('annonceTitre');
-    const annonceDescription = document.getElementById('annonceDescription');
-    const annonceType = document.getElementById('annonceType');
-    const annoncePrix = document.getElementById('annoncePrix');
-    
-    if (annonceModalTitle) annonceModalTitle.textContent = 'Modifier l\'annonce';
-    if (annonceIdInput) annonceIdInput.value = annonce.id;
-    if (annonceTitre) annonceTitre.value = annonce.titre || '';
-    if (annonceDescription) annonceDescription.value = annonce.description || '';
-    if (annonceType) annonceType.value = annonce.type || 'vente';
-    if (annoncePrix) annoncePrix.value = annonce.prix || '';
+    setModalValues('annonceModalTitle', 'Modifier l\'annonce');
+    setValue('annonceId', annonce.id);
+    setValue('annonceTitre', annonce.titre || '');
+    setValue('annonceDescription', annonce.description || '');
+    setValue('annonceType', annonce.type || 'vente');
+    setValue('annoncePrix', annonce.prix || '');
     
     showModal('annonceModal');
 };
@@ -1205,12 +1180,13 @@ window.saveAnnonce = async function() {
         showToast('❌ Connexion requise', 'error');
         return;
     }
-    const annonceId = document.getElementById('annonceId')?.value;
-    const titre = document.getElementById('annonceTitre')?.value;
-    const description = document.getElementById('annonceDescription')?.value;
-    const type = document.getElementById('annonceType')?.value;
-    const prix = document.getElementById('annoncePrix')?.value;
-    const userId = document.getElementById('annonceUserId')?.value;
+    
+    const annonceId = getValue('annonceId');
+    const titre = getValue('annonceTitre');
+    const description = getValue('annonceDescription');
+    const type = getValue('annonceType');
+    const prix = getValue('annoncePrix');
+    const userId = getValue('annonceUserId');
     
     if (!titre || !description || !userId) {
         showToast('❌ Champs obligatoires', 'error');
@@ -1258,7 +1234,6 @@ window.saveAnnonce = async function() {
         updateAnnoncesTable();
         
     } catch (error) {
-        console.error('❌ Erreur:', error);
         showToast('❌ ' + (error.message || 'Erreur'), 'error');
     } finally {
         showLoading(false);
@@ -1309,6 +1284,7 @@ window.toggleAnnonceStatus = async function(annonceId, newStatus) {
         showToast('❌ Connexion requise', 'error');
         return;
     }
+    
     showLoading(true);
     try {
         await supabaseClient
@@ -1323,7 +1299,6 @@ window.toggleAnnonceStatus = async function(annonceId, newStatus) {
         await loadAnnonces();
         updateAnnoncesTable();
     } catch (error) {
-        console.error('❌ Erreur:', error);
         showToast('❌ Erreur', 'error');
     } finally {
         showLoading(false);
@@ -1335,6 +1310,7 @@ window.deleteAnnonce = async function(annonceId) {
         showToast('❌ Connexion requise', 'error');
         return;
     }
+    
     showConfirm('⚠️ Supprimer cette annonce ?', async () => {
         showLoading(true);
         try {
@@ -1347,7 +1323,6 @@ window.deleteAnnonce = async function(annonceId) {
             await loadAnnonces();
             updateAnnoncesTable();
         } catch (error) {
-            console.error('❌ Erreur:', error);
             showToast('❌ Erreur', 'error');
         } finally {
             showLoading(false);
@@ -1360,6 +1335,7 @@ window.deleteAllInactiveAnnonces = async function() {
         showToast('❌ Connexion requise', 'error');
         return;
     }
+    
     showConfirm('⚠️ Supprimer toutes les annonces inactives ?', async () => {
         showLoading(true);
         try {
@@ -1372,7 +1348,6 @@ window.deleteAllInactiveAnnonces = async function() {
             await loadAnnonces();
             updateAnnoncesTable();
         } catch (error) {
-            console.error('❌ Erreur:', error);
             showToast('❌ Erreur', 'error');
         } finally {
             showLoading(false);
@@ -1381,7 +1356,7 @@ window.deleteAllInactiveAnnonces = async function() {
 };
 
 // ============================================
-// ACTIONS RETRAITS - CORRIGÉES (SANS supabase.raw)
+// ACTIONS RETRAITS
 // ============================================
 window.viewRetraitDetails = function(retraitId) {
     const retrait = allRetraits.find(r => r.id === retraitId);
@@ -1470,7 +1445,7 @@ window.approveRetrait = async function(retraitId) {
             const newAmount = Math.max(0, currentAmount - retrait.amount);
             const newWithdrawn = (currentWithdrawn || 0) + retrait.amount;
             
-            // 3. Mettre à jour ou créer le solde
+            // 3. Mettre à jour le solde
             if (balanceData) {
                 await supabaseClient
                     .from('balances')
@@ -1503,8 +1478,7 @@ window.approveRetrait = async function(retraitId) {
             await loadAllData();
             
         } catch (error) {
-            console.error('❌ Erreur:', error);
-            showToast('❌ ' + (error.message || 'Erreur lors de l\'approbation'), 'error');
+            showToast('❌ ' + (error.message || 'Erreur'), 'error');
         } finally {
             showLoading(false);
         }
@@ -1542,7 +1516,6 @@ window.rejectRetrait = async function(retraitId) {
             await loadAllData();
             
         } catch (error) {
-            console.error('❌ Erreur:', error);
             showToast('❌ ' + (error.message || 'Erreur'), 'error');
         } finally {
             showLoading(false);
@@ -1555,7 +1528,7 @@ window.rejectRetraitFromModal = function() {
 };
 
 // ============================================
-// ACTIONS RECHARGES - CORRIGÉES (SANS supabase.raw)
+// ACTIONS RECHARGES - CORRIGÉE POUR TRIGGER 3 NIVEAUX
 // ============================================
 window.viewRechargeDetails = function(rechargeId) {
     const recharge = allRecharges.find(r => r.id === rechargeId);
@@ -1575,12 +1548,13 @@ window.viewRechargeDetails = function(rechargeId) {
                 <div class="detail-row"><span class="detail-label">Opérateur:</span><span class="detail-value">${recharge.method || 'Mobile Money'}</span></div>
                 <div class="detail-row"><span class="detail-label">Téléphone:</span><span class="detail-value">${recharge.phone || '-'}</span></div>
                 <div class="detail-row"><span class="detail-label">Nom du compte:</span><span class="detail-value">${recharge.account_name || '-'}</span></div>
-                <div class="detail-row"><span class="detail-label">Déblocage:</span><span class="detail-value">${recharge.unlock_referral ? '✅ Oui' : '❌ Non'}</span></div>
+                <div class="detail-row"><span class="detail-label">Déblocage:</span><span class="detail-value">${recharge.unlock_referral ? '✅ Oui - 🔓 Débloquera le lien' : '❌ Non'}</span></div>
                 <div class="detail-row"><span class="detail-label">Date:</span><span class="detail-value">${date}</span></div>
                 <div class="detail-row"><span class="detail-label">Statut:</span><span class="detail-value">
                     <span class="badge ${recharge.status === 'pending' ? 'badge-pending' : 
                                       recharge.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">
-                        ${recharge.status}
+                        ${recharge.status === 'pending' ? '⏳ En attente' : 
+                          recharge.status === 'approved' ? '✅ Approuvée' : '❌ Rejetée'}
                     </span>
                 </span></div>
             </div>
@@ -1590,9 +1564,6 @@ window.viewRechargeDetails = function(rechargeId) {
     showModal('rechargeDetailsModal');
 };
 
-// ============================================
-// ACTIONS RECHARGES - VERSION CORRIGÉE
-// ============================================
 window.approveRecharge = async function(rechargeId) {
     if (!currentUser) {
         showToast('❌ Connexion requise', 'error');
@@ -1657,22 +1628,15 @@ window.approveRecharge = async function(rechargeId) {
                     });
             }
             
-            // 4. Débloquer le parrainage si demandé
-            if (recharge.unlock_referral) {
-                await supabaseClient
-                    .from('referral_data')
-                    .update({ 
-                        is_unlocked: true, 
-                        unlocked_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('user_id', recharge.user_id);
-            }
+            // 4. ✅ LE TRIGGER SQL S'OCCUPE DE :
+            //    - Débloquer le code de parrainage
+            //    - Payer 1000 F au parrain niveau 1
+            //    - Payer 500 F au parrain niveau 2  
+            //    - Payer 250 F au parrain niveau 3
+            //    - Mettre à jour les compteurs (direct_count, level2_count, level3_count)
+            //    - Mettre à jour les gains (direct_earnings, level2_earnings, level3_earnings)
             
-            // ✅ 5. LE TRIGGER SQL VA AUTOMATIQUEMENT PAYER LES COMMISSIONS
-            // ✅ Plus rien à faire ici, le trigger s'en charge !
-            
-            showToast('✅ Recharge approuvée - Commissions versées', 'success');
+            showToast('✅ Recharge approuvée - Commissions versées automatiquement', 'success');
             closeModal('rechargeDetailsModal');
             await loadAllData();
             
@@ -1684,6 +1648,7 @@ window.approveRecharge = async function(rechargeId) {
         }
     });
 };
+
 window.approveRechargeFromModal = function() {
     approveRecharge(currentRechargeId);
 };
@@ -1715,7 +1680,6 @@ window.rejectRecharge = async function(rechargeId) {
             await loadAllData();
             
         } catch (error) {
-            console.error('❌ Erreur:', error);
             showToast('❌ ' + (error.message || 'Erreur'), 'error');
         } finally {
             showLoading(false);
@@ -1813,7 +1777,7 @@ window.exportTableToCSV = function(tableType) {
                 Rôle: u.email === ADMIN_EMAIL ? 'Admin' : 'User',
                 Statut: u.statut || 'active',
                 Solde: allBalances.find(b => b.user_id === u.id)?.amount || 0,
-                Date: u.created_at || ''
+                Date: u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : ''
             }));
             break;
         case 'annonces':
@@ -1823,23 +1787,26 @@ window.exportTableToCSV = function(tableType) {
                 Prix: a.prix || 0,
                 Vues: a.views || 0,
                 Statut: a.statut || '',
-                Date: a.created_at || ''
+                Date: a.created_at ? new Date(a.created_at).toLocaleDateString('fr-FR') : ''
             }));
             break;
         case 'retraits':
             data = allRetraits.map(r => ({
+                Utilisateur: allUsers.find(u => u.id === r.user_id)?.email || '',
                 Montant: r.amount || 0,
                 Méthode: r.method || '',
                 Statut: r.status || '',
-                Date: r.created_at || ''
+                Date: r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR') : ''
             }));
             break;
         case 'recharges':
             data = allRecharges.map(r => ({
+                Utilisateur: allUsers.find(u => u.id === r.user_id)?.email || '',
                 Montant: r.amount || 0,
-                Opérateur: r.operator || '',
+                Méthode: r.method || '',
+                Déblocage: r.unlock_referral ? 'Oui' : 'Non',
                 Statut: r.status || '',
-                Date: r.created_at || ''
+                Date: r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR') : ''
             }));
             break;
         case 'referrals':
@@ -1849,6 +1816,9 @@ window.exportTableToCSV = function(tableType) {
                     Utilisateur: user?.email || '',
                     Code: r.referral_code || '',
                     Statut: r.is_unlocked ? 'Débloqué' : 'Verrouillé',
+                    Directs: r.direct_count || 0,
+                    Niveau2: r.level2_count || 0,
+                    Niveau3: r.level3_count || 0,
                     Gains: r.total_earned || 0
                 };
             });
@@ -1875,5 +1845,39 @@ window.exportTableToCSV = function(tableType) {
     showToast(`✅ Export ${tableType} réussi`, 'success');
 };
 
-// Exposer les fonctions pour les événements HTML
+// Exposer les fonctions
 window.loadAllData = loadAllData;
+window.switchTab = switchTab;
+window.filterUsers = filterUsers;
+window.filterAnnonces = filterAnnonces;
+window.filterReferrals = filterReferrals;
+window.filterRetraits = filterRetraits;
+window.filterRecharges = filterRecharges;
+window.filterRetraitsByStatus = filterRetraitsByStatus;
+window.filterRechargesByStatus = filterRechargesByStatus;
+window.showAddUserModal = showAddUserModal;
+window.editUser = editUser;
+window.saveUser = saveUser;
+window.toggleUserStatus = toggleUserStatus;
+window.deleteUser = deleteUser;
+window.unlockReferral = unlockReferral;
+window.showAddAnnonceModal = showAddAnnonceModal;
+window.editAnnonce = editAnnonce;
+window.saveAnnonce = saveAnnonce;
+window.viewAnnonceDetails = viewAnnonceDetails;
+window.editAnnonceFromModal = editAnnonceFromModal;
+window.deleteAnnonceFromModal = deleteAnnonceFromModal;
+window.toggleAnnonceStatus = toggleAnnonceStatus;
+window.deleteAnnonce = deleteAnnonce;
+window.deleteAllInactiveAnnonces = deleteAllInactiveAnnonces;
+window.viewRetraitDetails = viewRetraitDetails;
+window.approveRetrait = approveRetrait;
+window.approveRetraitFromModal = approveRetraitFromModal;
+window.rejectRetrait = rejectRetrait;
+window.rejectRetraitFromModal = rejectRetraitFromModal;
+window.viewRechargeDetails = viewRechargeDetails;
+window.approveRecharge = approveRecharge;
+window.approveRechargeFromModal = approveRechargeFromModal;
+window.rejectRecharge = rejectRecharge;
+window.rejectRechargeFromModal = rejectRechargeFromModal;
+window.exportTableToCSV = exportTableToCSV;

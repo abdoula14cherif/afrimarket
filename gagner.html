@@ -842,13 +842,18 @@
                         <span id="userBalance">0</span><span class="balance-currency">F</span>
                     </div>
                     
-                    <!-- BOUTONS RETRAIT & RECHARGE - VERSION FINALE -->
+                    <!-- ============================================ -->
+                    <!-- BOUTONS RETRAIT & RECHARGE - CORRIGÉS        -->
+                    /* CES BOUTONS SONT DES LIENS HTML PUR */
+                    /* AUCUN JAVASCRIPT NE LES TOUCHE */
+                    /* ILS REDIRIGENT NATURELLEMENT VERS LES PAGES */
+                    <!-- ============================================ -->
                     <div class="balance-actions">
-                        <a href="retrait.html" class="balance-btn retrait" id="retraitBtn">
+                        <a href="/retrait.html" class="balance-btn retrait" id="retraitBtn">
                             <i class="fas fa-wallet"></i>
                             <span>Retrait</span>
                         </a>
-                        <a href="recharge.html" class="balance-btn recharge" id="rechargeBtn">
+                        <a href="/recharge.html" class="balance-btn recharge" id="rechargeBtn">
                             <i class="fas fa-coins"></i>
                             <span>Recharger</span>
                         </a>
@@ -977,9 +982,11 @@
             // Configurer l'interface
             setupInterface();
             
-            // Vérifier que les boutons existent
-            console.log('🔍 Bouton Retrait:', document.getElementById('retraitBtn')?.href);
-            console.log('🔍 Bouton Recharge:', document.getElementById('rechargeBtn')?.href);
+            // ============================================
+            // AUCUN CODE POUR LES BOUTONS RETRAIT/RECHARGE
+            // CES BOUTONS SONT DES LIENS HTML PURS
+            // ILS REDIRIGENT DÉJÀ TOUT SEULS VERS /retrait.html ET /recharge.html
+            // ============================================
         });
         
         // ============================================
@@ -1070,16 +1077,13 @@
                 document.getElementById('menuOverlay').style.display = 'none';
             });
             
-            // Rafraîchir solde
+            // Rafraîchir solde - SEUL ÉVÉNEMENT SUR LES BOUTONS
             document.getElementById('refreshBalance').addEventListener('click', async function() {
                 this.style.transform = 'rotate(360deg)';
                 setTimeout(() => this.style.transform = 'rotate(0deg)', 300);
                 await loadUserBalance();
                 showToast('✅ Solde actualisé', 'success');
             });
-            
-            // PAS DE CODE POUR LES BOUTONS RETRAIT/RECHARGE
-            // ILS FONCTIONNENT DÉJÀ AVEC LES LIENS HTML
         }
         
         // ============================================

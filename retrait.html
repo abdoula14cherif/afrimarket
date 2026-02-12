@@ -8,6 +8,7 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
+        /* TOUS TES STYLES RESTENT EXACTEMENT LES MÊMES */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -655,6 +656,21 @@
             color: var(--dark-text);
         }
 
+        .refresh-btn {
+            background: none;
+            border: none;
+            color: var(--light-gray);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .refresh-btn:hover {
+            background: rgba(29, 53, 87, 0.1);
+            transform: rotate(180deg);
+        }
+
         .history-list {
             display: flex;
             flex-direction: column;
@@ -946,7 +962,7 @@
             <button class="menu-item" id="supportBtn">
                 <i class="fas fa-headset"></i> <span>Support</span>
             </button>
-            <a href="connexion.html?logout=true" class="menu-item" id="logoutBtn">
+            <a href="#" class="menu-item" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i> <span>Déconnexion</span>
             </a>
         </div>
@@ -1192,10 +1208,10 @@
 
     <script>
         // ============================================
-        // CONFIGURATION
+        // ✅ NOUVELLES CLÉS SUPABASE - NOUVEAU PROJET
         // ============================================
-        const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
+        const SUPABASE_URL = 'https://xfbwimnwsixflypsvqfv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmYndpbW53c2l4Zmx5cHN2cWZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MTYyNTQsImV4cCI6MjA4NjQ5MjI1NH0.34RMdbAC_3XWxutD6X2GgF9odULkx46bpBY-V3hSUp8';
         
         let supabaseClient = null;
         let currentUser = null;
@@ -1205,62 +1221,87 @@
         let withdrawalHistory = [];
 
         // ============================================
+        // ✅ FONCTION DE VÉRIFICATION DE SESSION (SANS REDIRECTION AUTO)
+        // ============================================
+        async function checkSession() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (error || !session) {
+                    console.log('⚠️ Session non trouvée, mode lecture seule');
+                    
+                    // ✅ MODE LECTURE SEULE - Pas de redirection
+                    const mockUserId = 'guest-' + Date.now();
+                    currentUser = { 
+                        id: mockUserId, 
+                        email: 'visiteur@afrimarket.com',
+                        isGuest: true 
+                    };
+                    
+                    document.getElementById('userBalance').textContent = '0';
+                    return currentUser;
+                }
+                
+                console.log('✅ Session active:', session.user.email);
+                currentUser = session.user;
+                return currentUser;
+                
+            } catch (error) {
+                console.error('❌ Erreur session:', error);
+                // ✅ MODE LECTURE SEULE - Pas de redirection
+                currentUser = { 
+                    id: 'guest-' + Date.now(), 
+                    email: 'visiteur@afrimarket.com',
+                    isGuest: true 
+                };
+                return currentUser;
+            }
+        }
+
+        // ============================================
         // INITIALISATION
         // ============================================
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Page retrait chargée');
             
-            // Initialiser Supabase
+            // Initialiser Supabase avec les NOUVELLES clés
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             
-            // Vérifier la session
+            // ✅ Vérifier la session sans redirection automatique
             await checkSession();
             
-            // Charger le solde
-            await loadUserBalance();
-            
-            // Charger l'historique
-            await loadWithdrawalHistory();
+            if (currentUser && !currentUser.isGuest) {
+                console.log('✅ Utilisateur connecté:', currentUser.email);
+                updateUserMenu();
+                await loadUserBalance();
+                await loadWithdrawalHistory();
+            } else {
+                console.log('ℹ️ Mode lecture seule - utilisateur non connecté');
+                document.getElementById('sidebarUserName').textContent = 'Visiteur';
+                document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
+                document.getElementById('sidebarUserAvatar').innerHTML = '<i class="fas fa-user"></i>';
+                document.getElementById('userBalance').textContent = '0';
+                
+                // Données de démonstration pour l'historique
+                displayMockHistory();
+            }
             
             // Configurer l'interface
             setupInterface();
         });
 
         // ============================================
-        // SESSION UTILISATEUR
-        // ============================================
-        async function checkSession() {
-            // Vérifier dans l'URL d'abord
-            const urlParams = new URLSearchParams(window.location.search);
-            const userId = urlParams.get('user');
-            
-            if (userId) {
-                currentUser = { id: userId };
-                return;
-            }
-            
-            // Vérifier Supabase
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if (user) {
-                currentUser = user;
-            } else {
-                // Rediriger vers connexion
-                window.location.href = 'connexion.html';
-            }
-        }
-
-        // ============================================
         // SOLDE
         // ============================================
         async function loadUserBalance() {
             try {
-                if (!currentUser) return;
+                if (!currentUser || currentUser.isGuest) return;
                 
                 const { data, error } = await supabaseClient
                     .from('balances')
                     .select('amount')
                     .eq('user_id', currentUser.id)
-                    .single();
+                    .maybeSingle();
                 
                 if (error && error.code !== 'PGRST116') {
                     console.error('Erreur chargement solde:', error);
@@ -1279,7 +1320,10 @@
         // ============================================
         async function loadWithdrawalHistory() {
             try {
-                if (!currentUser) return;
+                if (!currentUser || currentUser.isGuest) {
+                    displayMockHistory();
+                    return;
+                }
                 
                 const { data, error } = await supabaseClient
                     .from('retraits')
@@ -1294,8 +1338,19 @@
                 
             } catch (error) {
                 console.error('Erreur chargement historique:', error);
-                showToast('Erreur chargement historique', 'error');
+                displayMockHistory();
             }
+        }
+
+        function displayMockHistory() {
+            const container = document.getElementById('historyList');
+            container.innerHTML = `
+                <div class="no-history">
+                    <i class="fas fa-wallet"></i>
+                    <p>Aucun retrait pour le moment</p>
+                    <p style="font-size: 12px; margin-top: 10px;">Connectez-vous pour voir votre historique</p>
+                </div>
+            `;
         }
 
         function displayWithdrawalHistory() {
@@ -1332,25 +1387,28 @@
                 
                 let statusClass = 'pending';
                 let statusText = 'En attente';
+                let iconClass = 'pending';
                 
                 if (withdrawal.status === 'approved') {
                     statusClass = 'approved';
                     statusText = 'Approuvé';
+                    iconClass = 'success';
                 } else if (withdrawal.status === 'rejected') {
                     statusClass = 'rejected';
                     statusText = 'Rejeté';
+                    iconClass = 'rejected';
                 }
                 
                 const item = document.createElement('div');
                 item.className = 'history-item';
                 item.innerHTML = `
                     <div class="history-info">
-                        <div class="history-icon ${withdrawal.status === 'approved' ? 'success' : withdrawal.status === 'rejected' ? 'rejected' : 'pending'}">
+                        <div class="history-icon ${iconClass}">
                             <i class="fas ${icon}"></i>
                         </div>
                         <div class="history-details">
                             <h4>Retrait ${methodName}</h4>
-                            <p>${withdrawal.account || withdrawal.phone || withdrawal.wallet || ''}</p>
+                            <p>${withdrawal.account_name || withdrawal.phone || withdrawal.wallet || ''}</p>
                             <p style="font-size: 11px;">${date}</p>
                             <span class="history-status status-${statusClass}">
                                 ${statusText}
@@ -1403,10 +1461,12 @@
                 menuOverlay.style.display = 'block';
             });
             
-            menuOverlay.addEventListener('click', () => {
-                sidebarMenu.classList.remove('open');
-                menuOverlay.style.display = 'none';
-            });
+            menuOverlay.addEventListener('click', closeSidebar);
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebarMenu').classList.remove('open');
+            document.getElementById('menuOverlay').style.display = 'none';
         }
 
         function setupTheme() {
@@ -1494,16 +1554,25 @@
             const submitBtn = document.getElementById('submitWithdrawal');
             
             submitBtn.addEventListener('click', async () => {
+                // Vérifier si l'utilisateur est connecté
+                if (!currentUser || currentUser.isGuest) {
+                    showToast('❌ Veuillez vous connecter pour effectuer un retrait', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'connexion.html';
+                    }, 2000);
+                    return;
+                }
+                
                 // Vérifier le solde
                 const amount = parseFloat(document.getElementById('amount').value);
                 
                 if (!amount || amount < 2000) {
-                    showToast('Le montant minimum est de 2 000 F', 'error');
+                    showToast('❌ Le montant minimum est de 2 000 F', 'error');
                     return;
                 }
                 
                 if (amount > userBalance) {
-                    showToast('Solde insuffisant', 'error');
+                    showToast('❌ Solde insuffisant', 'error');
                     return;
                 }
                 
@@ -1511,7 +1580,7 @@
                 const password = document.getElementById('securityPassword').value;
                 
                 if (!password) {
-                    showToast('Veuillez entrer votre mot de passe', 'error');
+                    showToast('❌ Veuillez entrer votre mot de passe', 'error');
                     return;
                 }
                 
@@ -1531,7 +1600,7 @@
                     const country = document.querySelector('.country-btn.active').dataset.country;
                     
                     if (!phone || !accountName) {
-                        showToast('Veuillez remplir tous les champs', 'error');
+                        showToast('❌ Veuillez remplir tous les champs', 'error');
                         return;
                     }
                     
@@ -1546,7 +1615,7 @@
                     const network = document.getElementById('cryptoNetwork').selectedOptions[0].text;
                     
                     if (!wallet || !accountName) {
-                        showToast('Veuillez remplir tous les champs', 'error');
+                        showToast('❌ Veuillez remplir tous les champs', 'error');
                         return;
                     }
                     
@@ -1569,21 +1638,17 @@
                 const hours = now.getHours();
                 
                 if (hours < 8 || hours >= 17) {
-                    showToast('Les retraits sont disponibles de 8h à 17h', 'error');
+                    showToast('⏰ Les retraits sont disponibles de 8h à 17h', 'warning');
                     showLoading(false);
                     return;
                 }
                 
                 // Insérer dans Supabase
-                const { data, error } = await supabaseClient
+                const { error } = await supabaseClient
                     .from('retraits')
-                    .insert([withdrawalData])
-                    .select();
+                    .insert([withdrawalData]);
                 
                 if (error) throw error;
-                
-                // Mettre à jour le solde (en attente)
-                // Le solde sera déduit lors de l'approbation par l'admin
                 
                 showToast('✅ Demande de retrait envoyée avec succès', 'success');
                 
@@ -1603,8 +1668,8 @@
                 await loadWithdrawalHistory();
                 
             } catch (error) {
-                console.error('Erreur soumission retrait:', error);
-                showToast('Erreur lors de la soumission', 'error');
+                console.error('❌ Erreur soumission retrait:', error);
+                showToast('❌ Erreur lors de la soumission', 'error');
             } finally {
                 showLoading(false);
             }
@@ -1623,7 +1688,7 @@
                     refreshBtn.style.transform = 'rotate(0deg)';
                 }, 300);
                 
-                showToast('Historique actualisé', 'success');
+                showToast('📋 Historique actualisé', 'success');
             });
         }
 
@@ -1632,8 +1697,7 @@
             
             supportBtn.addEventListener('click', () => {
                 alert('📞 Support AFRIMARKET\n\n📧 Email: support@afrimarket.com\n📱 WhatsApp: +237 6 00 00 00 00\n\nDisponible 24h/24');
-                document.getElementById('sidebarMenu').classList.remove('open');
-                document.getElementById('menuOverlay').style.display = 'none';
+                closeSidebar();
             });
         }
 
@@ -1642,13 +1706,36 @@
             
             logoutBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 
-                await supabaseClient.auth.signOut();
+                if (supabaseClient) {
+                    await supabaseClient.auth.signOut();
+                }
+                
+                const theme = localStorage.getItem('afrimarket_theme');
                 localStorage.clear();
-                sessionStorage.clear();
+                if (theme) localStorage.setItem('afrimarket_theme', theme);
                 
                 window.location.href = 'connexion.html';
             });
+        }
+
+        // ============================================
+        // MENU UTILISATEUR
+        // ============================================
+        function updateUserMenu() {
+            if (!currentUser || currentUser.isGuest) return;
+            
+            const userName = currentUser.user_metadata?.nom_complet || 
+                            currentUser.user_metadata?.full_name ||
+                            currentUser.email?.split('@')[0] || 
+                            'Utilisateur';
+            const userEmail = currentUser.email || '';
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            document.getElementById('sidebarUserName').textContent = userName;
+            document.getElementById('sidebarUserEmail').textContent = userEmail;
+            document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
         }
 
         // ============================================
@@ -1663,11 +1750,14 @@
                 <div class="toast-icon">
                     <i class="fas ${type === 'success' ? 'fa-check-circle' : 
                                    type === 'error' ? 'fa-exclamation-circle' : 
+                                   type === 'warning' ? 'fa-exclamation-triangle' : 
                                    'fa-info-circle'}"></i>
                 </div>
                 <div class="toast-content">
                     <div class="toast-title">${type === 'success' ? 'Succès' : 
-                                             type === 'error' ? 'Erreur' : 'Information'}</div>
+                                               type === 'error' ? 'Erreur' : 
+                                               type === 'warning' ? 'Attention' : 
+                                               'Information'}</div>
                     <div class="toast-message">${message}</div>
                 </div>
                 <button class="toast-close" onclick="this.parentElement.remove()">

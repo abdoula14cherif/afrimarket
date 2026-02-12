@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
-        /* TOUS LES STYLES RESTENT IDENTIQUES */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -134,7 +133,7 @@
         .notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(0%); opacity: 1; }
         }
         .loading-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -279,7 +278,7 @@
         }
 
         // ============================================
-        // FONCTION D'INSCRIPTION - 100% MANUELLE
+        // FONCTION D'INSCRIPTION - AVEC VOS TABLES
         // ============================================
         async function inscrireUtilisateur(userData) {
             try {
@@ -299,7 +298,11 @@
                     }
                 });
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('❌ Erreur Supabase:', error);
+                    throw error;
+                }
+                
                 if (!data.user) throw new Error('Erreur création utilisateur');
                 
                 console.log('✅ Utilisateur créé:', data.user.id);
@@ -307,7 +310,8 @@
                 // 2. GÉNÉRER UN CODE DE PARRAINAGE
                 const refCode = Math.random().toString(36).substring(2, 8).toUpperCase();
                 
-                // 3. ✅ INSÉRER DIRECTEMENT DANS users (table utilisateur)
+                // 3. ✅ INSÉRER DANS users
+                console.log('📦 Insertion dans users...');
                 const { error: userError } = await supabaseClient
                     .from('users')
                     .insert({
@@ -320,22 +324,14 @@
                         created_at: new Date().toISOString()
                     });
                 
-                if (userError) console.error('⚠️ Erreur users:', userError);
+                if (userError) {
+                    console.error('⚠️ Erreur users:', userError);
+                } else {
+                    console.log('✅ users OK');
+                }
                 
-                // 4. ✅ INSÉRER DIRECTEMENT DANS balances (table équilibre)
-                const { error: balanceError } = await supabaseClient
-                    .from('balances')
-                    .insert({
-                        user_id: data.user.id,
-                        amount: 0,
-                        total_earned: 0,
-                        total_withdrawn: 0,
-                        created_at: new Date().toISOString()
-                    });
-                
-                if (balanceError) console.error('⚠️ Erreur balances:', balanceError);
-                
-                // 5. ✅ INSÉRER DIRECTEMENT DANS referral_data (table références data)
+                // 4. ✅ INSÉRER DANS referral_data
+                console.log('📦 Insertion dans referral_data...');
                 const { error: referralError } = await supabaseClient
                     .from('referral_data')
                     .insert({
@@ -353,11 +349,71 @@
                         created_at: new Date().toISOString()
                     });
                 
-                if (referralError) console.error('⚠️ Erreur referral_data:', referralError);
+                if (referralError) {
+                    console.error('⚠️ Erreur referral_data:', referralError);
+                } else {
+                    console.log('✅ referral_data OK');
+                }
                 
-                console.log('✅ Données insérées avec succès');
+                // 5. ✅ INSÉRER DANS user_earnings (si la table existe)
+                console.log('📦 Insertion dans user_earnings...');
+                const { error: earningsError } = await supabaseClient
+                    .from('user_earnings')
+                    .insert({
+                        user_id: data.user.id,
+                        total_earned: 0,
+                        available_commission: 0,
+                        referral_unlocked: false,
+                        created_at: new Date().toISOString()
+                    })
+                    .maybeSingle();
                 
-                // 6. STOCKAGE LOCAL
+                if (earningsError) {
+                    console.log('ℹ️ user_earnings non utilisé');
+                } else {
+                    console.log('✅ user_earnings OK');
+                }
+                
+                // 6. ✅ INSÉRER DANS profiles (si la table existe)
+                console.log('📦 Insertion dans profiles...');
+                const { error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .insert({
+                        id: data.user.id,
+                        email: data.user.email,
+                        nom_complet: userData.nom_complet,
+                        created_at: new Date().toISOString()
+                    })
+                    .maybeSingle();
+                
+                if (profileError) {
+                    console.log('ℹ️ profiles non utilisé');
+                } else {
+                    console.log('✅ profiles OK');
+                }
+                
+                // 7. ✅ CRÉER LE SOLDE DANS balances
+                console.log('📦 Insertion dans balances...');
+                const { error: balanceError } = await supabaseClient
+                    .from('balances')
+                    .insert({
+                        user_id: data.user.id,
+                        amount: 0,
+                        total_earned: 0,
+                        total_withdrawn: 0,
+                        created_at: new Date().toISOString()
+                    })
+                    .maybeSingle();
+                
+                if (balanceError) {
+                    console.log('ℹ️ balances non utilisé');
+                } else {
+                    console.log('✅ balances OK');
+                }
+                
+                console.log('✅ Toutes les données ont été traitées');
+                
+                // 8. STOCKAGE LOCAL
                 localStorage.setItem('afrimarket_user_id', data.user.id);
                 localStorage.setItem('afrimarket_user_email', data.user.email);
                 localStorage.setItem('afrimarket_user_name', userData.nom_complet);
@@ -367,13 +423,12 @@
                 return { success: true, message: '✅ Inscription réussie !' };
                 
             } catch (error) {
-                console.error('❌ Erreur:', error);
-                return { 
-                    success: false, 
-                    error: error.message.includes('already registered') 
-                        ? 'Un compte existe déjà avec cet email' 
-                        : 'Erreur technique. Veuillez réessayer.' 
-                };
+                console.error('❌ ERREUR COMPLÈTE:', error);
+                let errorMsg = 'Erreur technique';
+                if (error.message?.includes('already registered')) {
+                    errorMsg = 'Un compte existe déjà avec cet email';
+                }
+                return { success: false, error: errorMsg };
             }
         }
 
@@ -530,6 +585,7 @@
                         showLoading(false);
                     }
                 } catch (error) {
+                    console.error('❌ Erreur:', error);
                     showNotification('❌ Erreur technique', 'error');
                     showLoading(false);
                 }

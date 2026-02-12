@@ -1587,5 +1587,52 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
     </script>
+    <script>
+    // ============================================
+    // CORRECTION BOUTONS RETRAIT & RECHARGE
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Vérifier que les boutons existent
+        console.log('🔧 Correction des boutons...');
+        
+        // Solution 1: Redirection directe avec URL absolue
+        const retraitBtn = document.querySelector('.balance-btn.retrait');
+        if (retraitBtn) {
+            retraitBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('💰 Redirection vers retrait.html');
+                window.location.href = 'https://afrimarket-prod.vercel.app/retrait.html';
+            });
+        }
+        
+        const rechargeBtn = document.querySelector('.balance-btn.recharge');
+        if (rechargeBtn) {
+            rechargeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('💳 Redirection vers recharge.html');
+                window.location.href = 'https://afrimarket-prod.vercel.app/recharge.html';
+            });
+        }
+        
+        // Solution 2: Remplacer les liens si nécessaire
+        const allRetraitLinks = document.querySelectorAll('a[href*="retrait"]');
+        allRetraitLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'https://afrimarket-prod.vercel.app/retrait.html';
+            });
+        });
+        
+        const allRechargeLinks = document.querySelectorAll('a[href*="recharge"]');
+        allRechargeLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'https://afrimarket-prod.vercel.app/recharge.html';
+            });
+        });
+    });
+</script>
 </body>
 </html>

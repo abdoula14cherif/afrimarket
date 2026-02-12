@@ -1590,6 +1590,9 @@ window.viewRechargeDetails = function(rechargeId) {
     showModal('rechargeDetailsModal');
 };
 
+// ============================================
+// ACTIONS RECHARGES - VERSION CORRIGÉE
+// ============================================
 window.approveRecharge = async function(rechargeId) {
     if (!currentUser) {
         showToast('❌ Connexion requise', 'error');
@@ -1666,23 +1669,10 @@ window.approveRecharge = async function(rechargeId) {
                     .eq('user_id', recharge.user_id);
             }
             
-            // 5. Créer une transaction
-            await supabaseClient
-                .from('transactions')
-                .insert({
-                    user_id: recharge.user_id,
-                    amount: recharge.amount,
-                    type: 'deposit',
-                    status: 'completed',
-                    reference_id: rechargeId,
-                    description: 'Recharge approuvée' + (recharge.unlock_referral ? ' + Déblocage parrainage' : ''),
-                    balance_before: currentAmount,
-                    balance_after: newAmount,
-                    created_at: new Date().toISOString()
-                })
-                .maybeSingle();
+            // ✅ 5. LE TRIGGER SQL VA AUTOMATIQUEMENT PAYER LES COMMISSIONS
+            // ✅ Plus rien à faire ici, le trigger s'en charge !
             
-            showToast('✅ Recharge approuvée', 'success');
+            showToast('✅ Recharge approuvée - Commissions versées', 'success');
             closeModal('rechargeDetailsModal');
             await loadAllData();
             
@@ -1694,7 +1684,6 @@ window.approveRecharge = async function(rechargeId) {
         }
     });
 };
-
 window.approveRechargeFromModal = function() {
     approveRecharge(currentRechargeId);
 };

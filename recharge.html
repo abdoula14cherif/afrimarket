@@ -8,6 +8,7 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
+        /* TOUS TES STYLES RESTENT EXACTEMENT LES MÊMES */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -360,7 +361,7 @@
             color: var(--dark-text);
         }
 
-        /* Carte solde */
+        /* Carte solde - MODIFIÉE POUR AJOUTER LE BOUTON RETRAIT */
         .balance-card {
             background: linear-gradient(135deg, var(--primary-blue), #2a5298);
             border-radius: var(--radius-lg);
@@ -368,12 +369,29 @@
             color: white;
             box-shadow: var(--shadow-lg);
             margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1%, transparent 1%);
+            background-size: 20px 20px;
+            opacity: 0.3;
         }
 
         .balance-label {
             font-size: 14px;
             opacity: 0.9;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .balance-amount {
@@ -396,6 +414,48 @@
             padding: 10px 0;
             border-top: 1px solid rgba(255,255,255,0.2);
             margin-top: 10px;
+        }
+
+        /* ✅ NOUVEAU BOUTON RETRAIT SUR LA CARTE DE SOLDE */
+        .balance-withdraw-btn {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: white;
+            color: var(--primary-blue);
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            z-index: 10;
+        }
+
+        .dark-mode .balance-withdraw-btn {
+            background: var(--dark-card);
+            color: var(--primary-blue);
+            border: 1px solid var(--dark-border);
+        }
+
+        .balance-withdraw-btn i {
+            font-size: 16px;
+            color: var(--primary-blue);
+        }
+
+        .balance-withdraw-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .balance-withdraw-btn:active {
+            transform: translateY(0);
         }
 
         /* Tabs pays */
@@ -1036,7 +1096,18 @@
             to { opacity: 1; }
         }
 
-        /* Responsive */
+        /* Responsive pour le bouton retrait */
+        @media (max-width: 768px) {
+            .balance-withdraw-btn {
+                position: relative;
+                bottom: auto;
+                right: auto;
+                margin-top: 20px;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
         @media (max-width: 480px) {
             .country-tab {
                 min-width: 100px;
@@ -1109,7 +1180,7 @@
             <button class="menu-item" id="supportMenuItem">
                 <i class="fas fa-headset"></i> <span>Support</span>
             </button>
-            <a href="connexion.html?logout=true" class="menu-item" id="logoutBtn">
+            <a href="#" class="menu-item" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i> <span>Déconnexion</span>
             </a>
         </div>
@@ -1151,7 +1222,7 @@
     <!-- Contenu principal -->
     <main class="main-content">
         <div class="container">
-            <!-- Solde actuel -->
+            <!-- Solde actuel - AVEC BOUTON RETRAIT -->
             <div class="balance-card">
                 <div class="balance-label">
                     <i class="fas fa-wallet"></i> Solde disponible
@@ -1163,6 +1234,12 @@
                 <div class="balance-info">
                     <i class="fas fa-info-circle"></i> Débloquez votre lien de parrainage : 2 150 F
                 </div>
+                
+                <!-- ✅ BOUTON RETRAIT AJOUTÉ -->
+                <a href="retrait.html" class="balance-withdraw-btn">
+                    <i class="fas fa-wallet"></i>
+                    <span>Effectuer un retrait</span>
+                </a>
             </div>
 
             <!-- Sélecteur de pays -->
@@ -1338,10 +1415,10 @@
 
     <script>
         // ============================================
-        // CONFIGURATION SUPABASE
+        // ✅ NOUVELLES CLÉS SUPABASE - NOUVEAU PROJET
         // ============================================
-        const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
+        const SUPABASE_URL = 'https://xfbwimnwsixflypsvqfv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmYndpbW53c2l4Zmx5cHN2cWZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MTYyNTQsImV4cCI6MjA4NjQ5MjI1NH0.34RMdbAC_3XWxutD6X2GgF9odULkx46bpBY-V3hSUp8';
         
         // ============================================
         // COMPTES DE RECHANGE
@@ -1363,47 +1440,55 @@
         let allRecharges = [];
 
         // ============================================
+        // ✅ FONCTION DE VÉRIFICATION DE SESSION (SANS REDIRECTION AUTO)
+        // ============================================
+        async function checkSession() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (error || !session) {
+                    console.log('⚠️ Session non trouvée, mode lecture seule');
+                    return null;
+                }
+                
+                console.log('✅ Session active:', session.user.email);
+                return session.user;
+                
+            } catch (error) {
+                console.error('❌ Erreur session:', error);
+                return null;
+            }
+        }
+
+        // ============================================
         // INITIALISATION
         // ============================================
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Page Recharge chargée');
             
-            // Initialiser Supabase
+            // Initialiser Supabase avec les NOUVELLES clés
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             
-            // Vérifier la session
-            await checkUserSession();
+            // ✅ Vérifier la session sans redirection automatique
+            const user = await checkSession();
             
-            // Charger le solde
-            await loadUserBalance();
-            
-            // Charger l'historique
-            await loadRechargeHistory();
+            if (user) {
+                currentUser = user;
+                console.log('✅ Utilisateur connecté:', user.email);
+                updateUserMenu();
+                await loadUserBalance();
+                await loadRechargeHistory();
+            } else {
+                console.log('ℹ️ Mode lecture seule - utilisateur non connecté');
+                document.getElementById('sidebarUserName').textContent = 'Visiteur';
+                document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
+                document.getElementById('sidebarUserAvatar').innerHTML = '<i class="fas fa-user"></i>';
+                document.getElementById('userBalance').textContent = '0';
+            }
             
             // Configurer l'interface
             setupInterface();
         });
-
-        // ============================================
-        // SESSION UTILISATEUR
-        // ============================================
-        async function checkUserSession() {
-            try {
-                const { data: { user } } = await supabaseClient.auth.getUser();
-                
-                if (user) {
-                    currentUser = user;
-                    console.log('✅ Utilisateur:', user.email);
-                    updateUserMenu();
-                } else {
-                    // Rediriger vers connexion
-                    window.location.href = 'connexion.html';
-                }
-            } catch (error) {
-                console.error('❌ Erreur session:', error);
-                window.location.href = 'connexion.html';
-            }
-        }
 
         // ============================================
         // SOLDE UTILISATEUR
@@ -1416,7 +1501,7 @@
                     .from('balances')
                     .select('amount')
                     .eq('user_id', currentUser.id)
-                    .single();
+                    .maybeSingle();
                 
                 if (error && error.code !== 'PGRST116') {
                     console.error('Erreur chargement solde:', error);
@@ -1535,10 +1620,7 @@
                 document.getElementById('menuOverlay').style.display = 'block';
             });
             
-            document.getElementById('menuOverlay').addEventListener('click', () => {
-                document.getElementById('sidebarMenu').classList.remove('open');
-                document.getElementById('menuOverlay').style.display = 'none';
-            });
+            document.getElementById('menuOverlay').addEventListener('click', closeSidebar);
             
             // Thème menu
             document.getElementById('menuThemeToggle').checked = savedTheme === 'dark-mode';
@@ -1554,12 +1636,19 @@
                 closeSidebar();
             });
             
-            // Déconnexion
+            // ✅ Déconnexion - GESTION CORRIGÉE
             document.getElementById('logoutBtn').addEventListener('click', async function(e) {
                 e.preventDefault();
-                await supabaseClient.auth.signOut();
+                e.stopPropagation();
+                
+                if (supabaseClient) {
+                    await supabaseClient.auth.signOut();
+                }
+                
+                const theme = localStorage.getItem('afrimarket_theme');
                 localStorage.clear();
-                sessionStorage.clear();
+                if (theme) localStorage.setItem('afrimarket_theme', theme);
+                
                 window.location.href = 'connexion.html';
             });
             
@@ -1598,42 +1687,39 @@
             
             // Soumission formulaire Cameroun
             const form = document.getElementById('rechargeCmForm');
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const phone = document.getElementById('paymentPhone').value.trim();
-                const accountName = document.getElementById('accountName').value.trim();
-                const amount = parseFloat(document.getElementById('amount').value);
-                const operator = document.getElementById('operator').value;
-                
-                // Validations
-                if (!phone || !accountName || !amount) {
-                    showToast('❌ Veuillez remplir tous les champs', 'error');
-                    return;
-                }
-                
-                if (amount < 1000) {
-                    showToast('❌ Le montant minimum est de 1 000 F', 'error');
-                    return;
-                }
-                
-                // Vérifier que le numéro correspond au bon opérateur
-                if (operator === 'orange' && !phone.includes('658')) {
-                    showToast('⚠️ Vérifiez que vous avez utilisé le numéro Orange Money 658033690', 'warning');
-                }
-                if (operator === 'mtn' && !phone.includes('651')) {
-                    showToast('⚠️ Vérifiez que vous avez utilisé le numéro MTN Money 651461777', 'warning');
-                }
-                
-                // Envoyer la demande
-                await submitRechargeRequest({
-                    phone,
-                    accountName,
-                    amount,
-                    operator,
-                    method: operator === 'orange' ? 'Orange Money' : 'MTN Money'
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    if (!currentUser) {
+                        showToast('❌ Veuillez vous connecter', 'error');
+                        return;
+                    }
+                    
+                    const phone = document.getElementById('paymentPhone').value.trim();
+                    const accountName = document.getElementById('accountName').value.trim();
+                    const amount = parseFloat(document.getElementById('amount').value);
+                    const operator = document.getElementById('operator').value;
+                    
+                    if (!phone || !accountName || !amount) {
+                        showToast('❌ Veuillez remplir tous les champs', 'error');
+                        return;
+                    }
+                    
+                    if (amount < 1000) {
+                        showToast('❌ Le montant minimum est de 1 000 F', 'error');
+                        return;
+                    }
+                    
+                    await submitRechargeRequest({
+                        phone,
+                        accountName,
+                        amount,
+                        operator,
+                        method: operator === 'orange' ? 'Orange Money' : 'MTN Money'
+                    });
                 });
-            });
+            }
         }
 
         // ============================================
@@ -1643,7 +1729,6 @@
             showLoading(true);
             
             try {
-                // Préparer les données
                 const newRecharge = {
                     user_id: currentUser.id,
                     amount: rechargeData.amount,
@@ -1654,24 +1739,15 @@
                     country: 'cm',
                     status: 'pending',
                     created_at: new Date().toISOString(),
-                    // Vérification du déblocage du lien de parrainage
-                    unlock_referral: false
+                    unlock_referral: rechargeData.amount >= 2150
                 };
 
-                // Vérifier si le montant est suffisant pour débloquer le lien (2150 F)
-                if (rechargeData.amount >= 2150) {
-                    newRecharge.unlock_referral = true;
-                }
-
-                // Insérer dans Supabase
-                const { data, error } = await supabaseClient
+                const { error } = await supabaseClient
                     .from('recharges')
-                    .insert([newRecharge])
-                    .select();
+                    .insert([newRecharge]);
 
                 if (error) throw error;
 
-                // Message de succès
                 let successMessage = `✅ Demande de recharge de ${rechargeData.amount} F envoyée !`;
                 
                 if (newRecharge.unlock_referral) {
@@ -1680,10 +1756,7 @@
                 
                 showToast(successMessage, 'success');
 
-                // Réinitialiser le formulaire
                 document.getElementById('rechargeCmForm').reset();
-
-                // Recharger l'historique
                 await loadRechargeHistory();
 
             } catch (error) {
@@ -1701,7 +1774,6 @@
             navigator.clipboard.writeText(number).then(() => {
                 showToast(`📋 Numéro ${number} copié !`, 'success');
             }).catch(() => {
-                // Fallback
                 const textArea = document.createElement('textarea');
                 textArea.value = number;
                 document.body.appendChild(textArea);
@@ -1726,6 +1798,7 @@
             if (!currentUser) return;
             
             const userName = currentUser.user_metadata?.nom_complet || 
+                            currentUser.user_metadata?.full_name ||
                             currentUser.email?.split('@')[0] || 
                             'Utilisateur';
             const userEmail = currentUser.email || '';

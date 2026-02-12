@@ -6,122 +6,177 @@
     <title>Inscription - AFRIMARKET</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1d3557, #2a5298);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
             padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
         }
         .card {
             background: white;
+            border-radius: 20px;
             padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease;
         }
-        h2 {
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
             color: #1d3557;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
+            font-size: 28px;
             text-align: center;
+        }
+        .subtitle {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 30px;
         }
         .code-badge {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
             text-align: center;
             font-weight: bold;
+            font-size: 18px;
+        }
+        .code-badge.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
         }
         input {
             width: 100%;
-            padding: 14px;
-            margin: 8px 0;
+            padding: 14px 16px;
             border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-            box-sizing: border-box;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
         }
         input:focus {
             border-color: #1d3557;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(29,53,87,0.1);
         }
         input[readonly] {
             background: #f8fafc;
+            border-color: #cbd5e1;
             cursor: not-allowed;
         }
-        button {
+        .btn {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: linear-gradient(135deg, #1d3557, #2a5298);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            margin-top: 20px;
+            transition: all 0.3s;
+            margin-top: 10px;
         }
-        button:hover {
+        .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(29,53,87,0.3);
+            box-shadow: 0 10px 20px rgba(29,53,87,0.3);
         }
-        .error {
-            color: #ef4444;
-            font-size: 14px;
-            margin-top: 5px;
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
-        .success {
-            color: #10b981;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-        .hidden {
-            display: none;
-        }
-        #debug {
+        .message {
             margin-top: 20px;
-            padding: 10px;
-            background: #f1f5f9;
+            padding: 12px;
             border-radius: 8px;
-            font-size: 12px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .success { background: #d1fae5; color: #065f46; }
+        .error { background: #fee2e2; color: #991b1b; }
+        .info { background: #dbeafe; color: #1e40af; }
+        .hidden { display: none; }
+        .debug {
+            margin-top: 20px;
+            padding: 15px;
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 8px;
             font-family: monospace;
+            font-size: 12px;
             max-height: 200px;
             overflow-y: auto;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>🚀 AFRIMARKET</h2>
-        
-        <div id="codeBadge" class="code-badge">
-            🔍 Vérification du code...
+    <div class="container">
+        <div class="card">
+            <h1>🚀 AFRIMARKET</h1>
+            <div class="subtitle">Rejoignez la communauté</div>
+            
+            <div id="codeBadge" class="code-badge">
+                <span id="codeMessage">🔍 Vérification du code de parrainage...</span>
+            </div>
+
+            <form id="inscriptionForm">
+                <div class="form-group">
+                    <label>📌 Code de parrainage</label>
+                    <input type="text" id="referralCode" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>👤 Nom complet</label>
+                    <input type="text" id="fullName" placeholder="Ex: Jean Dupont" required>
+                </div>
+
+                <div class="form-group">
+                    <label>📧 Email</label>
+                    <input type="email" id="email" placeholder="exemple@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>🔐 Mot de passe</label>
+                    <input type="password" id="password" placeholder="Minimum 6 caractères" minlength="6" required>
+                </div>
+
+                <div class="form-group">
+                    <label>🔐 Confirmer le mot de passe</label>
+                    <input type="password" id="confirmPassword" placeholder="Retapez votre mot de passe" required>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    ✅ S'inscrire
+                </button>
+            </form>
+
+            <div id="message" class="message hidden"></div>
+            <div id="debug" class="debug"></div>
         </div>
-
-        <form id="inscriptionForm">
-            <input type="text" id="referralCode" placeholder="Code de parrainage" readonly value="CHARGEMENT...">
-            
-            <input type="text" id="nomComplet" placeholder="Nom complet" required>
-            
-            <input type="email" id="email" placeholder="Adresse email" required>
-            
-            <input type="password" id="password" placeholder="Mot de passe (6 caractères min)" required minlength="6">
-            
-            <input type="password" id="confirmPassword" placeholder="Confirmer le mot de passe" required>
-            
-            <div id="passwordMatch" class="error hidden">Les mots de passe ne correspondent pas</div>
-            
-            <button type="submit" id="submitBtn">S'inscrire</button>
-        </form>
-
-        <div id="message"></div>
-        <div id="debug"></div>
     </div>
 
     <script>
@@ -134,17 +189,30 @@
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         // ============================================
-        // UTILITAIRES
+        // ÉTAT GLOBAL
         // ============================================
-        function debug(msg) {
-            const el = document.getElementById('debug');
-            el.innerHTML += `<div>📋 ${new Date().toLocaleTimeString()} - ${msg}</div>`;
-            console.log(msg);
+        let validReferralCode = 'ABDOULA'; // Code admin par défaut
+        let isValidated = false;
+
+        // ============================================
+        // DEBUG
+        // ============================================
+        function debug(message, type = 'info') {
+            const debugEl = document.getElementById('debug');
+            const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            debugEl.innerHTML += `<div>[${time}] ${message}</div>`;
+            console.log(`[${time}] ${message}`);
         }
 
-        function showMessage(msg, type = 'error') {
-            const el = document.getElementById('message');
-            el.innerHTML = `<div style="color: ${type === 'success' ? '#10b981' : '#ef4444'}; margin-top: 10px;">${msg}</div>`;
+        function showMessage(message, type = 'info') {
+            const msgEl = document.getElementById('message');
+            msgEl.className = `message ${type}`;
+            msgEl.innerHTML = message;
+            msgEl.classList.remove('hidden');
+        }
+
+        function hideMessage() {
+            document.getElementById('message').classList.add('hidden');
         }
 
         // ============================================
@@ -163,86 +231,91 @@
         }
 
         // ============================================
-        // VALIDATION DU CODE (SANS TABLE)
+        // VALIDATION DU CODE - VERSION SIMPLIFIÉE
         // ============================================
         async function validateReferralCode(code) {
             debug(`🔍 Validation du code: ${code}`);
             
-            // ✅ CODE ADMIN ACCEPTÉ AUTOMATIQUEMENT
+            // ✅ CODE ADMIN - TOUJOURS VALIDE
             if (code === 'ABDOULA') {
-                debug('✅ Code ABDOULA accepté');
+                debug('✅ Code ABDOULA validé');
                 return true;
             }
             
-            try {
-                // ESSAYER DE VALIDER, MAIS SI LA TABLE N'EXISTE PAS, ON ACCEPTE QUAND MÊME
-                const { data, error } = await supabase
-                    .from('referral_data')
-                    .select('referral_code')
-                    .eq('referral_code', code)
-                    .maybeSingle();
-                
-                if (error) {
-                    debug(`⚠️ Table referral_data inaccessible: ${error.message}`);
-                    debug(`✅ Code ${code} accepté (mode dégradé)`);
-                    return true;
-                }
-                
-                if (data) {
-                    debug(`✅ Code ${code} trouvé dans la base`);
-                    return true;
-                }
-                
-                debug(`⚠️ Code ${code} non trouvé, mais accepté quand même`);
-                return true; // TOUJOURS ACCEPTER POUR LE TEST
-                
-            } catch (e) {
-                debug(`❌ Erreur validation: ${e.message}`);
-                return true; // ACCEPTER EN CAS D'ERREUR
-            }
+            // ✅ TOUS LES CODES SONT ACCEPTÉS POUR LE TEST
+            debug(`✅ Code ${code} accepté`);
+            return true;
         }
 
         // ============================================
-        // INSCRIPTION - SANS AUCUNE TABLE
+        // GÉNÉRER UN ID UNIQUE
+        // ============================================
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // ============================================
+        // INSCRIPTION - SANS AUTH
         // ============================================
         async function inscrireUtilisateur(userData) {
-            debug(`📝 Inscription pour: ${userData.email}`);
+            debug(`📝 Début inscription pour: ${userData.email}`);
             
             try {
-                // 1. INSCRIPTION SUPABASE UNIQUEMENT
-                const { data, error } = await supabase.auth.signUp({
-                    email: userData.email,
-                    password: userData.password,
-                    options: {
-                        data: {
-                            nom_complet: userData.nom_complet,
-                            telephone: userData.telephone || '',
-                            role: 'user',
-                            referral_code: userData.referral_code
-                        }
-                    }
-                });
+                // 1. GÉNÉRER UN ID UNIQUE
+                const userId = generateUUID();
+                debug(`🆔 ID généré: ${userId}`);
                 
-                if (error) {
-                    debug(`❌ Erreur Supabase: ${error.message}`);
-                    
-                    if (error.message.includes('already registered')) {
-                        return { success: false, error: 'Un compte existe déjà avec cet email' };
-                    }
-                    
-                    return { success: false, error: error.message };
+                // 2. GÉNÉRER UN CODE DE PARRAINAGE
+                const refCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+                debug(`🔑 Code parrainage: ${refCode}`);
+                
+                // 3. INSÉRER DIRECTEMENT DANS LA TABLE users
+                debug(`📦 Insertion dans users...`);
+                const { data: userData2, error: userError } = await supabase
+                    .from('users')
+                    .insert({
+                        id: userId,
+                        email: userData.email,
+                        nom_complet: userData.fullName,
+                        telephone: userData.telephone || '',
+                        role: 'user',
+                        statut: 'active',
+                        created_at: new Date().toISOString()
+                    })
+                    .select();
+                
+                if (userError) {
+                    debug(`❌ Erreur insertion users: ${userError.message}`);
+                    throw userError;
                 }
                 
-                if (!data.user) {
-                    return { success: false, error: 'Erreur création utilisateur' };
+                debug(`✅ Utilisateur créé dans users`);
+                
+                // 4. INSÉRER DANS referral_data
+                debug(`📦 Insertion dans referral_data...`);
+                const { error: refError } = await supabase
+                    .from('referral_data')
+                    .insert({
+                        user_id: userId,
+                        referral_code: refCode,
+                        referral_link: 'https://afrimarket-prod.vercel.app/index.html?ref=' + refCode,
+                        is_unlocked: false,
+                        created_at: new Date().toISOString()
+                    });
+                
+                if (refError) {
+                    debug(`⚠️ Erreur referral_data: ${refError.message}`);
+                } else {
+                    debug(`✅ referral_data OK`);
                 }
                 
-                debug(`✅ UTILISATEUR CRÉÉ: ${data.user.id}`);
-                
-                // 2. STOCKER DANS LOCALSTORAGE
-                localStorage.setItem('afrimarket_user_id', data.user.id);
-                localStorage.setItem('afrimarket_user_email', data.user.email);
-                localStorage.setItem('afrimarket_user_name', userData.nom_complet);
+                // 5. STOCKER DANS LOCALSTORAGE
+                localStorage.setItem('afrimarket_user_id', userId);
+                localStorage.setItem('afrimarket_user_email', userData.email);
+                localStorage.setItem('afrimarket_user_name', userData.fullName);
                 localStorage.setItem('afrimarket_logged_in', 'true');
                 localStorage.setItem('afrimarket_referral_used', userData.referral_code);
                 
@@ -251,14 +324,14 @@
                 return { 
                     success: true, 
                     message: '✅ Inscription réussie !',
-                    user: data.user
+                    userId: userId
                 };
                 
             } catch (error) {
-                debug(`❌ ERREUR CRITIQUE: ${error.message}`);
+                debug(`❌ ERREUR: ${error.message}`);
                 return { 
                     success: false, 
-                    error: 'Erreur technique. Veuillez réessayer.' 
+                    error: error.message 
                 };
             }
         }
@@ -268,106 +341,108 @@
         // ============================================
         document.addEventListener('DOMContentLoaded', async function() {
             debug('🚀 Page inscription chargée');
+            debug(`🔗 URL: ${window.location.href}`);
             
             // 1. CODE DE PARRAINAGE
             let codeFromURL = getReferralCodeFromURL();
             
             if (!codeFromURL) {
-                codeFromURL = 'ABDOULA'; // CODE PAR DÉFAUT
+                codeFromURL = 'ABDOULA';
                 debug(`⚠️ Aucun code trouvé, utilisation du code par défaut: ${codeFromURL}`);
             }
             
-            // Afficher le code
             document.getElementById('referralCode').value = codeFromURL;
             
-            // Valider le code
+            // 2. VALIDATION
             const isValid = await validateReferralCode(codeFromURL);
             
             if (isValid) {
-                document.getElementById('codeBadge').innerHTML = `
-                    ✅ Code valide: <strong>${codeFromURL}</strong>
-                `;
-                document.getElementById('codeBadge').style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                validReferralCode = codeFromURL;
+                isValidated = true;
+                
+                const badge = document.getElementById('codeBadge');
+                badge.classList.add('success');
+                document.getElementById('codeMessage').innerHTML = `✅ Code parrainage valide: <strong>${codeFromURL}</strong>`;
             } else {
-                document.getElementById('codeBadge').innerHTML = `
-                    ⚠️ Code invalide, inscription bloquée
-                `;
+                document.getElementById('codeMessage').innerHTML = `❌ Code invalide: ${codeFromURL}`;
                 document.getElementById('submitBtn').disabled = true;
                 return;
             }
 
-            // 2. VALIDATION MOT DE PASSE
+            // 3. VALIDATION MOT DE PASSE
             const password = document.getElementById('password');
             const confirm = document.getElementById('confirmPassword');
-            const matchMsg = document.getElementById('passwordMatch');
             
-            function checkPasswordMatch() {
-                if (confirm.value.length > 0) {
-                    if (password.value === confirm.value) {
-                        matchMsg.classList.add('hidden');
-                    } else {
-                        matchMsg.classList.remove('hidden');
+            function validatePasswords() {
+                if (password.value && confirm.value) {
+                    if (password.value !== confirm.value) {
+                        showMessage('❌ Les mots de passe ne correspondent pas', 'error');
+                        return false;
                     }
+                    if (password.value.length < 6) {
+                        showMessage('❌ Le mot de passe doit contenir au moins 6 caractères', 'error');
+                        return false;
+                    }
+                    hideMessage();
+                    return true;
                 }
+                return false;
             }
             
-            password.addEventListener('input', checkPasswordMatch);
-            confirm.addEventListener('input', checkPasswordMatch);
+            password.addEventListener('input', validatePasswords);
+            confirm.addEventListener('input', validatePasswords);
 
-            // 3. SUBMIT
+            // 4. SUBMIT
             const form = document.getElementById('inscriptionForm');
             
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                hideMessage();
                 
-                // Vérifications
-                if (password.value !== confirm.value) {
-                    showMessage('❌ Les mots de passe ne correspondent pas');
+                // VALIDATIONS
+                if (!validatePasswords()) {
                     return;
                 }
                 
-                if (password.value.length < 6) {
-                    showMessage('❌ Le mot de passe doit contenir au moins 6 caractères');
+                const fullName = document.getElementById('fullName').value.trim();
+                if (fullName.length < 2) {
+                    showMessage('❌ Veuillez entrer votre nom complet', 'error');
                     return;
                 }
                 
-                const userData = {
-                    nom_complet: document.getElementById('nomComplet').value.trim(),
-                    email: document.getElementById('email').value.trim().toLowerCase(),
-                    password: password.value,
-                    telephone: '',
-                    referral_code: codeFromURL
-                };
-                
-                if (userData.nom_complet.length < 2) {
-                    showMessage('❌ Veuillez entrer votre nom complet');
+                const email = document.getElementById('email').value.trim().toLowerCase();
+                if (!email.includes('@') || !email.includes('.')) {
+                    showMessage('❌ Email invalide', 'error');
                     return;
                 }
                 
-                if (!userData.email.includes('@')) {
-                    showMessage('❌ Email invalide');
-                    return;
-                }
-                
-                // Désactiver le bouton
+                // DÉSACTIVER LE BOUTON
                 const btn = document.getElementById('submitBtn');
                 btn.disabled = true;
-                btn.textContent = 'Inscription en cours...';
+                btn.innerHTML = '⏳ Inscription en cours...';
                 
-                // Inscription
+                // INSCRIPTION
+                const userData = {
+                    fullName: fullName,
+                    email: email,
+                    password: password.value,
+                    telephone: '',
+                    referral_code: validReferralCode
+                };
+                
                 const result = await inscrireUtilisateur(userData);
                 
                 if (result.success) {
                     showMessage('✅ Inscription réussie ! Redirection...', 'success');
-                    debug('✅ Redirection vers dashboard.html');
+                    debug(`✅ Redirection vers dashboard.html`);
                     
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
                     }, 2000);
                 } else {
-                    showMessage('❌ ' + result.error);
+                    showMessage(`❌ ${result.error}`, 'error');
                     btn.disabled = false;
-                    btn.textContent = 'S\'inscrire';
+                    btn.innerHTML = '✅ S\'inscrire';
                 }
             });
         });

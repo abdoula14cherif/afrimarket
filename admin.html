@@ -32,7 +32,6 @@
             --transition: all 0.3s ease;
         }
 
-        /* TOUS TES STYLES EXISTANTS - CONSERVÉS À L'IDENTIQUE */
         * {
             margin: 0;
             padding: 0;
@@ -258,8 +257,10 @@
             font-weight: 500;
         }
 
-        .dark-mode .menu-item.active {
-            color: #60a5fa;
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
         }
 
         .theme-toggle-menu {
@@ -379,6 +380,19 @@
             border-color: transparent;
         }
 
+        .admin-tab.pending-tab {
+            border-left: 4px solid var(--primary-orange);
+        }
+
+        .pending-badge {
+            background: var(--primary-orange);
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 11px;
+            margin-left: 6px;
+        }
+
         /* Statistiques */
         .stats-grid {
             display: grid;
@@ -423,7 +437,7 @@
         .stat-referrals .stat-icon { background: rgba(245, 158, 11, 0.1); color: var(--primary-orange); }
         .stat-ads .stat-icon { background: rgba(16, 185, 129, 0.1); color: var(--primary-green); }
         .stat-withdrawals .stat-icon { background: rgba(239, 68, 68, 0.1); color: var(--primary-red); }
-        .stat-balance .stat-icon { background: rgba(29, 53, 87, 0.1); color: var(--primary-blue); }
+        .stat-recharges .stat-icon { background: rgba(29, 53, 87, 0.1); color: var(--primary-blue); }
         .stat-pending .stat-icon { background: rgba(245, 158, 11, 0.1); color: var(--primary-orange); }
 
         .stat-number {
@@ -650,8 +664,9 @@
         .reject-btn { background: rgba(239, 68, 68, 0.1); color: var(--primary-red); }
         .disable-btn { background: rgba(100, 116, 139, 0.1); color: var(--light-gray); }
         .enable-btn { background: rgba(16, 185, 129, 0.1); color: var(--primary-green); }
+        .view-btn { background: rgba(139, 92, 246, 0.1); color: var(--primary-purple); }
 
-        /* Modals - MÊMES STYLES */
+        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -713,6 +728,42 @@
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+        }
+
+        /* Transaction Details */
+        .transaction-details {
+            background: var(--light-bg);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .dark-mode .transaction-details {
+            background: var(--dark-bg);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light-border);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--light-gray);
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--light-text);
         }
 
         /* Formulaires */
@@ -877,18 +928,10 @@
             color: var(--light-gray);
         }
 
-        .dark-mode .nav-icon {
-            color: #94a3b8;
-        }
-
         .nav-label {
             font-size: 11px;
             font-weight: 600;
             color: var(--light-gray);
-        }
-
-        .dark-mode .nav-label {
-            color: #94a3b8;
         }
 
         /* No data */
@@ -896,10 +939,6 @@
             text-align: center;
             padding: 40px 20px;
             color: var(--light-gray);
-        }
-
-        .dark-mode .no-data {
-            color: #94a3b8;
         }
 
         .no-data i {
@@ -985,6 +1024,7 @@
     </div>
 
     <!-- ========== MODALS ========== -->
+
     <!-- Modal Ajout/Modification Utilisateur -->
     <div class="modal-overlay" id="userModal">
         <div class="modal">
@@ -1077,6 +1117,60 @@
         </div>
     </div>
 
+    <!-- Modal Détails Recharge -->
+    <div class="modal-overlay" id="rechargeDetailsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Détails de la recharge</h3>
+                <button class="modal-close" onclick="closeModal('rechargeDetailsModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="rechargeDetailsContent">
+                <!-- Contenu dynamique -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="approveRechargeFromModal()"><i class="fas fa-check"></i> Approuver</button>
+                <button class="btn btn-danger" onclick="rejectRechargeFromModal()"><i class="fas fa-times"></i> Rejeter</button>
+                <button class="btn btn-secondary" onclick="closeModal('rechargeDetailsModal')">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Détails Retrait -->
+    <div class="modal-overlay" id="retraitDetailsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Détails du retrait</h3>
+                <button class="modal-close" onclick="closeModal('retraitDetailsModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="retraitDetailsContent">
+                <!-- Contenu dynamique -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="approveRetraitFromModal()"><i class="fas fa-check"></i> Approuver</button>
+                <button class="btn btn-danger" onclick="rejectRetraitFromModal()"><i class="fas fa-times"></i> Rejeter</button>
+                <button class="btn btn-secondary" onclick="closeModal('retraitDetailsModal')">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Détails Annonce -->
+    <div class="modal-overlay" id="annonceDetailsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Détails de l'annonce</h3>
+                <button class="modal-close" onclick="closeModal('annonceDetailsModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="annonceDetailsContent">
+                <!-- Contenu dynamique -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="editAnnonceFromModal()"><i class="fas fa-edit"></i> Modifier</button>
+                <button class="btn btn-danger" onclick="deleteAnnonceFromModal()"><i class="fas fa-trash"></i> Supprimer</button>
+                <button class="btn btn-secondary" onclick="closeModal('annonceDetailsModal')">Fermer</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Confirmation -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal">
@@ -1090,20 +1184,6 @@
             <div class="modal-footer">
                 <button class="btn btn-danger" id="confirmBtn"><i class="fas fa-check"></i> Confirmer</button>
                 <button class="btn btn-secondary" onclick="closeModal('confirmModal')">Annuler</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Détails -->
-    <div class="modal-overlay" id="detailsModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title" id="detailsTitle">Détails</h3>
-                <button class="modal-close" onclick="closeModal('detailsModal')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body" id="detailsContent"></div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('detailsModal')">Fermer</button>
             </div>
         </div>
     </div>
@@ -1137,6 +1217,9 @@
                     <i class="fas fa-user-shield"></i> 
                     Administration Complète
                     <span style="font-size: 14px; color: var(--light-gray); margin-left: 10px;" id="adminEmail"></span>
+                    <span id="pendingCountBadge" style="display: none; background: var(--primary-orange); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">
+                        <i class="fas fa-clock"></i> <span id="pendingCount">0</span> en attente
+                    </span>
                 </h2>
 
                 <!-- Onglets principaux -->
@@ -1150,11 +1233,13 @@
                     <button class="admin-tab" onclick="switchTab('referrals')">
                         <i class="fas fa-sitemap"></i> Parrainages
                     </button>
-                    <button class="admin-tab" onclick="switchTab('retraits')">
+                    <button class="admin-tab pending-tab" onclick="switchTab('retraits')">
                         <i class="fas fa-wallet"></i> Retraits
+                        <span id="retraitsPendingBadge" class="pending-badge" style="display: none;">0</span>
                     </button>
-                    <button class="admin-tab" onclick="switchTab('recharges')">
+                    <button class="admin-tab pending-tab" onclick="switchTab('recharges')">
                         <i class="fas fa-coins"></i> Recharges
+                        <span id="rechargesPendingBadge" class="pending-badge" style="display: none;">0</span>
                     </button>
                 </div>
 
@@ -1180,7 +1265,7 @@
                         <div class="stat-number" id="statsRetraits">0</div>
                         <div class="stat-label">Retraits en attente</div>
                     </div>
-                    <div class="stat-card stat-balance">
+                    <div class="stat-card stat-recharges">
                         <div class="stat-icon"><i class="fas fa-coins"></i></div>
                         <div class="stat-number" id="statsRecharges">0</div>
                         <div class="stat-label">Recharges en attente</div>
@@ -1250,22 +1335,220 @@
 
                 <!-- ========== SECTION ANNONCES ========== -->
                 <div id="annonces-tab" class="tab-content" style="display: none;">
-                    <!-- Contenu inchangé -->
+                    <div class="action-bar">
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="showAddAnnonceModal()">
+                                <i class="fas fa-plus-circle"></i> Ajouter une annonce
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteAllInactiveAnnonces()">
+                                <i class="fas fa-trash"></i> Supprimer les inactives
+                            </button>
+                            <button class="btn btn-success" onclick="exportTableToCSV('annonces')">
+                                <i class="fas fa-download"></i> Exporter CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filters-section">
+                        <div class="filter-group">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="filter-input" id="annonceSearch" placeholder="Rechercher une annonce..." onkeyup="filterAnnonces()">
+                        </div>
+                        <div class="filter-group">
+                            <select class="filter-select" id="annonceTypeFilter" onchange="filterAnnonces()">
+                                <option value="all">Tous les types</option>
+                                <option value="vente">À vendre</option>
+                                <option value="actualite">Actualités</option>
+                            </select>
+                            <select class="filter-select" id="annonceStatusFilter" onchange="filterAnnonces()">
+                                <option value="all">Tous les statuts</option>
+                                <option value="actif">Actives</option>
+                                <option value="inactif">Inactives</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table" id="annoncesTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Description</th>
+                                    <th>Utilisateur</th>
+                                    <th>Type</th>
+                                    <th>Prix</th>
+                                    <th>Vues</th>
+                                    <th>Contacts</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="annoncesTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- ========== SECTION PARRAINAGES ========== -->
                 <div id="referrals-tab" class="tab-content" style="display: none;">
-                    <!-- Contenu inchangé -->
+                    <div class="action-bar">
+                        <div class="action-buttons">
+                            <button class="btn btn-success" onclick="exportTableToCSV('referrals')">
+                                <i class="fas fa-download"></i> Exporter CSV
+                            </button>
+                            <button class="btn btn-secondary" onclick="loadAllData()">
+                                <i class="fas fa-sync-alt"></i> Rafraîchir
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filters-section">
+                        <div class="filter-group">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="filter-input" id="referralSearch" placeholder="Rechercher un parrain..." onkeyup="filterReferrals()">
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table" id="referralsTable">
+                            <thead>
+                                <tr>
+                                    <th>Utilisateur</th>
+                                    <th>Email</th>
+                                    <th>Code</th>
+                                    <th>Statut lien</th>
+                                    <th>Date déblocage</th>
+                                    <th>Filleuls directs</th>
+                                    <th>Niveau 2</th>
+                                    <th>Niveau 3</th>
+                                    <th>Gains niveau 1</th>
+                                    <th>Gains niveau 2</th>
+                                    <th>Gains niveau 3</th>
+                                    <th>Total gains</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="referralsTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- ========== SECTION RETRAITS ========== -->
                 <div id="retraits-tab" class="tab-content" style="display: none;">
-                    <!-- Contenu inchangé -->
+                    <div class="action-bar">
+                        <div class="action-buttons">
+                            <button class="btn btn-success" onclick="exportTableToCSV('retraits')">
+                                <i class="fas fa-download"></i> Exporter CSV
+                            </button>
+                            <button class="btn btn-warning" onclick="filterRetraitsByStatus('pending')">
+                                <i class="fas fa-clock"></i> En attente
+                            </button>
+                            <button class="btn btn-secondary" onclick="filterRetraitsByStatus('all')">
+                                <i class="fas fa-list"></i> Tous
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filters-section">
+                        <div class="filter-group">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="filter-input" id="retraitSearch" placeholder="Rechercher un retrait..." onkeyup="filterRetraits()">
+                        </div>
+                        <div class="filter-group">
+                            <select class="filter-select" id="retraitStatusFilter" onchange="filterRetraits()">
+                                <option value="all">Tous les statuts</option>
+                                <option value="pending">En attente</option>
+                                <option value="approved">Approuvés</option>
+                                <option value="rejected">Rejetés</option>
+                            </select>
+                            <select class="filter-select" id="retraitMethodFilter" onchange="filterRetraits()">
+                                <option value="all">Toutes les méthodes</option>
+                                <option value="mobile">Mobile Money</option>
+                                <option value="crypto">Crypto</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table" id="retraitsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Utilisateur</th>
+                                    <th>Contact</th>
+                                    <th>Montant</th>
+                                    <th>Méthode</th>
+                                    <th>Compte</th>
+                                    <th>Date demande</th>
+                                    <th>Statut</th>
+                                    <th>Date traitement</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="retraitsTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- ========== SECTION RECHARGES ========== -->
                 <div id="recharges-tab" class="tab-content" style="display: none;">
-                    <!-- Contenu inchangé -->
+                    <div class="action-bar">
+                        <div class="action-buttons">
+                            <button class="btn btn-success" onclick="exportTableToCSV('recharges')">
+                                <i class="fas fa-download"></i> Exporter CSV
+                            </button>
+                            <button class="btn btn-warning" onclick="filterRechargesByStatus('pending')">
+                                <i class="fas fa-clock"></i> En attente
+                            </button>
+                            <button class="btn btn-secondary" onclick="filterRechargesByStatus('all')">
+                                <i class="fas fa-list"></i> Tous
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filters-section">
+                        <div class="filter-group">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="filter-input" id="rechargeSearch" placeholder="Rechercher une recharge..." onkeyup="filterRecharges()">
+                        </div>
+                        <div class="filter-group">
+                            <select class="filter-select" id="rechargeStatusFilter" onchange="filterRecharges()">
+                                <option value="all">Tous les statuts</option>
+                                <option value="pending">En attente</option>
+                                <option value="approved">Approuvées</option>
+                                <option value="rejected">Rejetées</option>
+                            </select>
+                            <select class="filter-select" id="rechargeOperatorFilter" onchange="filterRecharges()">
+                                <option value="all">Tous les opérateurs</option>
+                                <option value="orange">Orange Money</option>
+                                <option value="mtn">MTN Money</option>
+                                <option value="moov">Moov Money</option>
+                                <option value="wave">Wave</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table" id="rechargesTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Utilisateur</th>
+                                    <th>Téléphone</th>
+                                    <th>Montant</th>
+                                    <th>Opérateur</th>
+                                    <th>Nom compte</th>
+                                    <th>Date demande</th>
+                                    <th>Déblocage</th>
+                                    <th>Statut</th>
+                                    <th>Date traitement</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rechargesTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </div>
@@ -1306,6 +1589,9 @@
         let currentTab = 'users';
         let currentAction = null;
         let currentItemId = null;
+        let currentRechargeId = null;
+        let currentRetraitId = null;
+        let currentAnnonceId = null;
 
         // ============================================
         // ✅ FONCTION DE VÉRIFICATION DE SESSION (SANS REDIRECTION AUTO)
@@ -1355,6 +1641,9 @@
                 // Charger toutes les données
                 await loadAllData();
                 
+                // Mettre à jour les badges
+                updatePendingBadges();
+                
             } catch (error) {
                 console.error('❌ Erreur initialisation:', error);
                 showToast('Erreur de chargement', 'error');
@@ -1390,6 +1679,7 @@
             // Rafraîchir
             document.getElementById('refreshMenuItem').addEventListener('click', async () => {
                 await loadAllData();
+                updatePendingBadges();
                 showToast('✅ Données actualisées', 'success');
                 closeSidebar();
             });
@@ -1403,7 +1693,6 @@
                     await supabaseClient.auth.signOut();
                 }
                 
-                localStorage.clear();
                 const theme = localStorage.getItem('afrimarket_theme');
                 localStorage.clear();
                 if (theme) localStorage.setItem('afrimarket_theme', theme);
@@ -1459,10 +1748,6 @@
             // Mettre à jour les boutons
             document.querySelectorAll('.admin-tab').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
-            
-            // Rafraîchir les données si nécessaire
-            if (tabName === 'retraits') loadRetraits();
-            if (tabName === 'recharges') loadRecharges();
         }
 
         // ============================================
@@ -1483,6 +1768,7 @@
                 
                 updateStatistics();
                 updateAllTables();
+                updatePendingBadges();
                 showToast('✅ Données chargées', 'success');
                 
             } catch (error) {
@@ -1587,6 +1873,40 @@
             
             document.getElementById('statsTotalPending').textContent = 
                 (retraitsEnAttente + rechargesEnAttente) || 0;
+        }
+
+        function updatePendingBadges() {
+            const retraitsEnAttente = allRetraits.filter(r => r.status === 'pending').length;
+            const rechargesEnAttente = allRecharges.filter(r => r.status === 'pending').length;
+            const totalEnAttente = retraitsEnAttente + rechargesEnAttente;
+            
+            // Badge titre
+            const pendingBadge = document.getElementById('pendingCountBadge');
+            const pendingCount = document.getElementById('pendingCount');
+            if (totalEnAttente > 0) {
+                pendingBadge.style.display = 'inline-block';
+                pendingCount.textContent = totalEnAttente;
+            } else {
+                pendingBadge.style.display = 'none';
+            }
+            
+            // Badge retraits
+            const retraitsBadge = document.getElementById('retraitsPendingBadge');
+            if (retraitsEnAttente > 0) {
+                retraitsBadge.style.display = 'inline-block';
+                retraitsBadge.textContent = retraitsEnAttente;
+            } else {
+                retraitsBadge.style.display = 'none';
+            }
+            
+            // Badge recharges
+            const rechargesBadge = document.getElementById('rechargesPendingBadge');
+            if (rechargesEnAttente > 0) {
+                rechargesBadge.style.display = 'inline-block';
+                rechargesBadge.textContent = rechargesEnAttente;
+            } else {
+                rechargesBadge.style.display = 'none';
+            }
         }
 
         // ============================================
@@ -1705,13 +2025,16 @@
                     <td>${user?.email?.split('@')[0] || annonce.user_id?.substring(0,8) || '-'}</td>
                     <td><span class="badge ${annonce.type === 'vente' ? 'badge-vente' : 'badge-actualite'}">
                         ${annonce.type === 'vente' ? 'Vente' : 'Actualité'}</span></td>
-                    <td>${annonce.prix ? annonce.prix + ' F' : 'Gratuit'}</td>
+                    <td>${annonce.prix ? annonce.prix.toLocaleString() + ' F' : 'Gratuit'}</td>
                     <td>${annonce.views || 0}</td>
                     <td>${annonce.contacts || 0}</td>
                     <td>${date}</td>
                     <td><span class="badge ${annonce.statut === 'actif' ? 'badge-active' : 'badge-inactive'}">
                         ${annonce.statut === 'actif' ? 'Actif' : 'Inactif'}</span></td>
                     <td class="actions-cell">
+                        <button class="action-btn view-btn" onclick="viewAnnonceDetails('${annonce.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
                         <button class="action-btn edit-btn" onclick="editAnnonce('${annonce.id}')">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -1827,24 +2150,40 @@
                     new Date(retrait.processed_at).toLocaleDateString('fr-FR') : '-';
                 const shortId = retrait.id.substring(0, 8) + '...';
                 
+                // Déterminer l'icône et le libellé
+                let methodIcon = 'fa-mobile-alt';
+                let methodColor = 'var(--primary-green)';
+                let contactInfo = retrait.phone || '-';
+                
+                if (retrait.method === 'crypto') {
+                    methodIcon = 'fa-coins';
+                    methodColor = 'var(--primary-orange)';
+                    contactInfo = retrait.wallet_address?.substring(0, 15) + '...' || '-';
+                }
+                
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${shortId}</td>
-                    <td><strong>${user?.email?.split('@')[0] || retrait.user_id?.substring(0,8) || '-'}</strong></td>
+                    <td><strong>${user?.email?.split('@')[0] || retrait.user_id?.substring(0,8) || '-'}</strong><br>
+                        <small style="color: var(--light-gray);">${user?.email || ''}</small>
+                    </td>
+                    <td>${contactInfo}</td>
                     <td><strong style="color: var(--primary-red);">${retrait.amount.toLocaleString()} F</strong></td>
-                    <td>${retrait.method === 'mobile' ? '📱 Mobile Money' : '🪙 Crypto'}</td>
-                    <td>${retrait.phone || retrait.wallet_address || '-'}</td>
+                    <td><span style="color: ${methodColor};"><i class="fas ${methodIcon}"></i> ${retrait.method === 'mobile' ? 'Mobile Money' : 'Crypto'}</span></td>
                     <td>${retrait.account_name || '-'}</td>
                     <td>${date}</td>
                     <td>
                         <span class="badge ${retrait.status === 'pending' ? 'badge-pending' : 
                                           retrait.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">
-                            ${retrait.status === 'pending' ? 'En attente' : 
-                              retrait.status === 'approved' ? 'Approuvé' : 'Rejeté'}
+                            ${retrait.status === 'pending' ? '⏳ En attente' : 
+                              retrait.status === 'approved' ? '✅ Approuvé' : '❌ Rejeté'}
                         </span>
                     </td>
                     <td>${processedDate}</td>
                     <td class="actions-cell">
+                        <button class="action-btn view-btn" onclick="viewRetraitDetails('${retrait.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
                         ${retrait.status === 'pending' && currentUser ? 
                             `<button class="action-btn approve-btn" onclick="approveRetrait('${retrait.id}')">
                                 <i class="fas fa-check"></i>
@@ -1862,16 +2201,25 @@
         function filterRetraits() {
             const search = document.getElementById('retraitSearch')?.value.toLowerCase() || '';
             const statusFilter = document.getElementById('retraitStatusFilter')?.value || 'all';
+            const methodFilter = document.getElementById('retraitMethodFilter')?.value || 'all';
             
             const filtered = allRetraits.filter(retrait => {
                 const user = allUsers.find(u => u.id === retrait.user_id);
                 const matchesSearch = user?.email?.toLowerCase().includes(search) || 
-                                    retrait.id?.toLowerCase().includes(search);
+                                    retrait.id?.toLowerCase().includes(search) ||
+                                    retrait.phone?.includes(search) ||
+                                    retrait.account_name?.toLowerCase().includes(search);
                 const matchesStatus = statusFilter === 'all' || retrait.status === statusFilter;
-                return matchesSearch && matchesStatus;
+                const matchesMethod = methodFilter === 'all' || retrait.method === methodFilter;
+                return matchesSearch && matchesStatus && matchesMethod;
             });
             
             updateRetraitsTable(filtered);
+        }
+
+        function filterRetraitsByStatus(status) {
+            document.getElementById('retraitStatusFilter').value = status;
+            filterRetraits();
         }
 
         // ----- TABLEAU RECHARGES -----
@@ -1884,7 +2232,7 @@
             tbody.innerHTML = '';
             
             if (rechargesToShow.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="no-data">
+                tbody.innerHTML = `<tr><td colspan="11" class="no-data">
                     <i class="fas fa-coins"></i><p>Aucune recharge</p></td></tr>`;
                 return;
             }
@@ -1897,22 +2245,52 @@
                     new Date(recharge.processed_at).toLocaleDateString('fr-FR') : '-';
                 const shortId = recharge.id.substring(0, 8) + '...';
                 
+                // Déterminer l'opérateur
+                let operatorName = recharge.method || 'Mobile Money';
+                let operatorColor = 'var(--primary-blue)';
+                
+                if (recharge.operator === 'orange') {
+                    operatorName = 'Orange Money';
+                    operatorColor = 'var(--primary-orange)';
+                } else if (recharge.operator === 'mtn') {
+                    operatorName = 'MTN Money';
+                    operatorColor = '#ffc107';
+                } else if (recharge.operator === 'moov') {
+                    operatorName = 'Moov Money';
+                    operatorColor = '#e83e8c';
+                } else if (recharge.operator === 'wave') {
+                    operatorName = 'Wave';
+                    operatorColor = '#28a745';
+                }
+                
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${shortId}</td>
-                    <td><strong>${user?.email?.split('@')[0] || recharge.user_id?.substring(0,8) || '-'}</strong></td>
-                    <td><strong style="color: var(--primary-green);">${recharge.amount.toLocaleString()} F</strong></td>
-                    <td>${recharge.method || 'Mobile Money'}</td>
+                    <td><strong>${user?.email?.split('@')[0] || recharge.user_id?.substring(0,8) || '-'}</strong><br>
+                        <small style="color: var(--light-gray);">${user?.email || ''}</small>
+                    </td>
+                    <td>${recharge.phone || '-'}</td>
+                    <td><strong style="color: var(--primary-green);">+${recharge.amount.toLocaleString()} F</strong></td>
+                    <td><span style="color: ${operatorColor};"><i class="fas fa-mobile-alt"></i> ${operatorName}</span></td>
+                    <td>${recharge.account_name || '-'}</td>
                     <td>${date}</td>
+                    <td>
+                        ${recharge.unlock_referral ? 
+                            `<span class="badge badge-pending"><i class="fas fa-unlock"></i> À débloquer</span>` : 
+                            `<span class="badge badge-inactive">-</span>`}
+                    </td>
                     <td>
                         <span class="badge ${recharge.status === 'pending' ? 'badge-pending' : 
                                           recharge.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">
-                            ${recharge.status === 'pending' ? 'En attente' : 
-                              recharge.status === 'approved' ? 'Approuvée' : 'Rejetée'}
+                            ${recharge.status === 'pending' ? '⏳ En attente' : 
+                              recharge.status === 'approved' ? '✅ Approuvée' : '❌ Rejetée'}
                         </span>
                     </td>
                     <td>${processedDate}</td>
                     <td class="actions-cell">
+                        <button class="action-btn view-btn" onclick="viewRechargeDetails('${recharge.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
                         ${recharge.status === 'pending' && currentUser ? 
                             `<button class="action-btn approve-btn" onclick="approveRecharge('${recharge.id}')">
                                 <i class="fas fa-check"></i>
@@ -1930,16 +2308,25 @@
         function filterRecharges() {
             const search = document.getElementById('rechargeSearch')?.value.toLowerCase() || '';
             const statusFilter = document.getElementById('rechargeStatusFilter')?.value || 'all';
+            const operatorFilter = document.getElementById('rechargeOperatorFilter')?.value || 'all';
             
             const filtered = allRecharges.filter(recharge => {
                 const user = allUsers.find(u => u.id === recharge.user_id);
                 const matchesSearch = user?.email?.toLowerCase().includes(search) || 
-                                    recharge.id?.toLowerCase().includes(search);
+                                    recharge.id?.toLowerCase().includes(search) ||
+                                    recharge.phone?.includes(search) ||
+                                    recharge.account_name?.toLowerCase().includes(search);
                 const matchesStatus = statusFilter === 'all' || recharge.status === statusFilter;
-                return matchesSearch && matchesStatus;
+                const matchesOperator = operatorFilter === 'all' || recharge.operator === operatorFilter;
+                return matchesSearch && matchesStatus && matchesOperator;
             });
             
             updateRechargesTable(filtered);
+        }
+
+        function filterRechargesByStatus(status) {
+            document.getElementById('rechargeStatusFilter').value = status;
+            filterRecharges();
         }
 
         // ============================================
@@ -2248,6 +2635,74 @@
             }
         }
 
+        function viewAnnonceDetails(annonceId) {
+            const annonce = allAnnonces.find(a => a.id === annonceId);
+            if (!annonce) return;
+            
+            currentAnnonceId = annonceId;
+            
+            const user = allUsers.find(u => u.id === annonce.user_id);
+            const date = new Date(annonce.created_at).toLocaleString('fr-FR');
+            
+            const content = document.getElementById('annonceDetailsContent');
+            content.innerHTML = `
+                <div class="transaction-details">
+                    <div class="detail-row">
+                        <span class="detail-label">ID:</span>
+                        <span class="detail-value">${annonce.id}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Titre:</span>
+                        <span class="detail-value">${annonce.titre || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Description:</span>
+                        <span class="detail-value">${annonce.description || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Type:</span>
+                        <span class="detail-value"><span class="badge ${annonce.type === 'vente' ? 'badge-vente' : 'badge-actualite'}">${annonce.type === 'vente' ? 'À vendre' : 'Actualité'}</span></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Prix:</span>
+                        <span class="detail-value"><strong>${annonce.prix ? annonce.prix.toLocaleString() + ' F' : 'Gratuit'}</strong></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Statut:</span>
+                        <span class="detail-value"><span class="badge ${annonce.statut === 'actif' ? 'badge-active' : 'badge-inactive'}">${annonce.statut === 'actif' ? 'Actif' : 'Inactif'}</span></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Vues:</span>
+                        <span class="detail-value">${annonce.views || 0}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Contacts:</span>
+                        <span class="detail-value">${annonce.contacts || 0}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Publié par:</span>
+                        <span class="detail-value">${user?.email || annonce.user_id}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date:</span>
+                        <span class="detail-value">${date}</span>
+                    </div>
+                </div>
+            `;
+            
+            showModal('annonceDetailsModal');
+        }
+
+        function editAnnonceFromModal() {
+            closeModal('annonceDetailsModal');
+            editAnnonce(currentAnnonceId);
+        }
+
+        async function deleteAnnonceFromModal() {
+            closeModal('annonceDetailsModal');
+            await deleteAnnonce(currentAnnonceId);
+        }
+
         async function toggleAnnonceStatus(annonceId, newStatus) {
             if (!currentUser) {
                 showToast('❌ Connexion requise', 'error');
@@ -2319,16 +2774,107 @@
         // ============================================
         // ACTIONS RETRAITS
         // ============================================
+        function viewRetraitDetails(retraitId) {
+            const retrait = allRetraits.find(r => r.id === retraitId);
+            if (!retrait) return;
+            
+            currentRetraitId = retraitId;
+            
+            const user = allUsers.find(u => u.id === retrait.user_id);
+            const date = new Date(retrait.created_at).toLocaleString('fr-FR');
+            
+            let methodDetails = '';
+            if (retrait.method === 'mobile') {
+                methodDetails = `
+                    <div class="detail-row">
+                        <span class="detail-label">Téléphone:</span>
+                        <span class="detail-value">${retrait.phone || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Opérateur:</span>
+                        <span class="detail-value">${retrait.operator || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Pays:</span>
+                        <span class="detail-value">${retrait.country || '-'}</span>
+                    </div>
+                `;
+            } else {
+                methodDetails = `
+                    <div class="detail-row">
+                        <span class="detail-label">Adresse wallet:</span>
+                        <span class="detail-value">${retrait.wallet_address || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Réseau:</span>
+                        <span class="detail-value">${retrait.network || '-'}</span>
+                    </div>
+                `;
+            }
+            
+            const content = document.getElementById('retraitDetailsContent');
+            content.innerHTML = `
+                <div class="transaction-details">
+                    <div class="detail-row">
+                        <span class="detail-label">ID Transaction:</span>
+                        <span class="detail-value">${retrait.id}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Utilisateur:</span>
+                        <span class="detail-value">${user?.email || retrait.user_id}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Nom complet:</span>
+                        <span class="detail-value">${user?.nom_complet || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Montant:</span>
+                        <span class="detail-value"><strong style="color: var(--primary-red);">${retrait.amount.toLocaleString()} F</strong></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Méthode:</span>
+                        <span class="detail-value">${retrait.method === 'mobile' ? 'Mobile Money' : 'Crypto'}</span>
+                    </div>
+                    ${methodDetails}
+                    <div class="detail-row">
+                        <span class="detail-label">Nom du compte:</span>
+                        <span class="detail-value">${retrait.account_name || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date demande:</span>
+                        <span class="detail-value">${date}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Statut:</span>
+                        <span class="detail-value">
+                            <span class="badge ${retrait.status === 'pending' ? 'badge-pending' : 
+                                              retrait.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">
+                                ${retrait.status === 'pending' ? 'En attente' : 
+                                  retrait.status === 'approved' ? 'Approuvé' : 'Rejeté'}
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            `;
+            
+            showModal('retraitDetailsModal');
+        }
+
         async function approveRetrait(retraitId) {
             if (!currentUser) {
                 showToast('❌ Connexion requise', 'error');
                 return;
             }
+            
+            const retrait = allRetraits.find(r => r.id === retraitId);
+            if (!retrait) return;
+            
             showConfirm(
-                '✅ Approuver ce retrait ?',
+                `✅ Approuver ce retrait de ${retrait.amount.toLocaleString()} F ?`,
                 async () => {
                     showLoading(true);
                     try {
+                        // Mettre à jour le statut du retrait
                         await supabaseClient
                             .from('retraits')
                             .update({ 
@@ -2338,22 +2884,22 @@
                             })
                             .eq('id', retraitId);
                         
-                        const retrait = allRetraits.find(r => r.id === retraitId);
-                        if (retrait) {
-                            await supabaseClient
-                                .from('balances')
-                                .update({ 
-                                    amount: supabase.raw('amount - ' + retrait.amount),
-                                    total_withdrawn: supabase.raw('COALESCE(total_withdrawn, 0) + ' + retrait.amount)
-                                })
-                                .eq('user_id', retrait.user_id);
-                        }
+                        // Débiter le solde de l'utilisateur
+                        await supabaseClient
+                            .from('balances')
+                            .update({ 
+                                amount: supabase.raw('amount - ' + retrait.amount),
+                                total_withdrawn: supabase.raw('COALESCE(total_withdrawn, 0) + ' + retrait.amount)
+                            })
+                            .eq('user_id', retrait.user_id);
                         
                         showToast('✅ Retrait approuvé', 'success');
+                        closeModal('retraitDetailsModal');
                         await loadRetraits();
                         await loadBalances();
                         updateRetraitsTable();
                         updateUsersTable();
+                        updatePendingBadges();
                         
                     } catch (error) {
                         console.error('Erreur:', error);
@@ -2365,13 +2911,21 @@
             );
         }
 
+        function approveRetraitFromModal() {
+            approveRetrait(currentRetraitId);
+        }
+
         async function rejectRetrait(retraitId) {
             if (!currentUser) {
                 showToast('❌ Connexion requise', 'error');
                 return;
             }
+            
+            const retrait = allRetraits.find(r => r.id === retraitId);
+            if (!retrait) return;
+            
             showConfirm(
-                '❌ Rejeter ce retrait ?',
+                `❌ Rejeter ce retrait de ${retrait.amount.toLocaleString()} F ?`,
                 async () => {
                     showLoading(true);
                     try {
@@ -2385,8 +2939,10 @@
                             .eq('id', retraitId);
                         
                         showToast('✅ Retrait rejeté', 'success');
+                        closeModal('retraitDetailsModal');
                         await loadRetraits();
                         updateRetraitsTable();
+                        updatePendingBadges();
                         
                     } catch (error) {
                         showToast('❌ Erreur', 'error');
@@ -2397,19 +2953,99 @@
             );
         }
 
+        function rejectRetraitFromModal() {
+            rejectRetrait(currentRetraitId);
+        }
+
         // ============================================
         // ACTIONS RECHARGES
         // ============================================
+        function viewRechargeDetails(rechargeId) {
+            const recharge = allRecharges.find(r => r.id === rechargeId);
+            if (!recharge) return;
+            
+            currentRechargeId = rechargeId;
+            
+            const user = allUsers.find(u => u.id === recharge.user_id);
+            const date = new Date(recharge.created_at).toLocaleString('fr-FR');
+            
+            // Déterminer l'opérateur
+            let operatorName = recharge.method || 'Mobile Money';
+            if (recharge.operator === 'orange') operatorName = 'Orange Money';
+            else if (recharge.operator === 'mtn') operatorName = 'MTN Money';
+            else if (recharge.operator === 'moov') operatorName = 'Moov Money';
+            else if (recharge.operator === 'wave') operatorName = 'Wave';
+            
+            const content = document.getElementById('rechargeDetailsContent');
+            content.innerHTML = `
+                <div class="transaction-details">
+                    <div class="detail-row">
+                        <span class="detail-label">ID Transaction:</span>
+                        <span class="detail-value">${recharge.id}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Utilisateur:</span>
+                        <span class="detail-value">${user?.email || recharge.user_id}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Nom complet:</span>
+                        <span class="detail-value">${user?.nom_complet || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Montant:</span>
+                        <span class="detail-value"><strong style="color: var(--primary-green);">+${recharge.amount.toLocaleString()} F</strong></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Opérateur:</span>
+                        <span class="detail-value">${operatorName}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Téléphone:</span>
+                        <span class="detail-value">${recharge.phone || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Nom du compte:</span>
+                        <span class="detail-value">${recharge.account_name || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Déblocage parrainage:</span>
+                        <span class="detail-value">${recharge.unlock_referral ? '✅ Oui (2 150 F)' : '❌ Non'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date demande:</span>
+                        <span class="detail-value">${date}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Statut:</span>
+                        <span class="detail-value">
+                            <span class="badge ${recharge.status === 'pending' ? 'badge-pending' : 
+                                              recharge.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">
+                                ${recharge.status === 'pending' ? 'En attente' : 
+                                  recharge.status === 'approved' ? 'Approuvée' : 'Rejetée'}
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            `;
+            
+            showModal('rechargeDetailsModal');
+        }
+
         async function approveRecharge(rechargeId) {
             if (!currentUser) {
                 showToast('❌ Connexion requise', 'error');
                 return;
             }
+            
+            const recharge = allRecharges.find(r => r.id === rechargeId);
+            if (!recharge) return;
+            
             showConfirm(
-                '✅ Approuver cette recharge ?',
+                `✅ Approuver cette recharge de ${recharge.amount.toLocaleString()} F ?`,
                 async () => {
                     showLoading(true);
                     try {
+                        // Mettre à jour le statut de la recharge
                         await supabaseClient
                             .from('recharges')
                             .update({ 
@@ -2419,25 +3055,36 @@
                             })
                             .eq('id', rechargeId);
                         
-                        const recharge = allRecharges.find(r => r.id === rechargeId);
-                        if (recharge) {
+                        
+                                      unlocked_at: new Date().toISOString() 
+                                })
+                                .eq('user_id', recharge.user_id);
+                        }
+                        
+                          // Débloquer le lien de parrainage si demandé
+                        if (recharge.unlock_referral) {
                             await supabaseClient
-                                .from('balances')
+                                .from('referral_data')
                                 .update({ 
-                                    amount: supabase.raw('amount + ' + recharge.amount),
-                                    total_earned: supabase.raw('total_earned + ' + recharge.amount)
+                                    is_unlocked: true, 
+                                    unlocked_at: new Date().toISOString() 
                                 })
                                 .eq('user_id', recharge.user_id);
                         }
                         
                         showToast('✅ Recharge approuvée', 'success');
+                        closeModal('rechargeDetailsModal');
                         await loadRecharges();
                         await loadBalances();
+                        await loadReferrals();
                         updateRechargesTable();
                         updateUsersTable();
+                        updateReferralsTable();
+                        updatePendingBadges();
                         
                     } catch (error) {
-                        showToast('❌ Erreur', 'error');
+                        console.error('Erreur:', error);
+                        showToast('❌ Erreur: ' + error.message, 'error');
                     } finally {
                         showLoading(false);
                     }
@@ -2445,13 +3092,21 @@
             );
         }
 
+        function approveRechargeFromModal() {
+            approveRecharge(currentRechargeId);
+        }
+
         async function rejectRecharge(rechargeId) {
             if (!currentUser) {
                 showToast('❌ Connexion requise', 'error');
                 return;
             }
+            
+            const recharge = allRecharges.find(r => r.id === rechargeId);
+            if (!recharge) return;
+            
             showConfirm(
-                '❌ Rejeter cette recharge ?',
+                `❌ Rejeter cette recharge de ${recharge.amount.toLocaleString()} F ?`,
                 async () => {
                     showLoading(true);
                     try {
@@ -2465,8 +3120,10 @@
                             .eq('id', rechargeId);
                         
                         showToast('✅ Recharge rejetée', 'success');
+                        closeModal('rechargeDetailsModal');
                         await loadRecharges();
                         updateRechargesTable();
+                        updatePendingBadges();
                         
                     } catch (error) {
                         showToast('❌ Erreur', 'error');
@@ -2475,6 +3132,10 @@
                     }
                 }
             );
+        }
+
+        function rejectRechargeFromModal() {
+            rejectRecharge(currentRechargeId);
         }
 
         // ============================================
@@ -2486,10 +3147,12 @@
             toast.className = `toast-notification ${type}`;
             toast.innerHTML = `
                 <div class="toast-icon"><i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                    type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i></div>
+                    type === 'error' ? 'fa-exclamation-circle' : 
+                    type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i></div>
                 <div class="toast-content">
                     <div class="toast-title">${type === 'success' ? 'Succès' : 
-                        type === 'error' ? 'Erreur' : 'Information'}</div>
+                        type === 'error' ? 'Erreur' : 
+                        type === 'warning' ? 'Attention' : 'Information'}</div>
                     <div class="toast-message">${message}</div>
                 </div>
                 <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
@@ -2530,6 +3193,7 @@
                         Nom: u.nom_complet || '',
                         Rôle: u.email === ADMIN_EMAIL ? 'Admin' : 'User',
                         Statut: u.statut || 'active',
+                        Solde: allBalances.find(b => b.user_id === u.id)?.amount || 0,
                         Date: u.created_at
                     }));
                     break;
@@ -2545,16 +3209,22 @@
                     break;
                 case 'retraits':
                     data = allRetraits.map(r => ({
+                        ID: r.id,
                         Montant: r.amount,
                         Méthode: r.method,
+                        Téléphone: r.phone,
+                        Compte: r.account_name,
                         Statut: r.status,
                         Date: r.created_at
                     }));
                     break;
                 case 'recharges':
                     data = allRecharges.map(r => ({
+                        ID: r.id,
                         Montant: r.amount,
-                        Méthode: r.method,
+                        Opérateur: r.operator,
+                        Téléphone: r.phone,
+                        Compte: r.account_name,
                         Statut: r.status,
                         Date: r.created_at
                     }));
@@ -2566,6 +3236,9 @@
                             Utilisateur: user?.email || '',
                             Code: r.referral_code,
                             Statut: r.is_unlocked ? 'Débloqué' : 'Verrouillé',
+                            Directs: r.direct_count,
+                            Niveau2: r.level2_count,
+                            Niveau3: r.level3_count,
                             Gains: r.total_earned || 0
                         };
                     });
@@ -2579,7 +3252,9 @@
             
             const csv = [
                 Object.keys(data[0]).join(','),
-                ...data.map(row => Object.values(row).join(','))
+                ...data.map(row => Object.values(row).map(val => 
+                    typeof val === 'string' && val.includes(',') ? `"${val}"` : val
+                ).join(','))
             ].join('\n');
             
             const blob = new Blob([csv], { type: 'text/csv' });
@@ -2604,18 +3279,29 @@
         window.showAddAnnonceModal = showAddAnnonceModal;
         window.editAnnonce = editAnnonce;
         window.saveAnnonce = saveAnnonce;
+        window.viewAnnonceDetails = viewAnnonceDetails;
+        window.editAnnonceFromModal = editAnnonceFromModal;
+        window.deleteAnnonceFromModal = deleteAnnonceFromModal;
         window.toggleAnnonceStatus = toggleAnnonceStatus;
         window.deleteAnnonce = deleteAnnonce;
         window.deleteAllInactiveAnnonces = deleteAllInactiveAnnonces;
+        window.viewRetraitDetails = viewRetraitDetails;
         window.approveRetrait = approveRetrait;
+        window.approveRetraitFromModal = approveRetraitFromModal;
         window.rejectRetrait = rejectRetrait;
+        window.rejectRetraitFromModal = rejectRetraitFromModal;
+        window.viewRechargeDetails = viewRechargeDetails;
         window.approveRecharge = approveRecharge;
+        window.approveRechargeFromModal = approveRechargeFromModal;
         window.rejectRecharge = rejectRecharge;
+        window.rejectRechargeFromModal = rejectRechargeFromModal;
         window.filterUsers = filterUsers;
         window.filterAnnonces = filterAnnonces;
         window.filterReferrals = filterReferrals;
         window.filterRetraits = filterRetraits;
         window.filterRecharges = filterRecharges;
+        window.filterRetraitsByStatus = filterRetraitsByStatus;
+        window.filterRechargesByStatus = filterRechargesByStatus;
         window.exportTableToCSV = exportTableToCSV;
         window.loadAllData = loadAllData;
         window.closeModal = closeModal;

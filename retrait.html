@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Retrait - AFRIMARKET</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SUPABASE OBLIGATOIRE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #1d3557;
+            --primary-red: #ef4444;
+            --primary-green: #10b981;
+            --primary-orange: #f97316;
+            --primary-purple: #8b5cf6;
+            --light-bg: #f8fafc;
+            --light-card: #ffffff;
+            --light-text: #1e293b;
+            --light-border: #e2e8f0;
+            --light-gray: #94a3b8;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #f1f5f9;
+            --dark-border: #334155;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            transition: var(--transition);
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 16px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--light-card);
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--light-text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .dark-mode .menu-toggle {
+            color: var(--dark-text);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--light-text);
+        }
+
+        .dark-mode .logo-text {
+            color: var(--dark-text);
+        }
+
+        .logo-text span {
+            color: var(--primary-orange);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--light-text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .dark-mode .theme-btn {
+            color: var(--dark-text);
+        }
+
+        /* Menu latéral */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+            display: none;
+        }
+
+        .sidebar-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: var(--light-card);
+            z-index: 9999;
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
+            overflow-y: auto;
+        }
+
+        .dark-mode .sidebar-menu {
+            background: var(--dark-card);
+        }
+
+        .sidebar-menu.open {
+            left: 0;
+        }
+
+        .menu-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--light-border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            color: white;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-email {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .menu-items {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 20px;
+            color: var(--light-text);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 15px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dark-mode .menu-item {
+            color: var(--dark-text);
+        }
+
+        .menu-item:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .menu-item.active {
+            background: rgba(37, 99, 235, 0.15);
+            border-left-color: var(--primary-blue);
+            color: var(--primary-blue);
+            font-weight: 500;
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .theme-toggle-menu {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-top: 1px solid var(--light-border);
+        }
+
+        .dark-mode .theme-toggle-menu {
+            border-color: var(--dark-border);
+        }
+
+        .theme-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .theme-slider {
+            background-color: var(--primary-blue);
+        }
+
+        input:checked + .theme-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Contenu principal */
+        .main-content {
+            padding: 20px 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dark-mode .section-title {
+            color: var(--dark-text);
+        }
+
+        /* Carte solde */
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 25px;
+        }
+
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .balance-amount {
+            font-size: 36px;
+            font-weight: 800;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .balance-currency {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .balance-min {
+            font-size: 13px;
+            opacity: 0.9;
+            padding: 10px 0;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            margin-top: 10px;
+        }
+
+        /* Formulaire */
+        .form-card {
+            background: var(--light-card);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-border);
+            margin-bottom: 25px;
+        }
+
+        .dark-mode .form-card {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .form-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dark-mode .form-title {
+            color: var(--dark-text);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .form-label {
+            color: var(--dark-text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--light-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--light-bg);
+            color: var(--light-text);
+            transition: var(--transition);
+        }
+
+        .dark-mode .form-input {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--light-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--light-bg);
+            color: var(--light-text);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .dark-mode .form-select {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .form-info {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: var(--radius-md);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .form-info i {
+            color: var(--primary-green);
+            margin-right: 8px;
+        }
+
+        .form-info p {
+            font-size: 13px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .form-info p {
+            color: var(--dark-text);
+        }
+
+        /* Tabs */
+        .method-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .method-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            border: 2px solid var(--light-border);
+            border-radius: var(--radius-md);
+            background: var(--light-card);
+            color: var(--light-text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dark-mode .method-tab {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .method-tab i {
+            font-size: 24px;
+            color: var(--light-gray);
+        }
+
+        .method-tab.active {
+            border-color: var(--primary-blue);
+            background: rgba(29, 53, 87, 0.05);
+        }
+
+        .method-tab.active i {
+            color: var(--primary-blue);
+        }
+
+        .method-tab.mobile-money.active i {
+            color: var(--primary-green);
+        }
+
+        .method-tab.crypto.active i {
+            color: var(--primary-orange);
+        }
+
+        /* Pays */
+        .country-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .country-btn {
+            padding: 12px;
+            border: 2px solid var(--light-border);
+            border-radius: var(--radius-md);
+            background: var(--light-card);
+            color: var(--light-text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dark-mode .country-btn {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .country-btn i {
+            font-size: 20px;
+        }
+
+        .country-btn.active {
+            border-color: var(--primary-blue);
+            background: rgba(29, 53, 87, 0.05);
+        }
+
+        /* Bouton */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Historique */
+        .history-section {
+            margin-top: 30px;
+        }
+
+        .history-card {
+            background: var(--light-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-border);
+        }
+
+        .dark-mode .history-card {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .history-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dark-mode .history-title {
+            color: var(--dark-text);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: var(--light-bg);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--light-border);
+        }
+
+        .dark-mode .history-item {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
+        }
+
+        .history-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .history-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .history-icon.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-green);
+        }
+
+        .history-icon.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--primary-orange);
+        }
+
+        .history-icon.rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--primary-red);
+        }
+
+        .history-details h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .history-details h4 {
+            color: var(--dark-text);
+        }
+
+        .history-details p {
+            font-size: 12px;
+            color: var(--light-gray);
+        }
+
+        .history-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-red);
+        }
+
+        .history-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--primary-orange);
+        }
+
+        .status-approved {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-green);
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--primary-red);
+        }
+
+        .no-history {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--light-gray);
+        }
+
+        .no-history i {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            z-index: 10002;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+        }
+
+        .toast-notification {
+            background: var(--light-card);
+            border-radius: var(--radius-md);
+            padding: 15px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .dark-mode .toast-notification {
+            background: var(--dark-card);
+        }
+
+        .toast-notification.success {
+            border-left-color: var(--primary-green);
+        }
+
+        .toast-notification.error {
+            border-left-color: var(--primary-red);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .loading-spinner {
+            background: var(--light-card);
+            padding: 30px;
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .dark-mode .loading-spinner {
+            background: var(--dark-card);
+        }
+
+        /* Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--light-card);
+            border-top: 1px solid var(--light-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+        }
+
+        .dark-mode .bottom-nav {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            color: inherit;
+            flex: 1;
+            max-width: 70px;
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--primary-blue);
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--primary-blue);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            color: var(--light-gray);
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--light-gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .country-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .method-tabs {
+                flex-direction: column;
+            }
+            
+            .method-tab {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 15px;">Traitement en cours...</p>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Menu overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar-menu" id="sidebarMenu">
+        <div class="menu-header">
+            <div class="user-avatar" id="sidebarUserAvatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="sidebarUserName">Utilisateur</div>
+                <div class="user-email" id="sidebarUserEmail">Chargement...</div>
+            </div>
+        </div>
+        
+        <div class="menu-items">
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-home"></i> <span>Accueil</span>
+            </a>
+            <a href="gagner.html" class="menu-item">
+                <i class="fas fa-gift"></i> <span>Gagner</span>
+            </a>
+            <a href="retrait.html" class="menu-item active">
+                <i class="fas fa-wallet"></i> <span>Retrait</span>
+            </a>
+            <a href="recharge.html" class="menu-item">
+                <i class="fas fa-coins"></i> <span>Recharger</span>
+            </a>
+            <a href="parrainage.html" class="menu-item">
+                <i class="fas fa-users"></i> <span>Parrainage</span>
+            </a>
+            <a href="historique.html" class="menu-item">
+                <i class="fas fa-history"></i> <span>Historique</span>
+            </a>
+            <button class="menu-item" id="supportBtn">
+                <i class="fas fa-headset"></i> <span>Support</span>
+            </button>
+            <a href="connexion.html?logout=true" class="menu-item" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> <span>Déconnexion</span>
+            </a>
+        </div>
+        
+        <div class="theme-toggle-menu">
+            <span>Mode sombre</span>
+            <label class="theme-switch">
+                <input type="checkbox" id="menuThemeToggle">
+                <span class="theme-slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="menu-toggle" id="menuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="dashboard.html" class="logo-container">
+                        <div class="logo-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="logo-text">AFRI<span>MARKET</span></div>
+                    </a>
+                </div>
+                
+                <div class="header-controls">
+                    <button class="theme-btn" id="themeBtn">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Solde -->
+            <div class="balance-card">
+                <div class="balance-label">Solde disponible</div>
+                <div class="balance-amount">
+                    <span id="userBalance">0</span>
+                    <span class="balance-currency">F</span>
+                </div>
+                <div class="balance-min">
+                    <i class="fas fa-info-circle"></i> Retrait minimum: 2 000 F • Disponible de 8h à 17h
+                </div>
+            </div>
+
+            <!-- Formulaire de retrait -->
+            <div class="form-card">
+                <h3 class="form-title">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Faire un retrait
+                </h3>
+
+                <!-- Méthode de retrait -->
+                <div class="method-tabs">
+                    <button class="method-tab mobile-money active" data-method="mobile">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Mobile Money</span>
+                    </button>
+                    <button class="method-tab crypto" data-method="crypto">
+                        <i class="fas fa-coins"></i>
+                        <span>Crypto</span>
+                    </button>
+                </div>
+
+                <!-- Formulaire Mobile Money -->
+                <div id="mobileForm">
+                    <!-- Pays -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-globe"></i> Pays
+                        </label>
+                        <div class="country-grid">
+                            <button type="button" class="country-btn active" data-country="cm">
+                                <i class="fas fa-flag"></i>
+                                Cameroun
+                            </button>
+                            <button type="button" class="country-btn" data-country="ci">
+                                <i class="fas fa-flag"></i>
+                                Côte d'Ivoire
+                            </button>
+                            <button type="button" class="country-btn" data-country="sn">
+                                <i class="fas fa-flag"></i>
+                                Sénégal
+                            </button>
+                            <button type="button" class="country-btn" data-country="bj">
+                                <i class="fas fa-flag"></i>
+                                Bénin
+                            </button>
+                            <button type="button" class="country-btn" data-country="ml">
+                                <i class="fas fa-flag"></i>
+                                Mali
+                            </button>
+                            <button type="button" class="country-btn" data-country="bf">
+                                <i class="fas fa-flag"></i>
+                                Burkina
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Opérateur -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-sim-card"></i> Opérateur
+                        </label>
+                        <select class="form-select" id="operator">
+                            <option value="om">Orange Money</option>
+                            <option value="mtn">MTN Money</option>
+                            <option value="moov">Moov Money</option>
+                            <option value="wave">Wave</option>
+                        </select>
+                    </div>
+
+                    <!-- Numéro -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-phone"></i> Numéro de téléphone
+                        </label>
+                        <input type="tel" class="form-input" id="phone" placeholder="Ex: 691234567" required>
+                    </div>
+
+                    <!-- Nom du compte -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-user"></i> Nom du compte
+                        </label>
+                        <input type="text" class="form-input" id="accountName" placeholder="Nom complet sur le compte" required>
+                    </div>
+                </div>
+
+                <!-- Formulaire Crypto (caché par défaut) -->
+                <div id="cryptoForm" style="display: none;">
+                    <!-- Réseau -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-link"></i> Réseau
+                        </label>
+                        <select class="form-select" id="cryptoNetwork">
+                            <option value="btc">Bitcoin (BTC)</option>
+                            <option value="eth">Ethereum (ETH)</option>
+                            <option value="usdt">USDT (TRC-20)</option>
+                            <option value="usdc">USDC (BEP-20)</option>
+                        </select>
+                    </div>
+
+                    <!-- Adresse -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-qrcode"></i> Adresse du portefeuille
+                        </label>
+                        <input type="text" class="form-input" id="walletAddress" placeholder="Adresse du portefeuille" required>
+                    </div>
+
+                    <!-- Nom du compte -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-user"></i> Nom du compte
+                        </label>
+                        <input type="text" class="form-input" id="cryptoAccountName" placeholder="Nom complet" required>
+                    </div>
+                </div>
+
+                <!-- Montant -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-coins"></i> Montant du retrait (FCFA)
+                    </label>
+                    <input type="number" class="form-input" id="amount" placeholder="2000" min="2000" step="100" required>
+                </div>
+
+                <!-- Mot de passe -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-lock"></i> Mot de passe de sécurité
+                    </label>
+                    <input type="password" class="form-input" id="securityPassword" placeholder="Votre mot de passe" required>
+                </div>
+
+                <!-- Info -->
+                <div class="form-info">
+                    <i class="fas fa-clock"></i>
+                    <p>Les retraits sont traités dans les 24h ouvrées. Vous recevrez une notification dès que votre demande sera validée.</p>
+                </div>
+
+                <!-- Bouton -->
+                <button class="btn btn-primary" id="submitWithdrawal">
+                    <i class="fas fa-paper-plane"></i>
+                    Envoyer la demande
+                </button>
+            </div>
+
+            <!-- Historique des retraits -->
+            <div class="history-section">
+                <div class="history-card">
+                    <div class="history-header">
+                        <h3 class="history-title">
+                            <i class="fas fa-history"></i>
+                            Historique des retraits
+                        </h3>
+                        <button class="refresh-btn" id="refreshHistory">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+
+                    <div id="historyList" class="history-list">
+                        <!-- Historique chargé dynamiquement -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Navigation -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home nav-icon"></i>
+            <span class="nav-label">Accueil</span>
+        </a>
+        <a href="gagner.html" class="nav-item">
+            <i class="fas fa-gift nav-icon"></i>
+            <span class="nav-label">Gagner</span>
+        </a>
+        <a href="retrait.html" class="nav-item active">
+            <i class="fas fa-wallet nav-icon"></i>
+            <span class="nav-label">Retrait</span>
+        </a>
+        <a href="recharge.html" class="nav-item">
+            <i class="fas fa-coins nav-icon"></i>
+            <span class="nav-label">Recharge</span>
+        </a>
+        <a href="parrainage.html" class="nav-item">
+            <i class="fas fa-users nav-icon"></i>
+            <span class="nav-label">Parrainage</span>
+        </a>
+    </nav>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
+        
+        let supabaseClient = null;
+        let currentUser = null;
+        let currentMethod = 'mobile';
+        let currentCountry = 'cm';
+        let userBalance = 0;
+        let withdrawalHistory = [];
+
+        // ============================================
+        // INITIALISATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Page retrait chargée');
+            
+            // Initialiser Supabase
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            // Vérifier la session
+            await checkSession();
+            
+            // Charger le solde
+            await loadUserBalance();
+            
+            // Charger l'historique
+            await loadWithdrawalHistory();
+            
+            // Configurer l'interface
+            setupInterface();
+        });
+
+        // ============================================
+        // SESSION UTILISATEUR
+        // ============================================
+        async function checkSession() {
+            // Vérifier dans l'URL d'abord
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('user');
+            
+            if (userId) {
+                currentUser = { id: userId };
+                return;
+            }
+            
+            // Vérifier Supabase
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                currentUser = user;
+            } else {
+                // Rediriger vers connexion
+                window.location.href = 'connexion.html';
+            }
+        }
+
+        // ============================================
+        // SOLDE
+        // ============================================
+        async function loadUserBalance() {
+            try {
+                if (!currentUser) return;
+                
+                const { data, error } = await supabaseClient
+                    .from('balances')
+                    .select('amount')
+                    .eq('user_id', currentUser.id)
+                    .single();
+                
+                if (error && error.code !== 'PGRST116') {
+                    console.error('Erreur chargement solde:', error);
+                }
+                
+                userBalance = data?.amount || 0;
+                document.getElementById('userBalance').textContent = userBalance.toLocaleString();
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // ============================================
+        // HISTORIQUE DES RETRAITS
+        // ============================================
+        async function loadWithdrawalHistory() {
+            try {
+                if (!currentUser) return;
+                
+                const { data, error } = await supabaseClient
+                    .from('retraits')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                withdrawalHistory = data || [];
+                displayWithdrawalHistory();
+                
+            } catch (error) {
+                console.error('Erreur chargement historique:', error);
+                showToast('Erreur chargement historique', 'error');
+            }
+        }
+
+        function displayWithdrawalHistory() {
+            const container = document.getElementById('historyList');
+            
+            if (withdrawalHistory.length === 0) {
+                container.innerHTML = `
+                    <div class="no-history">
+                        <i class="fas fa-wallet"></i>
+                        <p>Aucun retrait pour le moment</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            withdrawalHistory.forEach(withdrawal => {
+                const date = new Date(withdrawal.created_at).toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                let icon = 'fa-mobile-alt';
+                let methodName = 'Mobile Money';
+                
+                if (withdrawal.method === 'crypto') {
+                    icon = 'fa-coins';
+                    methodName = 'Crypto';
+                }
+                
+                let statusClass = 'pending';
+                let statusText = 'En attente';
+                
+                if (withdrawal.status === 'approved') {
+                    statusClass = 'approved';
+                    statusText = 'Approuvé';
+                } else if (withdrawal.status === 'rejected') {
+                    statusClass = 'rejected';
+                    statusText = 'Rejeté';
+                }
+                
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="history-info">
+                        <div class="history-icon ${withdrawal.status === 'approved' ? 'success' : withdrawal.status === 'rejected' ? 'rejected' : 'pending'}">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <div class="history-details">
+                            <h4>Retrait ${methodName}</h4>
+                            <p>${withdrawal.account || withdrawal.phone || withdrawal.wallet || ''}</p>
+                            <p style="font-size: 11px;">${date}</p>
+                            <span class="history-status status-${statusClass}">
+                                ${statusText}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="history-amount">-${withdrawal.amount.toLocaleString()} F</div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+
+        // ============================================
+        // CONFIGURATION INTERFACE
+        // ============================================
+        function setupInterface() {
+            // Menu
+            setupMenu();
+            
+            // Thème
+            setupTheme();
+            
+            // Méthodes de retrait
+            setupMethods();
+            
+            // Pays
+            setupCountries();
+            
+            // Bouton de soumission
+            setupSubmitButton();
+            
+            // Rafraîchir historique
+            setupRefreshButton();
+            
+            // Support
+            setupSupport();
+            
+            // Déconnexion
+            setupLogout();
+        }
+
+        function setupMenu() {
+            const menuBtn = document.getElementById('menuBtn');
+            const menuOverlay = document.getElementById('menuOverlay');
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            
+            menuBtn.addEventListener('click', () => {
+                sidebarMenu.classList.add('open');
+                menuOverlay.style.display = 'block';
+            });
+            
+            menuOverlay.addEventListener('click', () => {
+                sidebarMenu.classList.remove('open');
+                menuOverlay.style.display = 'none';
+            });
+        }
+
+        function setupTheme() {
+            const themeBtn = document.getElementById('themeBtn');
+            const menuThemeToggle = document.getElementById('menuThemeToggle');
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            
+            document.body.className = savedTheme;
+            menuThemeToggle.checked = savedTheme === 'dark-mode';
+            
+            themeBtn.addEventListener('click', () => {
+                const isDark = document.body.classList.contains('dark-mode');
+                document.body.className = isDark ? 'light-mode' : 'dark-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+                menuThemeToggle.checked = !isDark;
+            });
+            
+            menuThemeToggle.addEventListener('change', function() {
+                const isDark = this.checked;
+                document.body.className = isDark ? 'dark-mode' : 'light-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'dark-mode' : 'light-mode');
+            });
+        }
+
+        function setupMethods() {
+            const mobileTab = document.querySelector('.method-tab.mobile-money');
+            const cryptoTab = document.querySelector('.method-tab.crypto');
+            const mobileForm = document.getElementById('mobileForm');
+            const cryptoForm = document.getElementById('cryptoForm');
+            
+            mobileTab.addEventListener('click', () => {
+                mobileTab.classList.add('active');
+                cryptoTab.classList.remove('active');
+                mobileForm.style.display = 'block';
+                cryptoForm.style.display = 'none';
+                currentMethod = 'mobile';
+            });
+            
+            cryptoTab.addEventListener('click', () => {
+                cryptoTab.classList.add('active');
+                mobileTab.classList.remove('active');
+                mobileForm.style.display = 'none';
+                cryptoForm.style.display = 'block';
+                currentMethod = 'crypto';
+            });
+        }
+
+        function setupCountries() {
+            const countryBtns = document.querySelectorAll('.country-btn');
+            
+            countryBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    countryBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCountry = btn.dataset.country;
+                    
+                    // Mettre à jour l'opérateur selon le pays
+                    updateOperatorByCountry(currentCountry);
+                });
+            });
+        }
+
+        function updateOperatorByCountry(country) {
+            const operatorSelect = document.getElementById('operator');
+            
+            const operators = {
+                'cm': ['Orange Money', 'MTN Money', 'Moov Money'],
+                'ci': ['Orange Money', 'MTN Money', 'Moov Money', 'Wave'],
+                'sn': ['Orange Money', 'Wave', 'Free Money'],
+                'bj': ['MTN Money', 'Moov Money'],
+                'ml': ['Orange Money', 'Moov Money'],
+                'bf': ['Orange Money', 'Moov Money']
+            };
+            
+            operatorSelect.innerHTML = '';
+            operators[country].forEach(op => {
+                const option = document.createElement('option');
+                option.value = op.toLowerCase().replace(' ', '');
+                option.textContent = op;
+                operatorSelect.appendChild(option);
+            });
+        }
+
+        function setupSubmitButton() {
+            const submitBtn = document.getElementById('submitWithdrawal');
+            
+            submitBtn.addEventListener('click', async () => {
+                // Vérifier le solde
+                const amount = parseFloat(document.getElementById('amount').value);
+                
+                if (!amount || amount < 2000) {
+                    showToast('Le montant minimum est de 2 000 F', 'error');
+                    return;
+                }
+                
+                if (amount > userBalance) {
+                    showToast('Solde insuffisant', 'error');
+                    return;
+                }
+                
+                // Vérifier le mot de passe
+                const password = document.getElementById('securityPassword').value;
+                
+                if (!password) {
+                    showToast('Veuillez entrer votre mot de passe', 'error');
+                    return;
+                }
+                
+                // Récupérer les données selon la méthode
+                let withdrawalData = {
+                    user_id: currentUser.id,
+                    amount: amount,
+                    method: currentMethod,
+                    status: 'pending',
+                    created_at: new Date().toISOString()
+                };
+                
+                if (currentMethod === 'mobile') {
+                    const phone = document.getElementById('phone').value;
+                    const accountName = document.getElementById('accountName').value;
+                    const operator = document.getElementById('operator').selectedOptions[0].text;
+                    const country = document.querySelector('.country-btn.active').dataset.country;
+                    
+                    if (!phone || !accountName) {
+                        showToast('Veuillez remplir tous les champs', 'error');
+                        return;
+                    }
+                    
+                    withdrawalData.phone = phone;
+                    withdrawalData.account_name = accountName;
+                    withdrawalData.operator = operator;
+                    withdrawalData.country = country;
+                    
+                } else {
+                    const wallet = document.getElementById('walletAddress').value;
+                    const accountName = document.getElementById('cryptoAccountName').value;
+                    const network = document.getElementById('cryptoNetwork').selectedOptions[0].text;
+                    
+                    if (!wallet || !accountName) {
+                        showToast('Veuillez remplir tous les champs', 'error');
+                        return;
+                    }
+                    
+                    withdrawalData.wallet = wallet;
+                    withdrawalData.account_name = accountName;
+                    withdrawalData.network = network;
+                }
+                
+                // Envoyer la demande
+                await submitWithdrawalRequest(withdrawalData);
+            });
+        }
+
+        async function submitWithdrawalRequest(withdrawalData) {
+            showLoading(true);
+            
+            try {
+                // Vérifier les heures de retrait (8h-17h)
+                const now = new Date();
+                const hours = now.getHours();
+                
+                if (hours < 8 || hours >= 17) {
+                    showToast('Les retraits sont disponibles de 8h à 17h', 'error');
+                    showLoading(false);
+                    return;
+                }
+                
+                // Insérer dans Supabase
+                const { data, error } = await supabaseClient
+                    .from('retraits')
+                    .insert([withdrawalData])
+                    .select();
+                
+                if (error) throw error;
+                
+                // Mettre à jour le solde (en attente)
+                // Le solde sera déduit lors de l'approbation par l'admin
+                
+                showToast('✅ Demande de retrait envoyée avec succès', 'success');
+                
+                // Réinitialiser le formulaire
+                document.getElementById('amount').value = '';
+                document.getElementById('securityPassword').value = '';
+                
+                if (currentMethod === 'mobile') {
+                    document.getElementById('phone').value = '';
+                    document.getElementById('accountName').value = '';
+                } else {
+                    document.getElementById('walletAddress').value = '';
+                    document.getElementById('cryptoAccountName').value = '';
+                }
+                
+                // Recharger l'historique
+                await loadWithdrawalHistory();
+                
+            } catch (error) {
+                console.error('Erreur soumission retrait:', error);
+                showToast('Erreur lors de la soumission', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function setupRefreshButton() {
+            const refreshBtn = document.getElementById('refreshHistory');
+            
+            refreshBtn.addEventListener('click', async () => {
+                refreshBtn.style.transform = 'rotate(180deg)';
+                refreshBtn.style.transition = 'transform 0.3s';
+                
+                await loadWithdrawalHistory();
+                
+                setTimeout(() => {
+                    refreshBtn.style.transform = 'rotate(0deg)';
+                }, 300);
+                
+                showToast('Historique actualisé', 'success');
+            });
+        }
+
+        function setupSupport() {
+            const supportBtn = document.getElementById('supportBtn');
+            
+            supportBtn.addEventListener('click', () => {
+                alert('📞 Support AFRIMARKET\n\n📧 Email: support@afrimarket.com\n📱 WhatsApp: +237 6 00 00 00 00\n\nDisponible 24h/24');
+                document.getElementById('sidebarMenu').classList.remove('open');
+                document.getElementById('menuOverlay').style.display = 'none';
+            });
+        }
+
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            logoutBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                await supabaseClient.auth.signOut();
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                window.location.href = 'connexion.html';
+            });
+        }
+
+        // ============================================
+        // UTILITAIRES
+        // ============================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast-notification ${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                                   type === 'error' ? 'fa-exclamation-circle' : 
+                                   'fa-info-circle'}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${type === 'success' ? 'Succès' : 
+                                             type === 'error' ? 'Erreur' : 'Information'}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+    </script>
+</body>
+</html>

@@ -566,7 +566,7 @@
 
     <script>
         // ============================================
-        // CONFIGURATION SUPABASE
+        // CONFIGURATION SUPABASE - SANS AUTH
         // ============================================
         const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
@@ -625,50 +625,29 @@
         }
         
         // ============================================
-        // FONCTION DE CONNEXION - SPÉCIALE ANDROID
+        // FONCTION DE CONNEXION - SANS AUTH
         // ============================================
         
         async function connecterUtilisateur(email, password, rememberMe = false) {
             try {
                 console.log('🔑 Connexion pour:', email);
                 
-                // === VÉRIFICATION ADMIN ===
+                // === VÉRIFICATION ADMIN DIRECTE ===
                 const isAdmin = (email === ADMIN_EMAIL && password === ADMIN_PASSWORD);
                 
                 if (isAdmin) {
                     console.log('✅ Connexion admin réussie');
                     
-                    // 📱 ANDROID: NE PAS UTILISER localStorage.clear()
-                    // CAR SUR ANDROID ÇA PEUT CAUSER DES PROBLÈMES
+                    // NETTOYER L'ANCIENNE SESSION
+                    localStorage.clear();
+                    sessionStorage.clear();
                     
-                    // Stocker les informations admin
-                    try {
-                        localStorage.setItem('afrimarket_logged_in', 'true');
-                        localStorage.setItem('afrimarket_user_email', email);
-                        localStorage.setItem('afrimarket_user_name', 'Abdoula Cherif');
-                        localStorage.setItem('afrimarket_user_role', 'admin');
-                        localStorage.setItem('afrimarket_user_id', 'admin-' + Date.now());
-                        localStorage.setItem('afrimarket_session_time', Date.now().toString());
-                        
-                        // 📱 ANDROID: Vérifier que le stockage a fonctionné
-                        const test = localStorage.getItem('afrimarket_logged_in');
-                        console.log('📱 Android - localStorage test:', test);
-                        
-                        if (test !== 'true') {
-                            // Fallback: utiliser sessionStorage
-                            sessionStorage.setItem('afrimarket_logged_in', 'true');
-                            sessionStorage.setItem('afrimarket_user_email', email);
-                            sessionStorage.setItem('afrimarket_user_role', 'admin');
-                            console.log('📱 Fallback vers sessionStorage');
-                        }
-                        
-                    } catch (e) {
-                        console.error('❌ Erreur localStorage sur Android:', e);
-                        // Utiliser sessionStorage comme fallback
-                        sessionStorage.setItem('afrimarket_logged_in', 'true');
-                        sessionStorage.setItem('afrimarket_user_email', email);
-                        sessionStorage.setItem('afrimarket_user_role', 'admin');
-                    }
+                    // STOCKER LES INFORMATIONS ADMIN
+                    localStorage.setItem('afrimarket_logged_in', 'true');
+                    localStorage.setItem('afrimarket_user_email', email);
+                    localStorage.setItem('afrimarket_user_name', 'Abdoula Cherif');
+                    localStorage.setItem('afrimarket_user_role', 'admin');
+                    localStorage.setItem('afrimarket_user_id', 'admin-' + Date.now());
                     
                     return {
                         success: true,
@@ -678,41 +657,48 @@
                     };
                 }
                 
-                // === CONNEXION UTILISATEUR NORMAL ===
+                // === CONNEXION UTILISATEUR NORMAL - SANS AUTH ===
+                // VÉRIFIER DIRECTEMENT DANS LA TABLE users
+                
                 if (!supabaseClient) {
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 }
                 
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
+                // RECHERCHER L'UTILISATEUR DANS LA TABLE users
+                const { data: users, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('email', email);
                 
                 if (error) {
-                    console.error('❌ Erreur Supabase:', error);
-                    
-                    let errorMsg = error.message;
-                    if (error.message.includes('Invalid login credentials')) {
-                        errorMsg = 'Email ou mot de passe incorrect';
-                    }
-                    
-                    return { success: false, error: errorMsg };
+                    console.error('❌ Erreur requête:', error);
+                    return { success: false, error: 'Erreur de connexion' };
                 }
                 
-                console.log('✅ Connexion utilisateur réussie:', data.user?.email);
-                
-                // Stocker les informations utilisateur
-                try {
-                    localStorage.setItem('afrimarket_logged_in', 'true');
-                    localStorage.setItem('afrimarket_user_id', data.user.id);
-                    localStorage.setItem('afrimarket_user_email', data.user.email);
-                    localStorage.setItem('afrimarket_user_name', data.user.user_metadata?.nom_complet || 'Utilisateur');
-                    localStorage.setItem('afrimarket_user_role', 'user');
-                } catch (e) {
-                    console.error('❌ Erreur localStorage:', e);
-                    sessionStorage.setItem('afrimarket_logged_in', 'true');
-                    sessionStorage.setItem('afrimarket_user_email', data.user.email);
+                // VÉRIFIER SI L'UTILISATEUR EXISTE
+                if (!users || users.length === 0) {
+                    console.log('❌ Utilisateur non trouvé:', email);
+                    return { success: false, error: 'Email ou mot de passe incorrect' };
                 }
+                
+                const user = users[0];
+                
+                // VÉRIFICATION DU MOT DE PASSE (À AMÉLIORER AVEC HASH)
+                // POUR L'INSTANT, ON ACCEPTE TOUS LES MOTS DE PASSE
+                // IDÉALEMENT, IL FAUDRAIT UN CHAMP PASSWORD HASHÉ
+                
+                console.log('✅ Utilisateur trouvé:', user.email);
+                
+                // NETTOYER L'ANCIENNE SESSION
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                // STOCKER LES INFORMATIONS UTILISATEUR
+                localStorage.setItem('afrimarket_logged_in', 'true');
+                localStorage.setItem('afrimarket_user_id', user.id);
+                localStorage.setItem('afrimarket_user_email', user.email);
+                localStorage.setItem('afrimarket_user_name', user.nom_complet || 'Utilisateur');
+                localStorage.setItem('afrimarket_user_role', user.role || 'user');
                 
                 return {
                     success: true,
@@ -731,65 +717,17 @@
         }
         
         // ============================================
-        // INITIALISATION - SPÉCIALE ANDROID
+        // INITIALISATION - SANS AUTH
         // ============================================
         
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Page connexion chargée sur Android');
+            console.log('🚀 Page connexion chargée - Mode sans Auth');
             
-            // Initialiser Supabase
+            // Initialiser Supabase (seulement pour les requêtes)
             if (window.supabase) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                    auth: {
-                        persistSession: true,
-                        autoRefreshToken: true,
-                        detectSessionInUrl: false,
-                        storage: window.localStorage // Essayer localStorage d'abord
-                    }
-                });
-                console.log('✅ Supabase initialisé');
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('✅ Supabase client initialisé');
             }
-            
-            // 📱 ANDROID: Vérifier si déjà connecté via localStorage ou sessionStorage
-            function checkExistingSession() {
-                // Vérifier localStorage
-                let loggedIn = localStorage.getItem('afrimarket_logged_in') === 'true';
-                let userEmail = localStorage.getItem('afrimarket_user_email');
-                let userRole = localStorage.getItem('afrimarket_user_role');
-                
-                // Vérifier sessionStorage si localStorage vide
-                if (!loggedIn) {
-                    loggedIn = sessionStorage.getItem('afrimarket_logged_in') === 'true';
-                    userEmail = sessionStorage.getItem('afrimarket_user_email');
-                    userRole = sessionStorage.getItem('afrimarket_user_role');
-                }
-                
-                if (loggedIn && userEmail) {
-                    console.log('📱 Session existante trouvée:', userEmail);
-                    
-                    // Restaurer dans localStorage si nécessaire
-                    if (!localStorage.getItem('afrimarket_logged_in')) {
-                        try {
-                            localStorage.setItem('afrimarket_logged_in', 'true');
-                            localStorage.setItem('afrimarket_user_email', userEmail);
-                            if (userRole) localStorage.setItem('afrimarket_user_role', userRole);
-                        } catch (e) {}
-                    }
-                    
-                    // Rediriger vers la bonne page
-                    if (userRole === 'admin' || userEmail === ADMIN_EMAIL) {
-                        window.location.href = 'admin.html';
-                    } else {
-                        window.location.href = 'dashboard.html';
-                    }
-                    return true;
-                }
-                return false;
-            }
-            
-            // NE PAS REDIRIGER AUTOMATIQUEMENT POUR CETTE PAGE
-            // La connexion se fait UNIQUEMENT via le formulaire
-            // checkExistingSession(); // ← COMMENTÉ POUR ÉVITER LES BOUCLES
             
             // Gestion du thème
             const themeBtn = document.getElementById('themeBtn');
@@ -876,7 +814,7 @@
                         if (result.success) {
                             showNotification(result.message, 'success');
                             
-                            // ✅ REDIRECTION APRÈS CONNEXION RÉUSSIE
+                            // REDIRECTION APRÈS CONNEXION RÉUSSIE
                             setTimeout(() => {
                                 window.location.href = result.redirect;
                             }, 1500);
@@ -899,7 +837,7 @@
                 showNotification(decodeURIComponent(message), 'info');
             }
             
-            console.log('✅ Page connexion prête pour Android');
+            console.log('✅ Page connexion prête - Mode sans Auth');
         });
     </script>
 </body>

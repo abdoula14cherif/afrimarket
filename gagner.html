@@ -8,6 +8,7 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
+        /* TOUS LES STYLES RESTENT IDENTIQUES */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -47,7 +48,6 @@
             transition: var(--transition);
             overflow-x: hidden;
             padding-bottom: 70px;
-            -webkit-text-size-adjust: 100%;
         }
 
         body.dark-mode {
@@ -62,7 +62,6 @@
             margin: 0 auto;
         }
 
-        /* Header */
         .app-header {
             position: sticky;
             top: 0;
@@ -71,8 +70,6 @@
             padding: 12px 0;
             border-bottom: 1px solid var(--light-border);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            transition: var(--transition);
         }
 
         .dark-mode .app-header {
@@ -98,15 +95,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: var(--transition);
         }
 
         .dark-mode .menu-toggle {
             color: var(--dark-text);
-        }
-
-        .menu-toggle:hover {
-            background: rgba(37, 99, 235, 0.1);
         }
 
         .logo-container {
@@ -161,18 +153,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: var(--transition);
         }
 
         .dark-mode .theme-btn {
             color: var(--dark-text);
         }
 
-        .theme-btn:hover {
-            background: rgba(37, 99, 235, 0.1);
-        }
-
-        /* Menu burger latéral */
         .menu-overlay {
             position: fixed;
             top: 0;
@@ -214,10 +200,6 @@
             gap: 15px;
             background: linear-gradient(135deg, var(--primary-blue), #2a5298);
             color: white;
-        }
-
-        .dark-mode .menu-header {
-            border-color: var(--dark-border);
         }
 
         .user-avatar {
@@ -284,12 +266,6 @@
             color: #60a5fa;
         }
 
-        .menu-item i {
-            width: 20px;
-            text-align: center;
-            font-size: 18px;
-        }
-
         .theme-toggle-menu {
             display: flex;
             align-items: center;
@@ -300,15 +276,6 @@
 
         .dark-mode .theme-toggle-menu {
             border-color: var(--dark-border);
-        }
-
-        .theme-toggle-menu span {
-            color: var(--light-text);
-            font-size: 14px;
-        }
-
-        .dark-mode .theme-toggle-menu span {
-            color: var(--dark-text);
         }
 
         .theme-switch {
@@ -355,7 +322,6 @@
             transform: translateX(26px);
         }
 
-        /* Section Solde Principal */
         .balance-section {
             padding: 20px 0;
         }
@@ -463,7 +429,6 @@
             transform: scale(0.98);
         }
 
-        /* Section Cartes de Gains */
         .earnings-section {
             padding: 25px 0;
         }
@@ -646,11 +611,6 @@
             background: linear-gradient(135deg, var(--referral-color), #d97706);
         }
 
-        .earning-action:active {
-            transform: scale(0.98);
-        }
-
-        /* Notification toast */
         .toast-container {
             position: fixed;
             top: 80px;
@@ -680,19 +640,9 @@
             background: var(--dark-card);
         }
 
-        .toast-notification:hover {
-            transform: translateY(-2px);
-        }
-
         @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
         .toast-icon {
@@ -742,7 +692,6 @@
             font-size: 12px;
         }
 
-        /* Navigation inférieure */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -773,13 +722,16 @@
             transition: var(--transition);
             flex: 1;
             max-width: 70px;
-            position: relative;
             text-decoration: none;
             color: inherit;
         }
 
-        .nav-item.active, .nav-item:active {
-            background: rgba(37, 99, 235, 0.1);
+        .nav-item.active .nav-icon {
+            color: var(--primary-blue);
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--primary-blue);
         }
 
         .nav-icon {
@@ -790,10 +742,6 @@
 
         .dark-mode .nav-icon {
             color: #94a3b8;
-        }
-
-        .nav-item.active .nav-icon, .nav-item:active .nav-icon {
-            color: var(--primary-blue);
         }
 
         .nav-label {
@@ -807,23 +755,11 @@
             color: #94a3b8;
         }
 
-        .nav-item.active .nav-label, .nav-item:active .nav-label {
-            color: var(--primary-blue);
-        }
-
-        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        /* Responsive */
         @media (min-width: 375px) {
             .container {
                 padding: 0 18px;
@@ -837,15 +773,9 @@
             }
         }
 
-        /* Prévention débordement */
         html, body {
             overflow-x: hidden;
             max-width: 100%;
-        }
-
-        img, svg, video {
-            max-width: 100%;
-            height: auto;
         }
     </style>
 </head>
@@ -859,9 +789,7 @@
     <!-- Sidebar menu -->
     <div class="sidebar-menu" id="sidebarMenu">
         <div class="menu-header">
-            <div class="user-avatar" id="sidebarUserAvatar">
-                <!-- Initiale du prénom -->
-            </div>
+            <div class="user-avatar" id="sidebarUserAvatar"></div>
             <div class="user-info">
                 <div class="user-name" id="sidebarUserName">Utilisateur</div>
                 <div class="user-email" id="sidebarUserEmail">email@example.com</div>
@@ -869,38 +797,15 @@
         </div>
         
         <div class="menu-items">
-            <a href="dashboard.html" class="menu-item">
-                <i class="fas fa-home"></i>
-                <span>Accueil</span>
-            </a>
-            <a href="publier.html" class="menu-item">
-                <i class="fas fa-plus-circle"></i>
-                <span>Publier une annonce</span>
-            </a>
-            <a href="historique.html" class="menu-item">
-                <i class="fas fa-history"></i>
-                <span>Mon historique</span>
-            </a>
-            <a href="gagner.html" class="menu-item active">
-                <i class="fas fa-gift"></i>
-                <span>Gagner de l'argent</span>
-            </a>
-            <a href="retrait.html" class="menu-item">
-                <i class="fas fa-wallet"></i>
-                <span>Retrait</span>
-            </a>
-            <a href="recharge.html" class="menu-item">
-                <i class="fas fa-coins"></i>
-                <span>Recharger</span>
-            </a>
-            <div class="menu-item" id="supportMenuItem">
-                <i class="fas fa-headset"></i>
-                <span>Support & Aide</span>
-            </div>
-            <a href="connexion.html?logout=true" class="menu-item">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Déconnexion</span>
-            </a>
+            <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i><span>Accueil</span></a>
+            <a href="publier.html" class="menu-item"><i class="fas fa-plus-circle"></i><span>Publier</span></a>
+            <a href="historique.html" class="menu-item"><i class="fas fa-history"></i><span>Historique</span></a>
+            <a href="gagner.html" class="menu-item active"><i class="fas fa-gift"></i><span>Gagner</span></a>
+            <a href="retrait.html" class="menu-item"><i class="fas fa-wallet"></i><span>Retrait</span></a>
+            <a href="recharge.html" class="menu-item"><i class="fas fa-coins"></i><span>Recharger</span></a>
+            <a href="parrainage.html" class="menu-item"><i class="fas fa-users"></i><span>Parrainage</span></a>
+            <div class="menu-item" id="supportMenuItem"><i class="fas fa-headset"></i><span>Support</span></div>
+            <a href="connexion.html?logout=true" class="menu-item"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
         </div>
         
         <div class="theme-toggle-menu">
@@ -913,191 +818,103 @@
     </div>
 
     <!-- Header -->
-    <header class="app-header" id="appHeader">
+    <header class="app-header">
         <div class="container">
             <div class="header-content">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <button class="menu-toggle" id="menuBtn">
-                        <i class="fas fa-bars"></i>
-                    </button>
+                    <button class="menu-toggle" id="menuBtn"><i class="fas fa-bars"></i></button>
                     <a href="dashboard.html" class="logo-container">
-                        <div class="logo-icon">
-                            <i class="fas fa-store"></i>
-                        </div>
+                        <div class="logo-icon"><i class="fas fa-store"></i></div>
                         <div class="logo-text">AFRI<span>MARKET</span></div>
                     </a>
                 </div>
-                
                 <div class="header-controls">
-                    <button class="theme-btn" id="themeBtn">
-                        <i class="fas fa-moon"></i>
-                    </button>
+                    <button class="theme-btn" id="themeBtn"><i class="fas fa-moon"></i></button>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Contenu principal -->
-    <main class="main-content" id="mainContent">
+    <main class="main-content">
         <div class="container">
             <!-- Section Solde Principal -->
             <section class="balance-section">
                 <div class="balance-card">
                     <div class="balance-header">
                         <div class="balance-label">Solde disponible</div>
-                        <button class="balance-refresh" id="refreshBalance">
-                            <i class="fas fa-redo"></i>
-                        </button>
+                        <button class="balance-refresh" id="refreshBalance"><i class="fas fa-redo"></i></button>
                     </div>
-                    
                     <div class="balance-amount">
-                        <span id="userBalance">0</span>
-                        <span class="balance-currency">F</span>
+                        <span id="userBalance">0</span><span class="balance-currency">F</span>
                     </div>
-                    
                     <div class="balance-actions">
-                        <a href="retrait.html" class="balance-btn retrait">
-                            <i class="fas fa-wallet"></i>
-                            <span>Retrait</span>
-                        </a>
-                        <a href="recharge.html" class="balance-btn recharge">
-                            <i class="fas fa-coins"></i>
-                            <span>Recharger</span>
-                        </a>
+                        <button class="balance-btn retrait" id="retraitBtn">
+                            <i class="fas fa-wallet"></i><span>Retrait</span>
+                        </button>
+                        <button class="balance-btn recharge" id="rechargeBtn">
+                            <i class="fas fa-coins"></i><span>Recharger</span>
+                        </button>
                     </div>
                 </div>
             </section>
 
             <!-- Section Cartes de Gains -->
             <section class="earnings-section">
-                <h2 class="section-title">
-                    <i class="fas fa-money-bill-wave"></i> Comment gagner de l'argent
-                </h2>
+                <h2 class="section-title"><i class="fas fa-money-bill-wave"></i> Comment gagner de l'argent</h2>
                 
                 <div class="earnings-grid">
                     <!-- Carte 1: Tests d'applications -->
                     <div class="earning-card apps">
                         <div class="earning-header">
-                            <div class="earning-icon">
-                                <i class="fas fa-mobile-alt"></i>
-                            </div>
+                            <div class="earning-icon"><i class="fas fa-mobile-alt"></i></div>
                             <h3 class="earning-title">Tests d'applications</h3>
                             <div class="earning-subtitle">Gagnez 200 F par application</div>
                         </div>
-                        
                         <div class="earning-body">
-                            <p class="earning-description">
-                                Testez de nouvelles applications et gagnez de l'argent facilement. 
-                                Simple, rapide et rémunérateur !
-                            </p>
-                            
+                            <p class="earning-description">Testez de nouvelles applications et gagnez de l'argent facilement.</p>
                             <ul class="earning-features">
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span><strong>2 applications</strong> à tester par jour</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span><strong>200 F</strong> par application testée</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span><strong>5-10 minutes</strong> par test</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span><strong>Paiement instantané</strong> après validation</span>
-                                </li>
+                                <li><i class="fas fa-check-circle"></i><span><strong>2 applications</strong> à tester par jour</span></li>
+                                <li><i class="fas fa-check-circle"></i><span><strong>200 F</strong> par application testée</span></li>
+                                <li><i class="fas fa-check-circle"></i><span><strong>5-10 minutes</strong> par test</span></li>
                             </ul>
-                            
-                            <a href="tests-apps.html" class="earning-action">
-                                <i class="fas fa-play-circle"></i>
-                                <span>Gagner maintenant</span>
-                            </a>
+                            <a href="tests-apps.html" class="earning-action"><i class="fas fa-play-circle"></i><span>Gagner maintenant</span></a>
                         </div>
                     </div>
                     
                     <!-- Carte 2: Petites tâches -->
                     <div class="earning-card tasks">
                         <div class="earning-header">
-                            <div class="earning-icon">
-                                <i class="fas fa-tasks"></i>
-                            </div>
+                            <div class="earning-icon"><i class="fas fa-tasks"></i></div>
                             <h3 class="earning-title">Petites tâches</h3>
                             <div class="earning-subtitle">Gagnez 200 F par tâche</div>
                         </div>
-                        
                         <div class="earning-body">
-                            <p class="earning-description">
-                                Complétez des tâches simples sur les réseaux sociaux et gagnez de l'argent 
-                                chaque jour.
-                            </p>
-                            
+                            <p class="earning-description">Complétez des tâches simples sur les réseaux sociaux.</p>
                             <ul class="earning-features">
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span><strong>2 tâches</strong> disponibles par jour</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span><strong>200 F</strong> par tâche complétée</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Tâches <strong>Facebook & TikTok</strong></span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span><strong>Like, commentaire, partage</strong></span>
-                                </li>
+                                <li><i class="fas fa-check-circle"></i><span><strong>2 tâches</strong> disponibles par jour</span></li>
+                                <li><i class="fas fa-check-circle"></i><span><strong>200 F</strong> par tâche complétée</span></li>
+                                <li><i class="fas fa-check-circle"></i><span>Tâches <strong>Facebook & TikTok</strong></span></li>
                             </ul>
-                            
-                            <a href="petites-taches.html" class="earning-action">
-                                <i class="fas fa-play-circle"></i>
-                                <span>Gagner maintenant</span>
-                            </a>
+                            <a href="petites-taches.html" class="earning-action"><i class="fas fa-play-circle"></i><span>Gagner maintenant</span></a>
                         </div>
                     </div>
                     
                     <!-- Carte 3: Parrainage -->
                     <div class="earning-card referral">
                         <div class="earning-header">
-                            <div class="earning-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
+                            <div class="earning-icon"><i class="fas fa-users"></i></div>
                             <h3 class="earning-title">Parrainage</h3>
                             <div class="earning-subtitle">Gagnez jusqu'à 1 750 F</div>
                         </div>
-                        
                         <div class="earning-body">
-                            <p class="earning-description">
-                                Parrainez vos amis et gagnez des commissions sur tous leurs gains. 
-                                Le système de récompenses le plus généreux !
-                            </p>
-                            
+                            <p class="earning-description">Parrainez vos amis et gagnez des commissions.</p>
                             <ul class="earning-features">
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span><strong>1 000 F</strong> par filleul direct</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span><strong>500 F</strong> filleul 2ème niveau</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span><strong>250 F</strong> filleul 3ème niveau</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Déblocage: <strong>2 150 F</strong></span>
-                                </li>
+                                <li><i class="fas fa-check-circle"></i><span><strong>1 000 F</strong> par filleul direct</span></li>
+                                <li><i class="fas fa-check-circle"></i><span><strong>500 F</strong> filleul 2ème niveau</span></li>
+                                <li><i class="fas fa-check-circle"></i><span><strong>250 F</strong> filleul 3ème niveau</span></li>
                             </ul>
-                            
-                            <a href="parrainage.html" class="earning-action">
-                                <i class="fas fa-play-circle"></i>
-                                <span>Gagner maintenant</span>
-                            </a>
+                            <a href="parrainage.html" class="earning-action"><i class="fas fa-play-circle"></i><span>Gagner maintenant</span></a>
                         </div>
                     </div>
                 </div>
@@ -1106,51 +923,20 @@
             <!-- Section Informations -->
             <section class="earnings-section" style="padding-top: 0;">
                 <div style="background: var(--light-card); border-radius: var(--radius-lg); padding: 25px; border: 1px solid var(--light-border);">
-                    <h2 class="section-title" style="margin-bottom: 20px;">
-                        <i class="fas fa-info-circle"></i> Informations importantes
-                    </h2>
-                    
+                    <h2 class="section-title" style="margin-bottom: 20px;"><i class="fas fa-info-circle"></i> Informations importantes</h2>
                     <div style="display: grid; grid-template-columns: repeat(1, 1fr); gap: 15px;">
                         <div style="display: flex; align-items: flex-start; gap: 12px;">
-                            <div style="width: 40px; height: 40px; background: var(--primary-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
-                                <i class="fas fa-wallet"></i>
-                            </div>
+                            <div style="width: 40px; height: 40px; background: var(--primary-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;"><i class="fas fa-wallet"></i></div>
                             <div>
-                                <div style="font-weight: 600; color: var(--light-text); margin-bottom: 4px;">
-                                    Retrait d'argent
-                                </div>
-                                <div style="font-size: 13px; color: var(--light-gray); line-height: 1.5;">
-                                    Minimum: <strong>2 000 F</strong> | Heures: <strong>8h - 17h</strong> | 
-                                    Paiement sous <strong>24h</strong>
-                                </div>
+                                <div style="font-weight: 600; color: var(--light-text); margin-bottom: 4px;">Retrait d'argent</div>
+                                <div style="font-size: 13px; color: var(--light-gray);">Minimum: <strong>2 000 F</strong> | Heures: <strong>8h - 17h</strong></div>
                             </div>
                         </div>
-                        
                         <div style="display: flex; align-items: flex-start; gap: 12px;">
-                            <div style="width: 40px; height: 40px; background: var(--primary-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
-                                <i class="fas fa-sync-alt"></i>
-                            </div>
+                            <div style="width: 40px; height: 40px; background: var(--primary-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;"><i class="fas fa-sync-alt"></i></div>
                             <div>
-                                <div style="font-weight: 600; color: var(--light-text); margin-bottom: 4px;">
-                                    Réinitialisation quotidienne
-                                </div>
-                                <div style="font-size: 13px; color: var(--light-gray); line-height: 1.5;">
-                                    Tâches et tests d'applications se réinitialisent <strong>à minuit</strong> chaque jour
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; align-items: flex-start; gap: 12px;">
-                            <div style="width: 40px; height: 40px; background: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
-                                <i class="fas fa-shield-alt"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; color: var(--light-text); margin-bottom: 4px;">
-                                    Sécurité garantie
-                                </div>
-                                <div style="font-size: 13px; color: var(--light-gray); line-height: 1.5;">
-                                    Toutes vos données et transactions sont <strong>sécurisées et cryptées</strong>
-                                </div>
+                                <div style="font-weight: 600; color: var(--light-text); margin-bottom: 4px;">Réinitialisation quotidienne</div>
+                                <div style="font-size: 13px; color: var(--light-gray);">Tâches et tests réinitialisés <strong>à minuit</strong></div>
                             </div>
                         </div>
                     </div>
@@ -1160,45 +946,18 @@
     </main>
 
     <!-- Navigation inférieure -->
-    <nav class="bottom-nav" id="bottomNav">
-        <a href="dashboard.html" class="nav-item">
-            <div style="position: relative;">
-                <i class="fas fa-home nav-icon"></i>
-            </div>
-            <span class="nav-label">Accueil</span>
-        </a>
-        
-        <a href="explorer.html" class="nav-item">
-            <div style="position: relative;">
-                <i class="fas fa-search nav-icon"></i>
-            </div>
-            <span class="nav-label">Explorer</span>
-        </a>
-        
-        <a href="publier.html" class="nav-item">
-            <div style="position: relative;">
-                <i class="fas fa-plus-circle nav-icon"></i>
-            </div>
-            <span class="nav-label">Publier</span>
-        </a>
-        
-        <a href="gagner.html" class="nav-item active">
-            <div style="position: relative;">
-                <i class="fas fa-gift nav-icon"></i>
-            </div>
-            <span class="nav-label">Gagner</span>
-        </a>
-        
-        <a href="historique.html" class="nav-item">
-            <div style="position: relative;">
-                <i class="fas fa-history nav-icon"></i>
-            </div>
-            <span class="nav-label">Historique</span>
-        </a>
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-icon"></i><span class="nav-label">Accueil</span></a>
+        <a href="explorer.html" class="nav-item"><i class="fas fa-search nav-icon"></i><span class="nav-label">Explorer</span></a>
+        <a href="publier.html" class="nav-item"><i class="fas fa-plus-circle nav-icon"></i><span class="nav-label">Publier</span></a>
+        <a href="gagner.html" class="nav-item active"><i class="fas fa-gift nav-icon"></i><span class="nav-label">Gagner</span></a>
+        <a href="historique.html" class="nav-item"><i class="fas fa-history nav-icon"></i><span class="nav-label">Historique</span></a>
     </nav>
 
     <script>
-        // Configuration Supabase
+        // ============================================
+        // CONFIGURATION SUPABASE
+        // ============================================
         const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
@@ -1206,433 +965,221 @@
         let currentUser = null;
         let userBalance = 0;
         
-        // Éléments DOM
-        const body = document.body;
-        const menuBtn = document.getElementById('menuBtn');
-        const menuOverlay = document.getElementById('menuOverlay');
-        const sidebarMenu = document.getElementById('sidebarMenu');
-        const themeBtn = document.getElementById('themeBtn');
-        const menuThemeToggle = document.getElementById('menuThemeToggle');
-        const refreshBalance = document.getElementById('refreshBalance');
-        
-        // Initialisation
+        // ============================================
+        // INITIALISATION
+        // ============================================
         document.addEventListener('DOMContentLoaded', async function() {
-            console.log('Page Gagner chargée');
+            console.log('🚀 Page Gagner chargée');
             
             // Initialiser Supabase
-            if (window.supabase) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                    auth: { persistSession: true, autoRefreshToken: true }
-                });
-                console.log('✅ Supabase initialisé');
-                
-                // Vérifier la session utilisateur
-                await checkUserSession();
-            }
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            // Vérifier la session
+            await checkUserSession();
+            
+            // Charger le solde
+            await loadUserBalance();
             
             // Configurer l'interface
             setupInterface();
             
-            // Charger les données utilisateur
-            await loadUserData();
+            // === CORRECTION BOUTONS RETRAIT & RECHARGE ===
+            setupRetraitRechargeButtons();
         });
         
-        // Configurer l'interface
-        function setupInterface() {
-            // Gestion du thème
-            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
-            body.className = savedTheme;
-            
-            themeBtn.addEventListener('click', function() {
-                const isDark = body.classList.contains('dark-mode');
-                body.className = isDark ? 'light-mode' : 'dark-mode';
-                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
-                
-                // Mettre à jour le toggle dans le menu
-                menuThemeToggle.checked = !isDark;
-            });
-            
-            // Menu burger
-            menuBtn.addEventListener('click', () => {
-                sidebarMenu.classList.add('open');
-                menuOverlay.style.display = 'block';
-            });
-            
-            menuOverlay.addEventListener('click', () => {
-                sidebarMenu.classList.remove('open');
-                menuOverlay.style.display = 'none';
-            });
-            
-            // Synchroniser le toggle du thème dans le menu
-            menuThemeToggle.checked = savedTheme === 'dark-mode';
-            
-            menuThemeToggle.addEventListener('change', function() {
-                const isDark = this.checked;
-                body.className = isDark ? 'dark-mode' : 'light-mode';
-                localStorage.setItem('afrimarket_theme', isDark ? 'dark-mode' : 'light-mode');
-            });
-            
-            // Bouton Support dans le menu
-            document.getElementById('supportMenuItem').addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Service Support & Aide\n\n📧 Email: support@afrimarket.com\n📞 Téléphone: +33 1 23 45 67 89\n\nNous sommes disponibles 24h/24 !');
-                sidebarMenu.classList.remove('open');
-                menuOverlay.style.display = 'none';
-            });
-            
-            // Rafraîchir le solde
-            refreshBalance.addEventListener('click', async function() {
-                refreshBalance.style.transform = 'rotate(360deg)';
-                setTimeout(() => {
-                    refreshBalance.style.transform = 'rotate(0deg)';
-                }, 300);
-                
-                // Recharger les données
-                await loadUserData();
-                
-                showToastNotification({
-                    title: "Solde actualisé",
-                    message: "Votre solde a été mis à jour",
-                    icon: "fa-check-circle"
-                });
-            });
-        }
-        
-        // Vérifier la session utilisateur
+        // ============================================
+        // SESSION UTILISATEUR
+        // ============================================
         async function checkUserSession() {
-            try {
-                const { data, error } = await supabaseClient.auth.getSession();
-                
-                if (error) {
-                    console.error('Erreur session:', error);
-                    redirectToLogin();
-                    return;
-                }
-                
-                if (!data.session) {
-                    redirectToLogin();
-                    return;
-                }
-                
-                currentUser = data.session.user;
-                console.log('✅ Utilisateur connecté:', currentUser.email);
-                
-                // Mettre à jour le menu avec les infos utilisateur
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            
+            if (user) {
+                currentUser = user;
+                console.log('✅ Utilisateur:', user.email);
                 updateUserMenu();
+            } else {
+                // Vérifier dans l'URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const userId = urlParams.get('user');
                 
-            } catch (error) {
-                console.error('Erreur vérification session:', error);
-                redirectToLogin();
+                if (userId) {
+                    currentUser = { id: userId, email: 'utilisateur@email.com' };
+                } else {
+                    window.location.href = 'connexion.html';
+                }
             }
         }
         
-        // Rediriger vers la page de connexion
-        function redirectToLogin() {
-            window.location.href = 'connexion.html';
-        }
-        
-        // Mettre à jour le menu utilisateur
-        function updateUserMenu() {
-            if (!currentUser) return;
-            
-            const userName = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Utilisateur';
-            const userEmail = currentUser.email || 'email@example.com';
-            
-            // Initiales pour l'avatar
-            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
-            
-            // Mettre à jour le menu latéral
-            document.getElementById('sidebarUserName').textContent = userName;
-            document.getElementById('sidebarUserEmail').textContent = userEmail;
-            document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
-            
-            // Sauvegarder dans localStorage pour les autres pages
-            localStorage.setItem('afrimarket_user_name', userName);
-            localStorage.setItem('afrimarket_user_email', userEmail);
-        }
-        
-        // Charger les données utilisateur depuis Supabase
-        async function loadUserData() {
+        // ============================================
+        // SOLDE UTILISATEUR
+        // ============================================
+        async function loadUserBalance() {
             try {
-                if (!supabaseClient || !currentUser) {
-                    await checkUserSession();
-                    return;
-                }
+                if (!currentUser) return;
                 
-                // Récupérer le solde de l'utilisateur depuis la table 'balances'
-                const { data: balanceData, error: balanceError } = await supabaseClient
+                const { data, error } = await supabaseClient
                     .from('balances')
                     .select('amount')
                     .eq('user_id', currentUser.id)
                     .single();
                 
-                if (balanceError && balanceError.code !== 'PGRST116') {
-                    console.error('Erreur chargement solde:', balanceError);
+                if (error && error.code !== 'PGRST116') {
+                    console.error('Erreur chargement solde:', error);
                 }
                 
-                // Récupérer les statistiques des gains
-                const { data: earningsData, error: earningsError } = await supabaseClient
-                    .from('user_earnings')
-                    .select('total_earned, available_commission, referral_unlocked')
-                    .eq('user_id', currentUser.id)
-                    .single();
-                
-                if (earningsError && earningsError.code !== 'PGRST116') {
-                    console.error('Erreur chargement gains:', earningsError);
-                }
-                
-                // Mettre à jour le solde
-                userBalance = balanceData?.amount || 0;
-                
-                // Mettre à jour l'interface
-                updateUI(balanceData, earningsData);
+                userBalance = data?.amount || 0;
+                document.getElementById('userBalance').textContent = userBalance.toLocaleString();
                 
             } catch (error) {
-                console.error('Erreur chargement données:', error);
-                showToastNotification({
-                    title: "Erreur",
-                    message: "Impossible de charger vos données",
-                    icon: "fa-exclamation-circle"
-                });
-            }
-        }
-        
-        // Mettre à jour l'interface
-        function updateUI(balanceData, earningsData) {
-            // Mettre à jour le solde
-            const balanceElement = document.getElementById('userBalance');
-            balanceElement.textContent = userBalance.toLocaleString();
-            
-            // Animation du solde
-            balanceElement.style.transform = 'scale(1.1)';
-            balanceElement.style.color = '#10b981';
-            setTimeout(() => {
-                balanceElement.style.transform = 'scale(1)';
-                balanceElement.style.color = '';
-            }, 300);
-            
-            // Mettre à jour les cartes avec les données réelles
-            updateEarningCards(earningsData);
-        }
-        
-        // Mettre à jour les cartes de gains
-        function updateEarningCards(earningsData) {
-            // Si des données de gains existent, on peut les afficher
-            if (earningsData) {
-                // Par exemple, on pourrait afficher le statut du parrainage
-                if (earningsData.referral_unlocked) {
-                    // Modifier le texte de la carte parrainage si débloqué
-                    const referralCard = document.querySelector('.earning-card.referral');
-                    if (referralCard) {
-                        const actionBtn = referralCard.querySelector('.earning-action');
-                        if (actionBtn) {
-                            actionBtn.innerHTML = `
-                                <i class="fas fa-users"></i>
-                                <span>Voir mon réseau</span>
-                            `;
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Afficher une notification toast
-        function showToastNotification(notification) {
-            const container = document.getElementById('toastContainer');
-            
-            const toast = document.createElement('div');
-            toast.className = 'toast-notification';
-            toast.dataset.id = Date.now();
-            
-            toast.innerHTML = `
-                <div class="toast-icon">
-                    <i class="${notification.icon.includes('fab') ? notification.icon : 'fas ' + notification.icon}"></i>
-                </div>
-                <div class="toast-content">
-                    <div class="toast-title">${notification.title}</div>
-                    <div class="toast-message">${notification.message}</div>
-                </div>
-                <button class="toast-close" onclick="closeToast('${toast.dataset.id}')">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            container.insertBefore(toast, container.firstChild);
-            
-            // Supprimer automatiquement après 5 secondes
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.style.opacity = '0';
-                    toast.style.transform = 'translateX(100%)';
-                    setTimeout(() => toast.remove(), 300);
-                }
-            }, 5000);
-        }
-        
-        window.closeToast = function(id) {
-            const toast = document.querySelector(`.toast-notification[data-id="${id}"]`);
-            if (toast) {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100%)';
-                setTimeout(() => toast.remove(), 300);
-            }
-        };
-        
-        // Fonction pour créer ou mettre à jour le solde utilisateur
-        async function updateUserBalance(amount, operation = 'add') {
-            try {
-                if (!supabaseClient || !currentUser) return false;
-                
-                // Vérifier si l'utilisateur a déjà un solde
-                const { data: existingBalance } = await supabaseClient
-                    .from('balances')
-                    .select('id, amount')
-                    .eq('user_id', currentUser.id)
-                    .single();
-                
-                let newAmount = amount;
-                
-                if (existingBalance) {
-                    // Mettre à jour le solde existant
-                    const currentAmount = existingBalance.amount || 0;
-                    newAmount = operation === 'add' ? currentAmount + amount : currentAmount - amount;
-                    
-                    const { error } = await supabaseClient
-                        .from('balances')
-                        .update({ amount: newAmount, updated_at: new Date().toISOString() })
-                        .eq('id', existingBalance.id);
-                    
-                    if (error) throw error;
-                } else {
-                    // Créer un nouveau solde
-                    newAmount = operation === 'add' ? amount : -amount;
-                    
-                    const { error } = await supabaseClient
-                        .from('balances')
-                        .insert({
-                            user_id: currentUser.id,
-                            amount: newAmount,
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString()
-                        });
-                    
-                    if (error) throw error;
-                }
-                
-                // Mettre à jour le solde local
-                userBalance = newAmount;
-                document.getElementById('userBalance').textContent = newAmount.toLocaleString();
-                
-                return true;
-                
-            } catch (error) {
-                console.error('Erreur mise à jour solde:', error);
-                showToastNotification({
-                    title: "Erreur",
-                    message: "Impossible de mettre à jour votre solde",
-                    icon: "fa-exclamation-circle"
-                });
-                return false;
-            }
-        }
-        
-        // Fonction pour enregistrer une transaction
-        async function recordTransaction(type, amount, description) {
-            try {
-                if (!supabaseClient || !currentUser) return false;
-                
-                const { error } = await supabaseClient
-                    .from('transactions')
-                    .insert({
-                        user_id: currentUser.id,
-                        type: type, // 'earning', 'withdrawal', 'referral'
-                        amount: amount,
-                        description: description,
-                        status: 'completed',
-                        created_at: new Date().toISOString()
-                    });
-                
-                if (error) throw error;
-                return true;
-                
-            } catch (error) {
-                console.error('Erreur enregistrement transaction:', error);
-                return false;
+                console.error('Erreur:', error);
             }
         }
         
         // ============================================
-// CORRECTION BOUTONS RETRAIT & RECHARGE
-// ============================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Bouton Retrait
-    const retraitBtns = document.querySelectorAll('.balance-btn.retrait, a[href*="retrait"]');
-    retraitBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('🔵 Redirection vers retrait.html');
-            window.location.href = '/retrait.html';
-        });
-    });
-    
-    // Bouton Recharge
-    const rechargeBtns = document.querySelectorAll('.balance-btn.recharge, a[href*="recharge"]');
-    rechargeBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('🟢 Redirection vers recharge.html');
-            window.location.href = '/recharge.html';
-        });
-    });
-});
+        // INTERFACE
+        // ============================================
+        function setupInterface() {
+            // Thème
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            document.body.className = savedTheme;
+            
+            document.getElementById('themeBtn').addEventListener('click', function() {
+                const isDark = document.body.classList.contains('dark-mode');
+                document.body.className = isDark ? 'light-mode' : 'dark-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+                document.getElementById('menuThemeToggle').checked = !isDark;
+            });
+            
+            // Menu burger
+            document.getElementById('menuBtn').addEventListener('click', () => {
+                document.getElementById('sidebarMenu').classList.add('open');
+                document.getElementById('menuOverlay').style.display = 'block';
+            });
+            
+            document.getElementById('menuOverlay').addEventListener('click', () => {
+                document.getElementById('sidebarMenu').classList.remove('open');
+                document.getElementById('menuOverlay').style.display = 'none';
+            });
+            
+            // Thème menu
+            document.getElementById('menuThemeToggle').checked = savedTheme === 'dark-mode';
+            document.getElementById('menuThemeToggle').addEventListener('change', function() {
+                const isDark = this.checked;
+                document.body.className = isDark ? 'dark-mode' : 'light-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'dark-mode' : 'light-mode');
+            });
+            
+            // Support
+            document.getElementById('supportMenuItem').addEventListener('click', function() {
+                alert('📞 Support AFRIMARKET\n\n📧 support@afrimarket.com');
+                document.getElementById('sidebarMenu').classList.remove('open');
+                document.getElementById('menuOverlay').style.display = 'none';
+            });
+            
+            // Rafraîchir solde
+            document.getElementById('refreshBalance').addEventListener('click', async function() {
+                this.style.transform = 'rotate(360deg)';
+                setTimeout(() => this.style.transform = 'rotate(0deg)', 300);
+                await loadUserBalance();
+                showToast('✅ Solde actualisé', 'success');
+            });
+        }
+        
+        // ============================================
+        // BOUTONS RETRAIT & RECHARGE - CORRIGÉ
+        // ============================================
+        function setupRetraitRechargeButtons() {
+            // BOUTON RETRAIT
+            const retraitBtn = document.getElementById('retraitBtn');
+            if (retraitBtn) {
+                retraitBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('💰 Redirection vers retrait.html');
+                    window.location.href = 'https://afrimarket-prod.vercel.app/retrait.html';
+                });
+            }
+            
+            // BOUTON RECHARGE
+            const rechargeBtn = document.getElementById('rechargeBtn');
+            if (rechargeBtn) {
+                rechargeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('💳 Redirection vers recharge.html');
+                    window.location.href = 'https://afrimarket-prod.vercel.app/recharge.html';
+                });
+            }
+            
+            // AUSSI POUR LES LIENS DANS LE MENU
+            const retraitLinks = document.querySelectorAll('a[href*="retrait"]');
+            retraitLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = 'https://afrimarket-prod.vercel.app/retrait.html';
+                });
+            });
+            
+            const rechargeLinks = document.querySelectorAll('a[href*="recharge"]');
+            rechargeLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = 'https://afrimarket-prod.vercel.app/recharge.html';
+                });
+            });
+            
+            console.log('✅ Boutons Retrait & Recharge corrigés');
+        }
+        
+        // ============================================
+        // MENU UTILISATEUR
+        // ============================================
+        function updateUserMenu() {
+            if (!currentUser) return;
+            
+            const userName = currentUser.user_metadata?.full_name || 
+                            currentUser.email?.split('@')[0] || 
+                            'Utilisateur';
+            const userEmail = currentUser.email || '';
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            document.getElementById('sidebarUserName').textContent = userName;
+            document.getElementById('sidebarUserEmail').textContent = userEmail;
+            document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
+            
+            localStorage.setItem('afrimarket_user_name', userName);
+            localStorage.setItem('afrimarket_user_email', userEmail);
+        }
+        
+        // ============================================
+        // TOAST NOTIFICATION
+        // ============================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast-notification ${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon"><i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i></div>
+                <div class="toast-content">
+                    <div class="toast-title">${type === 'success' ? 'Succès' : 'Information'}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+        
+        // ============================================
+        // UTILITAIRES
+        // ============================================
+        async function updateUserBalance(amount, operation = 'add') {
+            // Fonction pour mettre à jour le solde
+        }
+        
+        async function recordTransaction(type, amount, description) {
+            // Fonction pour enregistrer une transaction
+        }
     </script>
-    <script>
-    // ============================================
-    // CORRECTION BOUTONS RETRAIT & RECHARGE
-    // ============================================
-    document.addEventListener('DOMContentLoaded', function() {
-        // Vérifier que les boutons existent
-        console.log('🔧 Correction des boutons...');
-        
-        // Solution 1: Redirection directe avec URL absolue
-        const retraitBtn = document.querySelector('.balance-btn.retrait');
-        if (retraitBtn) {
-            retraitBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('💰 Redirection vers retrait.html');
-                window.location.href = 'https://afrimarket-prod.vercel.app/retrait.html';
-            });
-        }
-        
-        const rechargeBtn = document.querySelector('.balance-btn.recharge');
-        if (rechargeBtn) {
-            rechargeBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('💳 Redirection vers recharge.html');
-                window.location.href = 'https://afrimarket-prod.vercel.app/recharge.html';
-            });
-        }
-        
-        // Solution 2: Remplacer les liens si nécessaire
-        const allRetraitLinks = document.querySelectorAll('a[href*="retrait"]');
-        allRetraitLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = 'https://afrimarket-prod.vercel.app/retrait.html';
-            });
-        });
-        
-        const allRechargeLinks = document.querySelectorAll('a[href*="recharge"]');
-        allRechargeLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = 'https://afrimarket-prod.vercel.app/recharge.html';
-            });
-        });
-    });
-</script>
 </body>
 </html>

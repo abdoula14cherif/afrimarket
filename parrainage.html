@@ -8,7 +8,7 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
-        /* Styles identiques à la version précédente */
+        /* TOUS LES STYLES RESTENT IDENTIQUES */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -322,7 +322,7 @@
             transform: translateX(26px);
         }
 
-        /* Section Statut Parrainage */
+        /* Section Statut Parrainage - MODIFIÉE POUR LE BOUTON DE RETRAIT */
         .status-section {
             padding: 20px 0;
         }
@@ -377,6 +377,48 @@
             font-size: 14px;
             opacity: 0.9;
             margin-bottom: 20px;
+        }
+
+        /* NOUVEAU BOUTON DE RETRAIT SUR LA CARTE */
+        .status-withdraw-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: white;
+            color: var(--referral-color);
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            z-index: 10;
+        }
+
+        .dark-mode .status-withdraw-btn {
+            background: var(--dark-card);
+            color: var(--referral-color);
+            border: 1px solid var(--dark-border);
+        }
+
+        .status-withdraw-btn i {
+            font-size: 16px;
+            color: var(--referral-color);
+        }
+
+        .status-withdraw-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-withdraw-btn:active {
+            transform: translateY(0);
         }
 
         /* Section Statistiques */
@@ -1136,6 +1178,22 @@
                 grid-template-columns: repeat(3, 1fr);
             }
         }
+
+        /* Responsive pour le bouton de retrait */
+        @media (max-width: 480px) {
+            .status-withdraw-btn {
+                position: relative;
+                bottom: auto;
+                right: auto;
+                margin-top: 15px;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .status-subtitle {
+                margin-bottom: 0;
+            }
+        }
     </style>
 </head>
 <body class="light-mode">
@@ -1241,7 +1299,7 @@
     <!-- Contenu principal -->
     <main class="main-content" id="mainContent">
         <div class="container">
-            <!-- Section Statut Parrainage -->
+            <!-- Section Statut Parrainage - AVEC BOUTON DE RETRAIT -->
             <section class="status-section">
                 <div class="status-card">
                     <div class="status-header">
@@ -1255,6 +1313,12 @@
                     <p class="status-subtitle" id="referralStatusMessage">
                         Débloquez votre lien de parrainage pour commencer à gagner
                     </p>
+                    
+                    <!-- NOUVEAU BOUTON DE RETRAIT - Affiche le statut et redirige vers retrait.html -->
+                    <a href="retrait.html" class="status-withdraw-btn" id="withdrawStatusBtn">
+                        <i class="fas fa-wallet"></i>
+                        <span id="withdrawBtnText">Effectuer un retrait</span>
+                    </a>
                 </div>
             </section>
 
@@ -1699,11 +1763,18 @@
             // Mettre à jour le statut
             const statusBadge = document.getElementById('referralStatusBadge');
             const statusMessage = document.getElementById('referralStatusMessage');
+            const withdrawBtn = document.getElementById('withdrawStatusBtn');
+            const withdrawBtnText = document.getElementById('withdrawBtnText');
             
             if (userReferralData.is_unlocked) {
                 statusBadge.innerHTML = '<i class="fas fa-unlock"></i> <span>Débloqué</span>';
                 statusBadge.style.background = 'rgba(16, 185, 129, 0.2)';
                 statusMessage.textContent = 'Votre lien de parrainage est actif. Partagez-le pour gagner !';
+                
+                // Mettre à jour le bouton de retrait
+                withdrawBtn.style.background = 'white';
+                withdrawBtn.style.color = 'var(--referral-color)';
+                withdrawBtnText.textContent = 'Retirer mes gains';
                 
                 // Afficher les sections
                 document.getElementById('referralLinkSection').style.display = 'block';
@@ -1720,6 +1791,12 @@
                 statusBadge.innerHTML = '<i class="fas fa-lock"></i> <span>Non débloqué</span>';
                 statusBadge.style.background = 'rgba(239, 68, 68, 0.2)';
                 statusMessage.textContent = 'Débloquez votre lien de parrainage pour commencer à gagner';
+                
+                // Mettre à jour le bouton de retrait
+                withdrawBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+                withdrawBtn.style.color = 'white';
+                withdrawBtn.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+                withdrawBtnText.textContent = 'Recharger pour débloquer';
                 
                 // Afficher les sections
                 document.getElementById('referralLinkSection').style.display = 'none';

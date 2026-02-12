@@ -2,214 +2,697 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Inscription - AFRIMARKET</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
-    <!-- IMPORTANT: Inclure Supabase JS -->
+    <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
+        :root {
+            --primary-blue: #1d3557;
+            --primary-red: #ef4444;
+            --primary-orange: #f97316;
+            --primary-green: #10b981;
+            --light-bg: #f8fafc;
+            --light-card: #ffffff;
+            --light-text: #1e293b;
+            --light-border: #e2e8f0;
+            --light-gray: #94a3b8;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #f1f5f9;
+            --dark-border: #334155;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .app-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .logo-text span {
+            color: #ffd700;
+        }
+
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(45deg);
+        }
+
+        /* Auth Card */
+        .auth-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px 30px;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.5s ease;
+        }
+
+        .dark-mode .auth-card {
+            background: var(--dark-card);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .dark-mode .auth-header h2 {
+            color: var(--dark-text);
+        }
+
+        .auth-header p {
+            color: var(--light-gray);
+            font-size: 14px;
+        }
+
+        /* Referral Badge */
+        .referral-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            animation: slideDown 0.5s ease;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .referral-badge i {
+            font-size: 28px;
+        }
+
+        .referral-badge-content {
+            flex: 1;
+        }
+
+        .referral-badge-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .referral-badge-code {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 14px;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Formulaire */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--light-text);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dark-mode .form-label {
+            color: var(--dark-text);
+        }
+
+        .form-label i {
+            color: var(--primary-blue);
+            width: 18px;
+        }
+
+        .form-label.required:after {
+            content: " *";
+            color: var(--primary-red);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--light-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            background: var(--light-bg);
+            color: var(--light-text);
+            transition: var(--transition);
+        }
+
+        .dark-mode .form-input {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(29, 53, 87, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--primary-red);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .form-input[readonly] {
+            background: rgba(29, 53, 87, 0.05);
+            cursor: not-allowed;
+            border-color: var(--light-gray);
+        }
+
+        .password-input {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--light-gray);
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            margin-top: 5px;
+            min-height: 20px;
+        }
+
+        .form-error {
+            font-size: 12px;
+            margin-top: 5px;
+            color: var(--primary-red);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-blue);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 14px;
+            color: var(--light-text);
+            cursor: pointer;
+        }
+
+        .dark-mode .checkbox-group label {
+            color: var(--dark-text);
+        }
+
+        .checkbox-group a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        /* Bouton */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            color: white;
+            box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 53, 87, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Auth Footer */
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid var(--light-border);
+        }
+
+        .dark-mode .auth-footer {
+            border-color: var(--dark-border);
+        }
+
+        .auth-footer p {
+            color: var(--light-gray);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .auth-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Notifications */
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
+            padding: 15px 25px;
+            border-radius: var(--radius-md);
             color: white;
-            font-weight: 500;
+            font-weight: 600;
             z-index: 10000;
-            animation: slideIn 0.3s ease;
+            animation: slideInRight 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
         }
-        
+
         .notification.success {
-            background: #10b981;
+            background: linear-gradient(135deg, #10b981, #059669);
         }
-        
+
         .notification.error {
-            background: #ef4444;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
         }
-        
-        .notification.info {
-            background: #3b82f6;
-        }
-        
+
         .notification.warning {
-            background: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
         }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
         }
-        
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
-        
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Loading overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.7);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 10001;
+            backdrop-filter: blur(5px);
         }
-        
+
         .loading-spinner {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 40px;
+            border-radius: var(--radius-lg);
             text-align: center;
+            box-shadow: var(--shadow-lg);
         }
-        
-        .referral-badge {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
+
+        .dark-mode .loading-spinner {
+            background: var(--dark-card);
         }
-        
-        .referral-badge i {
-            font-size: 20px;
+
+        .loading-spinner i {
+            font-size: 48px;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
         }
-        
-        .referral-code {
-            background: rgba(255,255,255,0.2);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-family: monospace;
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .auth-card {
+                padding: 30px 20px;
+            }
+            
+            .auth-header h2 {
+                font-size: 24px;
+            }
+            
+            .logo-text {
+                font-size: 18px;
+            }
+            
+            .referral-badge {
+                padding: 15px;
+            }
         }
     </style>
 </head>
-<body class="light-mode">
-    <!-- Overlay de chargement -->
+<body>
+    <!-- Loading overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner">
-            <i class="fas fa-spinner fa-spin fa-2x"></i>
-            <p style="margin-top: 15px;">Inscription en cours...</p>
+            <i class="fas fa-spinner fa-spin"></i>
+            <p style="margin-top: 15px; font-size: 16px; font-weight: 600;">Inscription en cours...</p>
         </div>
     </div>
 
-    <header class="header">
-        <div class="header-container">
-            <a href="dashboard.html" class="logo">
-                <i class="fas fa-arrow-left"></i>
-                <h1 style="font-family: 'Montserrat', sans-serif;">AFRI<span style="color: var(--primary-red);">MARKET</span></h1>
-            </a>
-            <div class="header-actions">
-                <button class="theme-btn" id="theme-btn">
+    <!-- Header -->
+    <div class="container">
+        <header class="app-header">
+            <div class="header-content">
+                <a href="index.html" class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="logo-text">AFRI<span>MARKET</span></div>
+                </a>
+                
+                <button class="theme-btn" id="themeBtn">
                     <i class="fas fa-moon"></i>
                 </button>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <main class="auth-container">
+        <!-- Auth Card -->
         <div class="auth-card">
             <div class="auth-header">
-                <h2><i class="fas fa-user-plus"></i> Créer un compte</h2>
-                <p>Rejoignez AFRIMARKET et gagnez de l'argent</p>
+                <h2>
+                    <i class="fas fa-user-plus" style="color: var(--primary-blue);"></i>
+                    Inscription
+                </h2>
+                <p>Rejoignez AFRIMARKET et commencez à gagner</p>
             </div>
 
-            <!-- BADGE DE PARRAINAGE (rempli dynamiquement) -->
-            <div id="referralBadge" style="display: none;" class="referral-badge">
-                <i class="fas fa-gift"></i>
-                <div style="flex: 1;">
-                    <strong>🎯 Vous êtes parrainé !</strong>
-                    <span id="referralMessage" style="margin-left: 5px;"></span>
-                </div>
-            </div>
+            <!-- Referral Badge - Sera affiché dynamiquement -->
+            <div id="referralBadgeContainer"></div>
 
             <form id="inscription-form" class="auth-form">
+                <!-- Code de parrainage (OBLIGATOIRE) -->
+                <div class="form-group">
+                    <label for="referral-code" class="form-label required">
+                        <i class="fas fa-gift"></i>
+                        Code de parrainage
+                    </label>
+                    <input type="text" 
+                           id="referral-code" 
+                           class="form-input" 
+                           placeholder="Ex: ABDOULA"
+                           required
+                           readonly>
+                    <div id="referralError" class="form-error" style="display: none;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Code de parrainage invalide ou non débloqué
+                    </div>
+                </div>
+
+                <!-- Nom complet -->
                 <div class="form-group">
                     <label for="nom-complet" class="form-label required">
-                        <i class="fas fa-user"></i> Nom complet
+                        <i class="fas fa-user"></i>
+                        Nom complet
                     </label>
-                    <input type="text" id="nom-complet" name="nom_complet" 
-                           placeholder="Ex: Jean Dupont" required>
+                    <input type="text" 
+                           id="nom-complet" 
+                           class="form-input" 
+                           name="nom_complet" 
+                           placeholder="Ex: Jean Dupont" 
+                           required>
                 </div>
 
+                <!-- Téléphone (optionnel) -->
                 <div class="form-group">
                     <label for="telephone" class="form-label">
-                        <i class="fas fa-phone"></i> Téléphone (optionnel)
+                        <i class="fas fa-phone"></i>
+                        Téléphone
                     </label>
-                    <input type="tel" id="telephone" name="telephone" 
-                           placeholder="Ex: +237 6 00 00 00 00">
+                    <input type="tel" 
+                           id="telephone" 
+                           class="form-input" 
+                           name="telephone" 
+                           placeholder="Ex: 691234567">
                 </div>
 
+                <!-- Email -->
                 <div class="form-group">
                     <label for="email" class="form-label required">
-                        <i class="fas fa-envelope"></i> Adresse email
+                        <i class="fas fa-envelope"></i>
+                        Adresse email
                     </label>
-                    <input type="email" id="email" name="email" 
-                           placeholder="exemple@email.com" required>
+                    <input type="email" 
+                           id="email" 
+                           class="form-input" 
+                           name="email" 
+                           placeholder="exemple@email.com" 
+                           required>
                 </div>
 
+                <!-- Mot de passe -->
                 <div class="form-group">
                     <label for="password" class="form-label required">
-                        <i class="fas fa-lock"></i> Mot de passe
+                        <i class="fas fa-lock"></i>
+                        Mot de passe
                     </label>
                     <div class="password-input">
-                        <input type="password" id="password" name="password" 
-                               placeholder="Minimum 6 caractères" required minlength="6">
+                        <input type="password" 
+                               id="password" 
+                               class="form-input" 
+                               name="password" 
+                               placeholder="Minimum 6 caractères" 
+                               required 
+                               minlength="6">
                         <button type="button" class="toggle-password" id="toggle-password">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
 
+                <!-- Confirmation mot de passe -->
                 <div class="form-group">
                     <label for="confirm-password" class="form-label required">
-                        <i class="fas fa-lock"></i> Confirmer le mot de passe
+                        <i class="fas fa-lock"></i>
+                        Confirmer le mot de passe
                     </label>
-                    <input type="password" id="confirm-password" 
-                           placeholder="Retapez votre mot de passe" required>
+                    <div class="password-input">
+                        <input type="password" 
+                               id="confirm-password" 
+                               class="form-input" 
+                               placeholder="Retapez votre mot de passe" 
+                               required>
+                        <button type="button" class="toggle-password" id="toggle-confirm-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     <div id="password-match" class="form-hint"></div>
                 </div>
 
-                <div class="form-group checkbox-group">
+                <!-- Newsletter (optionnel) -->
+                <div class="checkbox-group">
+                    <input type="checkbox" id="newsletter" name="newsletter">
+                    <label for="newsletter">
+                        Recevoir les offres et actualités
+                    </label>
+                </div>
+
+                <!-- Conditions d'utilisation -->
+                <div class="checkbox-group">
                     <input type="checkbox" id="conditions" name="conditions" required>
                     <label for="conditions">
                         J'accepte les <a href="conditions.html" target="_blank">conditions d'utilisation</a>
                     </label>
                 </div>
 
-                <div class="form-group checkbox-group">
-                    <input type="checkbox" id="newsletter" name="newsletter">
-                    <label for="newsletter">
-                        Recevoir les offres et actualités (optionnel)
-                    </label>
-                </div>
-
-                <button type="submit" class="btn auth-btn" id="submit-btn">
-                    <i class="fas fa-user-plus"></i> S'inscrire
+                <!-- Bouton d'inscription -->
+                <button type="submit" class="btn btn-primary" id="submit-btn">
+                    <i class="fas fa-user-plus"></i>
+                    S'inscrire
                 </button>
 
                 <div class="auth-footer">
-                    <p>Déjà un compte ? <a href="connexion.html" class="link">Se connecter</a></p>
+                    <p>Déjà un compte ? <a href="connexion.html">Se connecter</a></p>
                 </div>
             </form>
-            
-            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--light-border); text-align: center; font-size: 13px; color: var(--light-gray);">
-                <i class="fas fa-shield-alt"></i> Vos données sont sécurisées
-            </div>
         </div>
-    </main>
+    </div>
 
     <script>
         // ============================================
@@ -219,286 +702,322 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
         
         let supabaseClient = null;
-        let referralCode = null;
-        
-        // ============================================
-        // SYSTÈME DE PARRAINAGE - VERSION SIMPLIFIÉE
-        // ============================================
-        
-        // 1. Récupérer le code depuis l'URL
-        function getReferralCodeFromURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('ref');
-            return code ? code.toUpperCase() : null;
-        }
-        
-        // 2. Afficher le badge de parrainage
-        function showReferralBadge(code) {
-            // Créer un badge dynamique
-            const badge = document.createElement('div');
-            badge.style.cssText = `
-                background: linear-gradient(135deg, #f59e0b, #d97706);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                margin-bottom: 25px;
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                font-size: 15px;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            `;
-            badge.innerHTML = `
-                <i class="fas fa-gift" style="font-size: 28px;"></i>
-                <div style="flex: 1;">
-                    <strong style="font-size: 16px;">🎯 VOUS ÊTES PARRAINÉ !</strong>
-                    <div style="margin-top: 5px; font-size: 14px;">
-                        Code: <span style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; font-family: monospace; font-weight: bold; letter-spacing: 1px;">${code}</span>
-                    </div>
-                </div>
-            `;
-            
-            // Insérer le badge avant le formulaire
-            const form = document.getElementById('inscription-form');
-            if (form) {
-                form.parentNode.insertBefore(badge, form);
-            }
-            
-            // Activer aussi le badge existant
-            const existingBadge = document.getElementById('referralBadge');
-            const message = document.getElementById('referralMessage');
-            if (existingBadge && message) {
-                existingBadge.style.display = 'flex';
-                message.innerHTML = `Code: <span class="referral-code">${code}</span>`;
-            }
-            
-            console.log('✅ Badge affiché pour le code:', code);
-        }
-        
+        let currentReferralCode = null;
+        let isReferralValid = false;
+        let isCheckingCode = false;
+
         // ============================================
         // FONCTIONS D'INTERFACE
         // ============================================
-        
+
         function showNotification(message, type = 'info') {
             const oldNotif = document.querySelector('.notification');
             if (oldNotif) oldNotif.remove();
             
             const notif = document.createElement('div');
             notif.className = `notification ${type}`;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
             notif.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                               type === 'error' ? 'fa-exclamation-circle' : 
-                               type === 'warning' ? 'fa-exclamation-triangle' :
-                               'fa-info-circle'}"></i>
-                <span>${message}</span>
+                <i class="fas ${icons[type] || 'fa-info-circle'}" style="font-size: 20px;"></i>
+                <span style="flex: 1;">${message}</span>
             `;
             
             document.body.appendChild(notif);
             
-            setTimeout(() => {
-                notif.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => notif.remove(), 300);
-            }, 5000);
+            setTimeout(() => notif.remove(), 5000);
         }
-        
+
         function showLoading(show) {
             const overlay = document.getElementById('loadingOverlay');
-            const submitBtn = document.getElementById('submit-btn');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+
+        // ============================================
+        // RÉCUPÉRATION DU CODE DE PARRAINAGE
+        // ============================================
+
+        function getReferralCodeFromURL() {
+            // Méthode 1: ?ref=CODE
+            const urlParams = new URLSearchParams(window.location.search);
+            let code = urlParams.get('ref');
             
-            if (show) {
-                overlay.style.display = 'flex';
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inscription...';
-            } else {
-                overlay.style.display = 'none';
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> S\'inscrire';
+            // Méthode 2: /ref/CODE
+            if (!code && window.location.pathname.includes('/ref/')) {
+                code = window.location.pathname.split('/ref/')[1];
+                if (code) code = code.split('/')[0].split('?')[0];
+            }
+            
+            return code ? code.toUpperCase() : null;
+        }
+
+        // ============================================
+        // VALIDATION DU CODE DE PARRAINAGE
+        // ============================================
+
+        async function validateReferralCode(code) {
+            if (!code || !supabaseClient) return false;
+            
+            try {
+                isCheckingCode = true;
+                
+                // Vérifier si le code existe dans referral_data ET est débloqué
+                const { data, error } = await supabaseClient
+                    .from('referral_data')
+                    .select('user_id, referral_code, is_unlocked')
+                    .eq('referral_code', code)
+                    .eq('is_unlocked', true)
+                    .maybeSingle();
+                
+                if (error) {
+                    console.error('Erreur validation:', error);
+                    return false;
+                }
+                
+                if (!data) {
+                    console.log('❌ Code invalide ou non débloqué:', code);
+                    return false;
+                }
+                
+                console.log('✅ Code valide et débloqué:', code);
+                return true;
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                return false;
+            } finally {
+                isCheckingCode = false;
             }
         }
-        
+
+        // ============================================
+        // AFFICHAGE DU BADGE DE PARRAINAGE
+        // ============================================
+
+        function showReferralBadge(code) {
+            const container = document.getElementById('referralBadgeContainer');
+            
+            container.innerHTML = `
+                <div class="referral-badge">
+                    <i class="fas fa-gift"></i>
+                    <div class="referral-badge-content">
+                        <div class="referral-badge-title">🎯 Vous êtes parrainé !</div>
+                        <div>
+                            <span class="referral-badge-code">${code}</span>
+                            <span style="margin-left: 10px; font-size: 13px;">Code valide et actif</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         // ============================================
         // FONCTION D'INSCRIPTION
         // ============================================
-        
+
         async function inscrireUtilisateur(userData) {
             try {
                 console.log('📝 Inscription pour:', userData.email);
+                console.log('🎯 Code parrainage:', currentReferralCode);
                 
-                // PRÉPARER LES MÉTADONNÉES
-                const userMetadata = {
-                    nom_complet: userData.nom_complet,
-                    telephone: userData.telephone || '',
-                    newsletter: userData.newsletter || false,
-                    date_inscription: new Date().toISOString()
-                };
-                
-                // AJOUTER LE CODE DE PARRAINAGE SI PRÉSENT
-                if (referralCode) {
-                    userMetadata.referral_code = referralCode;
-                    console.log('🎯 CODE DE PARRAINAGE TRANSMIS:', referralCode);
-                }
-                
-                // Inscription avec Supabase
+                // 1. Inscription avec Supabase
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: userData.email,
                     password: userData.password,
                     options: {
-                        data: userMetadata,
+                        data: {
+                            nom_complet: userData.nom_complet,
+                            telephone: userData.telephone || '',
+                            role: 'user',
+                            referral_code: currentReferralCode // Code de parrainage OBLIGATOIRE
+                        },
                         emailRedirectTo: 'https://afrimarket-prod.vercel.app/dashboard.html'
                     }
                 });
                 
                 if (error) {
-                    console.error('❌ Erreur Supabase:', error);
+                    console.error('❌ Erreur inscription:', error);
                     
                     let errorMsg = error.message;
                     if (error.message.includes('already registered')) {
                         errorMsg = 'Un compte existe déjà avec cet email';
-                    } else if (error.message.includes('password')) {
-                        errorMsg = 'Le mot de passe doit contenir au moins 6 caractères';
                     }
                     
                     return { success: false, error: errorMsg };
                 }
                 
-                console.log('✅ Inscription réussie:', data.user?.email);
-                
-                // Stocker les infos utilisateur
-                if (data.user) {
-                    localStorage.setItem('afrimarket_user_id', data.user.id);
-                    localStorage.setItem('afrimarket_user_email', data.user.email);
-                    localStorage.setItem('afrimarket_user_name', userData.nom_complet);
-                    localStorage.setItem('afrimarket_logged_in', 'true');
-                    
-                    if (referralCode) {
-                        localStorage.setItem('afrimarket_referral_used', referralCode);
-                    }
+                if (!data.user) {
+                    return { success: false, error: 'Erreur création utilisateur' };
                 }
                 
-                return { 
-                    success: true, 
+                console.log('✅ Utilisateur créé:', data.user.id);
+                
+                // 2. Stocker les infos
+                localStorage.setItem('afrimarket_user_id', data.user.id);
+                localStorage.setItem('afrimarket_user_email', data.user.email);
+                localStorage.setItem('afrimarket_user_name', userData.nom_complet);
+                localStorage.setItem('afrimarket_logged_in', 'true');
+                localStorage.setItem('afrimarket_referral_used', currentReferralCode);
+                
+                return {
+                    success: true,
                     message: 'Inscription réussie !',
-                    user: data.user,
-                    requiresEmailConfirmation: data.user?.identities?.length === 0
+                    user: data.user
                 };
                 
             } catch (error) {
                 console.error('❌ Erreur générale:', error);
-                return { 
-                    success: false, 
-                    error: 'Erreur technique. Veuillez réessayer.' 
+                return {
+                    success: false,
+                    error: 'Erreur technique. Veuillez réessayer.'
                 };
             }
         }
-        
+
         // ============================================
         // INITIALISATION
         // ============================================
-        
+
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Page inscription chargée');
             
             // 1. Initialiser Supabase
-            if (window.supabase) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                    auth: {
-                        persistSession: true,
-                        autoRefreshToken: true,
-                        detectSessionInUrl: true
-                    }
-                });
-                console.log('✅ Supabase initialisé');
-            } else {
-                showNotification('❌ Erreur: Supabase non chargé', 'error');
-            }
-            
-            // ========================================
-            // 2. SYSTÈME DE PARRAINAGE - SIMPLIFIÉ
-            // ========================================
-            
-            // Récupérer le code depuis l'URL
-            const codeFromURL = getReferralCodeFromURL();
-            
-            if (codeFromURL) {
-                console.log('🎯 CODE DÉTECTÉ:', codeFromURL);
-                
-                // Stocker le code
-                referralCode = codeFromURL;
-                
-                // Afficher le badge IMMÉDIATEMENT (sans validation)
-                showReferralBadge(codeFromURL);
-                showNotification(`🎉 Vous êtes parrainé ! Code: ${codeFromURL}`, 'success');
-            } else {
-                console.log('❌ Aucun code de parrainage détecté');
-            }
-            
-            // ========================================
-            // 3. GESTION DU THÈME
-            // ========================================
-            
-            const themeBtn = document.getElementById('theme-btn');
-            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
-            document.body.className = savedTheme;
-            
-            themeBtn.addEventListener('click', function() {
-                const isDark = document.body.classList.contains('dark-mode');
-                document.body.className = isDark ? 'light-mode' : 'dark-mode';
-                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
-            });
-            
-            // ========================================
-            // 4. TOGGLE MOT DE PASSE
-            // ========================================
-            
-            const toggleBtn = document.getElementById('toggle-password');
-            const passwordInput = document.getElementById('password');
-            
-            toggleBtn.addEventListener('click', function() {
-                const type = passwordInput.type === 'password' ? 'text' : 'password';
-                passwordInput.type = type;
-                toggleBtn.innerHTML = type === 'password' ? 
-                    '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            });
-            
-            // ========================================
-            // 5. CONFIRMATION MOT DE PASSE
-            // ========================================
-            
-            const confirmInput = document.getElementById('confirm-password');
-            const matchHint = document.getElementById('password-match');
-            
-            confirmInput.addEventListener('input', function() {
-                const match = this.value === passwordInput.value;
-                if (this.value.length > 0) {
-                    matchHint.textContent = match ? '✅ Mots de passe identiques' : '❌ Mots de passe différents';
-                    matchHint.style.color = match ? '#10b981' : '#ef4444';
-                } else {
-                    matchHint.textContent = '';
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true
                 }
             });
             
-            // ========================================
-            // 6. SOUmission FORMULAIRE
-            // ========================================
+            // 2. Récupérer et valider le code de parrainage
+            const codeFromURL = getReferralCodeFromURL();
+            const referralInput = document.getElementById('referral-code');
+            const referralError = document.getElementById('referralError');
             
+            if (!codeFromURL) {
+                // PAS DE CODE DE PARRAINAGE = REFUSER L'INSCRIPTION
+                referralInput.value = 'CODE REQUIS';
+                referralInput.classList.add('error');
+                referralError.style.display = 'flex';
+                referralError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Un code de parrainage est obligatoire pour s\'inscrire';
+                
+                // Désactiver le bouton d'inscription
+                document.getElementById('submit-btn').disabled = true;
+                
+                showNotification('❌ Code de parrainage requis', 'error');
+                
+            } else {
+                // CODE PRÉSENT - VALIDATION
+                referralInput.value = codeFromURL;
+                
+                showLoading(true);
+                const isValid = await validateReferralCode(codeFromURL);
+                showLoading(false);
+                
+                if (isValid) {
+                    // CODE VALIDE
+                    currentReferralCode = codeFromURL;
+                    isReferralValid = true;
+                    referralInput.classList.remove('error');
+                    referralError.style.display = 'none';
+                    document.getElementById('submit-btn').disabled = false;
+                    showReferralBadge(codeFromURL);
+                    showNotification('✅ Code de parrainage valide !', 'success');
+                    
+                } else {
+                    // CODE INVALIDE
+                    referralInput.classList.add('error');
+                    referralError.style.display = 'flex';
+                    document.getElementById('submit-btn').disabled = true;
+                    showNotification('❌ Code de parrainage invalide ou non débloqué', 'error');
+                }
+            }
+
+            // 3. Gestion du thème
+            const themeBtn = document.getElementById('themeBtn');
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            
+            if (savedTheme === 'dark-mode') {
+                document.body.classList.add('dark-mode');
+                themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            themeBtn.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('afrimarket_theme', isDark ? 'dark-mode' : 'light-mode');
+                themeBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+
+            // 4. Toggle mot de passe
+            const toggleBtns = document.querySelectorAll('.toggle-password');
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const input = this.previousElementSibling;
+                    const type = input.type === 'password' ? 'text' : 'password';
+                    input.type = type;
+                    this.innerHTML = type === 'password' ? 
+                        '<i class="fas fa-eye"></i>' : 
+                        '<i class="fas fa-eye-slash"></i>';
+                });
+            });
+
+            // 5. Validation confirmation mot de passe
+            const passwordInput = document.getElementById('password');
+            const confirmInput = document.getElementById('confirm-password');
+            const matchHint = document.getElementById('password-match');
+
+            confirmInput.addEventListener('input', function() {
+                if (this.value.length === 0) {
+                    matchHint.innerHTML = '';
+                    return;
+                }
+                
+                const match = this.value === passwordInput.value;
+                matchHint.innerHTML = match ? 
+                    '✅ Mots de passe identiques' : 
+                    '❌ Mots de passe différents';
+                matchHint.style.color = match ? '#10b981' : '#ef4444';
+            });
+
+            // 6. Soumission formulaire
             const form = document.getElementById('inscription-form');
             
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                console.log('📤 Formulaire soumis');
                 
-                // Validation
+                // Vérifier que le code de parrainage est valide
+                if (!isReferralValid || !currentReferralCode) {
+                    showNotification('❌ Code de parrainage invalide', 'error');
+                    return;
+                }
+                
+                // Vérifier les mots de passe
                 if (passwordInput.value !== confirmInput.value) {
                     showNotification('❌ Les mots de passe ne correspondent pas', 'error');
                     return;
                 }
                 
+                // Vérifier la longueur du mot de passe
                 if (passwordInput.value.length < 6) {
                     showNotification('❌ Le mot de passe doit contenir au moins 6 caractères', 'error');
                     return;
                 }
                 
-                // Données utilisateur
+                // Vérifier les conditions
+                if (!document.getElementById('conditions').checked) {
+                    showNotification('❌ Vous devez accepter les conditions d\'utilisation', 'error');
+                    return;
+                }
+                
+                // Récupérer les données
                 const userData = {
                     nom_complet: document.getElementById('nom-complet').value.trim(),
                     telephone: document.getElementById('telephone').value.trim(),
@@ -507,21 +1026,19 @@
                     newsletter: document.getElementById('newsletter').checked
                 };
                 
-                if (!userData.email.includes('@')) {
+                // Validation email
+                if (!userData.email.includes('@') || !userData.email.includes('.')) {
                     showNotification('❌ Email invalide', 'error');
                     return;
                 }
                 
+                // Validation nom
                 if (userData.nom_complet.length < 3) {
                     showNotification('❌ Nom complet trop court', 'error');
                     return;
                 }
                 
-                if (!document.getElementById('conditions').checked) {
-                    showNotification('❌ Vous devez accepter les conditions', 'error');
-                    return;
-                }
-                
+                // Afficher le loading
                 showLoading(true);
                 
                 try {
@@ -530,43 +1047,22 @@
                     if (result.success) {
                         showNotification('✅ ' + result.message, 'success');
                         
-                        if (referralCode) {
-                            showNotification(`🎯 Inscription avec code: ${referralCode}`, 'success');
-                        }
+                        // Redirection vers dashboard
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 2000);
                         
-                        if (result.requiresEmailConfirmation) {
-                            showNotification('📧 Vérifiez votre email pour confirmer votre compte', 'info');
-                            setTimeout(() => {
-                                window.location.href = 'connexion.html?message=Vérifiez votre email pour confirmer votre compte';
-                            }, 3000);
-                        } else {
-                            showNotification('✅ Redirection vers le tableau de bord...', 'success');
-                            setTimeout(() => {
-                                window.location.href = 'dashboard.html';
-                            }, 2000);
-                        }
                     } else {
                         showNotification('❌ ' + result.error, 'error');
                         showLoading(false);
                     }
+                    
                 } catch (error) {
-                    console.error('❌ Erreur catch:', error);
-                    showNotification('❌ Erreur technique: ' + error.message, 'error');
+                    console.error('❌ Erreur:', error);
+                    showNotification('❌ Erreur technique', 'error');
                     showLoading(false);
                 }
             });
-            
-            // ========================================
-            // 7. MESSAGE DANS L'URL
-            // ========================================
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const message = urlParams.get('message');
-            if (message) {
-                showNotification(decodeURIComponent(message), 'info');
-            }
-            
-            console.log('✅ Page inscription prête');
         });
     </script>
 </body>

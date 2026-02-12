@@ -1920,7 +1920,7 @@
             updateRechargesTable();
         }
 
-        // ----- TABLEAU UTILISATEURS -----
+// ----- TABLEAU UTILISATEURS -----
         function updateUsersTable(filteredUsers = null) {
             const tbody = document.getElementById('usersTableBody');
             if (!tbody) return;
@@ -2770,7 +2770,7 @@
                 }
             );
         }
-
+        
         // ============================================
         // ACTIONS RETRAITS
         // ============================================
@@ -3055,13 +3055,16 @@
                             })
                             .eq('id', rechargeId);
                         
+                        // Ajouter au solde de l'utilisateur
+                        await supabaseClient
+                            .from('balances')
+                            .update({ 
+                                amount: supabase.raw('amount + ' + recharge.amount),
+                                total_earned: supabase.raw('total_earned + ' + recharge.amount)
+                            })
+                            .eq('user_id', recharge.user_id);
                         
-                                      unlocked_at: new Date().toISOString() 
-                                })
-                                .eq('user_id', recharge.user_id);
-                        }
-                        
-                          // Débloquer le lien de parrainage si demandé
+                        // Débloquer le lien de parrainage si demandé
                         if (recharge.unlock_referral) {
                             await supabaseClient
                                 .from('referral_data')

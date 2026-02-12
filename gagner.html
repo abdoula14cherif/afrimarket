@@ -8,7 +8,7 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
-        /* TOUS LES STYLES RESTENT IDENTIQUES */
+        /* TOUS TES STYLES RESTENT EXACTEMENT LES MÊMES */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -798,7 +798,7 @@
             <a href="recharge.html" class="menu-item"><i class="fas fa-coins"></i><span>Recharger</span></a>
             <a href="parrainage.html" class="menu-item"><i class="fas fa-users"></i><span>Parrainage</span></a>
             <div class="menu-item" id="supportMenuItem"><i class="fas fa-headset"></i><span>Support</span></div>
-            <a href="connexion.html?logout=true" class="menu-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
+            <a href="#" class="menu-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
         </div>
         
         <div class="theme-toggle-menu">
@@ -950,14 +950,35 @@
 
     <script>
         // ============================================
-        // CONFIGURATION SUPABASE
+        // ✅ NOUVELLES CLÉS SUPABASE - NOUVEAU PROJET
         // ============================================
-        const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
+        const SUPABASE_URL = 'https://xfbwimnwsixflypsvqfv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmYndpbW53c2l4Zmx5cHN2cWZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MTYyNTQsImV4cCI6MjA4NjQ5MjI1NH0.34RMdbAC_3XWxutD6X2GgF9odULkx46bpBY-V3hSUp8';
         
         let supabaseClient = null;
         let currentUser = null;
         let userBalance = 0;
+        
+        // ============================================
+        // ✅ FONCTION DE VÉRIFICATION DE SESSION (SANS REDIRECTION AUTO)
+        // ============================================
+        async function checkSession() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (error || !session) {
+                    console.log('⚠️ Session non trouvée, mode lecture seule');
+                    return null;
+                }
+                
+                console.log('✅ Session active:', session.user.email);
+                return session.user;
+                
+            } catch (error) {
+                console.error('❌ Erreur session:', error);
+                return null;
+            }
+        }
         
         // ============================================
         // INITIALISATION
@@ -965,14 +986,23 @@
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Page Gagner chargée');
             
-            // Initialiser Supabase
+            // Initialiser Supabase avec les NOUVELLES clés
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             
-            // Vérifier la session
-            await checkUserSession();
+            // ✅ Vérifier la session sans redirection automatique
+            const user = await checkSession();
             
-            // Charger le solde
-            await loadUserBalance();
+            if (user) {
+                currentUser = user;
+                console.log('✅ Utilisateur connecté:', user.email);
+                updateUserMenu();
+                await loadUserBalance();
+            } else {
+                console.log('ℹ️ Mode lecture seule - utilisateur non connecté');
+                document.getElementById('sidebarUserName').textContent = 'Visiteur';
+                document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
+                document.getElementById('sidebarUserAvatar').innerHTML = '<i class="fas fa-user"></i>';
+            }
             
             // Configurer l'interface
             setupInterface();
@@ -980,28 +1010,6 @@
             // Note: Les boutons Retrait et Recharge sont des liens HTML purs
             // Ils redirigent naturellement vers retrait.html et recharge.html
         });
-        
-        // ============================================
-        // SESSION UTILISATEUR
-        // ============================================
-        async function checkUserSession() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            
-            if (user) {
-                currentUser = user;
-                console.log('✅ Utilisateur:', user.email);
-                updateUserMenu();
-            } else {
-                const urlParams = new URLSearchParams(window.location.search);
-                const userId = urlParams.get('user');
-                
-                if (userId) {
-                    currentUser = { id: userId, email: 'utilisateur@email.com' };
-                } else {
-                    window.location.href = 'connexion.html';
-                }
-            }
-        }
         
         // ============================================
         // SOLDE UTILISATEUR
@@ -1014,7 +1022,7 @@
                     .from('balances')
                     .select('amount')
                     .eq('user_id', currentUser.id)
-                    .single();
+                    .maybeSingle();
                 
                 if (error && error.code !== 'PGRST116') {
                     console.error('Erreur chargement solde:', error);
@@ -1065,8 +1073,7 @@
             // Support
             document.getElementById('supportMenuItem').addEventListener('click', function() {
                 alert('📞 Support AFRIMARKET\n\n📧 support@afrimarket.com');
-                document.getElementById('sidebarMenu').classList.remove('open');
-                document.getElementById('menuOverlay').style.display = 'none';
+                closeSidebar();
             });
             
             // Rafraîchir solde - UNIQUEMENT sur le bouton refresh
@@ -1077,8 +1084,29 @@
                 showToast('✅ Solde actualisé', 'success');
             });
             
-            // NOTE IMPORTANTE: AUCUN EVENT LISTENER N'EST AJOUTÉ SUR LES BOUTONS RETRAIT ET RECHARGE
-            // Ils sont et restent des liens HTML purs qui redirigent naturellement
+            // ✅ Déconnexion - GESTION CORRIGÉE
+            document.getElementById('logoutBtn')?.addEventListener('click', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (supabaseClient) {
+                    await supabaseClient.auth.signOut();
+                }
+                
+                const theme = localStorage.getItem('afrimarket_theme');
+                localStorage.clear();
+                if (theme) localStorage.setItem('afrimarket_theme', theme);
+                
+                window.location.href = 'connexion.html';
+            });
+        }
+        
+        // ============================================
+        // FERMER LE MENU LATÉRAL
+        // ============================================
+        function closeSidebar() {
+            document.getElementById('sidebarMenu').classList.remove('open');
+            document.getElementById('menuOverlay').style.display = 'none';
         }
         
         // ============================================
@@ -1087,7 +1115,8 @@
         function updateUserMenu() {
             if (!currentUser) return;
             
-            const userName = currentUser.user_metadata?.full_name || 
+            const userName = currentUser.user_metadata?.nom_complet || 
+                            currentUser.user_metadata?.full_name ||
                             currentUser.email?.split('@')[0] || 
                             'Utilisateur';
             const userEmail = currentUser.email || '';
@@ -1125,17 +1154,6 @@
                 }
             }, 4000);
         }
-        
-        // ============================================
-        // DÉCONNEXION
-        // ============================================
-        document.getElementById('logoutBtn')?.addEventListener('click', async function(e) {
-            e.preventDefault();
-            await supabaseClient.auth.signOut();
-            localStorage.clear();
-            sessionStorage.clear();
-            window.location.href = 'connexion.html';
-        });
     </script>
 </body>
 </html>

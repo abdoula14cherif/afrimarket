@@ -1560,6 +1560,32 @@
                 return false;
             }
         }
+        
+        // ============================================
+// CORRECTION BOUTONS RETRAIT & RECHARGE
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Bouton Retrait
+    const retraitBtns = document.querySelectorAll('.balance-btn.retrait, a[href*="retrait"]');
+    retraitBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('🔵 Redirection vers retrait.html');
+            window.location.href = '/retrait.html';
+        });
+    });
+    
+    // Bouton Recharge
+    const rechargeBtns = document.querySelectorAll('.balance-btn.recharge, a[href*="recharge"]');
+    rechargeBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('🟢 Redirection vers recharge.html');
+            window.location.href = '/recharge.html';
+        });
+    });
+});
     </script>
 </body>
 </html>

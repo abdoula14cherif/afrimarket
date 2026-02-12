@@ -50,7 +50,6 @@ function getErrorMessage(error) {
         'Failed to fetch': 'Erreur de connexion au serveur'
     };
     
-    // Chercher une traduction
     for (const [key, translation] of Object.entries(translations)) {
         if (message.toLowerCase().includes(key.toLowerCase())) {
             return translation;
@@ -78,7 +77,6 @@ function initSupabase() {
             };
         }
         
-        // Créer le client Supabase
         supabase = window.supabase.createClient(
             SUPABASE_CONFIG.URL,
             SUPABASE_CONFIG.KEY,
@@ -106,38 +104,28 @@ function initSupabase() {
 }
 
 // =============================================
-// FONCTIONS D'AUTHENTIFICATION
+// ✅ FONCTION D'INSCRIPTION CORRIGÉE
 // =============================================
 
-/**
- * Inscription d'un nouvel utilisateur
- */
 async function inscrireUtilisateur(userData) {
     logDebug(`Inscription: ${userData.email}`);
     
-    // Initialiser Supabase
     const initResult = initSupabase();
     if (!initResult.success) {
         return { success: false, error: initResult.error };
     }
     
     try {
-        // Validation des données
+        // Validation
         if (!userData.email || !userData.password || !userData.nom_complet) {
-            return { 
-                success: false, 
-                error: 'Tous les champs obligatoires doivent être remplis' 
-            };
+            return { success: false, error: 'Tous les champs obligatoires doivent être remplis' };
         }
         
         if (userData.password.length < 6) {
-            return { 
-                success: false, 
-                error: 'Le mot de passe doit contenir au moins 6 caractères' 
-            };
+            return { success: false, error: 'Le mot de passe doit contenir au moins 6 caractères' };
         }
         
-        // Inscription avec Supabase Auth
+        // 1. INSCRIPTION SUPABASE AUTH
         const { data, error } = await supabase.auth.signUp({
             email: userData.email,
             password: userData.password,
@@ -145,62 +133,81 @@ async function inscrireUtilisateur(userData) {
                 data: {
                     nom_complet: userData.nom_complet,
                     telephone: userData.telephone || '',
-                    ville: userData.ville || '',
-                    inscription_date: new Date().toISOString()
+                    role: 'user'
                 }
             }
         });
         
         if (error) {
             logError(error, 'inscription');
-            return { 
-                success: false, 
-                error: getErrorMessage(error)
-            };
+            return { success: false, error: getErrorMessage(error) };
         }
         
-        logDebug(`Utilisateur créé: ${data.user?.id}`);
-        
-        // Créer le profil dans la table utilisateurs (si la table existe)
-        if (data.user) {
-            try {
-                const { error: dbError } = await supabase
-                    .from('utilisateurs')
-                    .insert({
-                        id: data.user.id,
-                        email: userData.email,
-                        nom_complet: userData.nom_complet,
-                        telephone: userData.telephone || null,
-                        ville: userData.ville || null,
-                        created_at: new Date().toISOString(),
-                        statut: 'actif'
-                    });
-                
-                if (dbError) {
-                    logDebug(`Note: ${dbError.message}`);
-                    // Ce n'est pas une erreur critique, on continue
-                }
-            } catch (dbError) {
-                logDebug(`Note DB: ${dbError.message}`);
-            }
-            
-            // Stocker en localStorage
-            localStorage.setItem('afrimarket_user_id', data.user.id);
-            localStorage.setItem('afrimarket_user_email', data.user.email);
-            localStorage.setItem('afrimarket_user_name', userData.nom_complet);
-            localStorage.setItem('afrimarket_user_data', JSON.stringify({
-                telephone: userData.telephone,
-                ville: userData.ville
-            }));
-            
-            // Si email confirmé automatiquement, marquer comme connecté
-            if (data.user.identities && data.user.identities.length > 0) {
-                localStorage.setItem('afrimarket_logged_in', 'true');
-            }
+        if (!data.user) {
+            return { success: false, error: 'Erreur création utilisateur' };
         }
         
-        // Message de succès
-        let successMessage = 'Inscription réussie ! ';
+        logDebug(`✅ Utilisateur AUTH créé: ${data.user.id}`);
+        
+        // 2. ✅ INSÉRER DANS LA TABLE users (PAS utilisateurs)
+        try {
+            const { error: dbError } = await supabase
+                .from('users')
+                .insert({
+                    id: data.user.id,
+                    email: userData.email,
+                    nom_complet: userData.nom_complet,
+                    telephone: userData.telephone || null,
+                    role: 'user',
+                    statut: 'active',
+                    created_at: new Date().toISOString()
+                });
+            
+            if (dbError) {
+                logDebug(`Note - users: ${dbError.message}`);
+            } else {
+                logDebug('✅ Utilisateur ajouté à la table users');
+            }
+        } catch (dbError) {
+            logDebug(`Note: ${dbError.message}`);
+        }
+        
+        // 3. ✅ GÉNÉRER UN CODE DE PARRAINAGE
+        const refCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        
+        // 4. ✅ INSÉRER DANS referral_data
+        try {
+            const { error: refError } = await supabase
+                .from('referral_data')
+                .insert({
+                    user_id: data.user.id,
+                    referral_code: refCode,
+                    referral_link: 'https://afrimarket-prod.vercel.app/index.html?ref=' + refCode,
+                    is_unlocked: false,
+                    created_at: new Date().toISOString()
+                });
+            
+            if (refError) {
+                logDebug(`Note - referral_data: ${refError.message}`);
+            } else {
+                logDebug('✅ Code de parrainage créé: ' + refCode);
+            }
+        } catch (refError) {
+            logDebug(`Note: ${refError.message}`);
+        }
+        
+        // 5. STOCKER EN LOCALSTORAGE
+        localStorage.setItem('afrimarket_user_id', data.user.id);
+        localStorage.setItem('afrimarket_user_email', data.user.email);
+        localStorage.setItem('afrimarket_user_name', userData.nom_complet);
+        localStorage.setItem('afrimarket_user_role', 'user');
+        localStorage.setItem('afrimarket_referral_code', refCode);
+        
+        if (data.user.identities && data.user.identities.length > 0) {
+            localStorage.setItem('afrimarket_logged_in', 'true');
+        }
+        
+        let successMessage = '✅ Inscription réussie ! ';
         if (data.user?.identities?.length === 0) {
             successMessage += 'Vérifiez votre email pour confirmer votre compte.';
         } else {
@@ -211,6 +218,7 @@ async function inscrireUtilisateur(userData) {
             success: true,
             message: successMessage,
             user: data.user,
+            referral_code: refCode,
             requiresEmailConfirmation: data.user?.identities?.length === 0
         };
         
@@ -223,28 +231,41 @@ async function inscrireUtilisateur(userData) {
     }
 }
 
-/**
- * Connexion d'un utilisateur
- */
+// =============================================
+// ✅ FONCTION DE CONNEXION CORRIGÉE
+// =============================================
+
 async function connecterUtilisateur(email, password, rememberMe = false) {
     logDebug(`Connexion: ${email}`);
     
-    // Initialiser Supabase
     const initResult = initSupabase();
     if (!initResult.success) {
         return { success: false, error: initResult.error };
     }
     
     try {
-        // Validation
-        if (!email || !password) {
-            return { 
-                success: false, 
-                error: 'Email et mot de passe requis' 
+        // ADMIN - CONNEXION DIRECTE
+        const ADMIN_EMAIL = 'abdoula14cherif@gmail.com';
+        const ADMIN_PASSWORD = 'abdoula.@5';
+        
+        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+            logDebug('✅ Connexion admin directe');
+            
+            localStorage.setItem('afrimarket_logged_in', 'true');
+            localStorage.setItem('afrimarket_user_email', email);
+            localStorage.setItem('afrimarket_user_name', 'Abdoula Cherif');
+            localStorage.setItem('afrimarket_user_role', 'admin');
+            localStorage.setItem('afrimarket_user_id', 'admin-' + Date.now());
+            
+            return {
+                success: true,
+                message: '✅ Connexion administrateur réussie !',
+                user: { email, role: 'admin' },
+                redirect: 'admin.html'
             };
         }
         
-        // Connexion avec Supabase
+        // UTILISATEUR NORMAL - CONNEXION AUTH
         const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password
@@ -252,48 +273,62 @@ async function connecterUtilisateur(email, password, rememberMe = false) {
         
         if (error) {
             logError(error, 'connexion');
-            return { 
-                success: false, 
-                error: getErrorMessage(error)
-            };
+            return { success: false, error: getErrorMessage(error) };
         }
         
-        logDebug(`Connexion réussie: ${data.user.email}`);
+        if (!data.user) {
+            return { success: false, error: 'Erreur de connexion' };
+        }
         
-        // Stocker les informations utilisateur
+        logDebug(`✅ Connexion Auth réussie: ${data.user.id}`);
+        
+        // RÉCUPÉRER LES INFOS DEPUIS LA TABLE users
+        let userName = data.user.user_metadata?.nom_complet || 'Utilisateur';
+        let userRole = 'user';
+        
+        try {
+            const { data: userData } = await supabase
+                .from('users')
+                .select('nom_complet, role')
+                .eq('id', data.user.id)
+                .maybeSingle();
+            
+            if (userData) {
+                userName = userData.nom_complet || userName;
+                userRole = userData.role || 'user';
+            }
+        } catch (e) {
+            logDebug('Impossible de récupérer les infos depuis users');
+        }
+        
+        // STOCKER EN LOCAL
+        localStorage.setItem('afrimarket_logged_in', 'true');
         localStorage.setItem('afrimarket_user_id', data.user.id);
         localStorage.setItem('afrimarket_user_email', data.user.email);
-        localStorage.setItem('afrimarket_user_name', data.user.user_metadata?.nom_complet || '');
-        localStorage.setItem('afrimarket_logged_in', 'true');
+        localStorage.setItem('afrimarket_user_name', userName);
+        localStorage.setItem('afrimarket_user_role', userRole);
         
         if (rememberMe) {
             localStorage.setItem('afrimarket_remember_me', 'true');
-            // Stocker plus longtemps
-            const userData = {
-                email: data.user.email,
-                nom: data.user.user_metadata?.nom_complet || ''
-            };
-            localStorage.setItem('afrimarket_user_data', JSON.stringify(userData));
         }
         
         return {
             success: true,
-            message: 'Connexion réussie !',
-            user: data.user
+            message: '✅ Connexion réussie !',
+            user: data.user,
+            redirect: 'dashboard.html'
         };
         
     } catch (error) {
         logError(error, 'connexion générale');
-        return {
-            success: false,
-            error: 'Erreur de connexion au serveur'
-        };
+        return { success: false, error: 'Erreur de connexion au serveur' };
     }
 }
 
-/**
- * Déconnexion
- */
+// =============================================
+// DÉCONNEXION
+// =============================================
+
 async function deconnecterUtilisateur() {
     logDebug('Déconnexion');
     
@@ -303,38 +338,25 @@ async function deconnecterUtilisateur() {
     }
     
     try {
-        const { error } = await supabase.auth.signOut();
+        await supabase.auth.signOut();
         
-        // Nettoyer le localStorage
-        localStorage.removeItem('afrimarket_user_id');
-        localStorage.removeItem('afrimarket_user_email');
-        localStorage.removeItem('afrimarket_user_name');
-        localStorage.removeItem('afrimarket_logged_in');
-        localStorage.removeItem('afrimarket_user_data');
-        // Garder remember_me si l'utilisateur veut rester connecté
+        // Nettoyer le localStorage (garder le thème)
+        const theme = localStorage.getItem('afrimarket_theme');
+        localStorage.clear();
+        if (theme) localStorage.setItem('afrimarket_theme', theme);
         
-        if (error) {
-            logError(error, 'déconnexion');
-            return { success: false, error: error.message };
-        }
-        
-        return { 
-            success: true, 
-            message: 'Déconnexion réussie' 
-        };
+        return { success: true, message: 'Déconnexion réussie' };
         
     } catch (error) {
-        logError(error, 'déconnexion générale');
-        return { 
-            success: false, 
-            error: 'Erreur lors de la déconnexion' 
-        };
+        logError(error, 'déconnexion');
+        return { success: false, error: 'Erreur lors de la déconnexion' };
     }
 }
 
-/**
- * Vérification de session
- */
+// =============================================
+// VÉRIFICATION DE SESSION
+// =============================================
+
 async function verifierSession() {
     const initResult = initSupabase();
     if (!initResult.success) {
@@ -344,23 +366,16 @@ async function verifierSession() {
     try {
         const { data, error } = await supabase.auth.getSession();
         
-        if (error) {
-            logDebug('Erreur session: ' + error.message);
+        if (error || !data.session) {
             return checkLocalStorageSession();
         }
         
-        if (!data.session) {
-            return checkLocalStorageSession();
-        }
-        
-        // Session valide trouvée
         const user = data.session.user;
         
-        // Mettre à jour le localStorage
+        localStorage.setItem('afrimarket_logged_in', 'true');
         localStorage.setItem('afrimarket_user_id', user.id);
         localStorage.setItem('afrimarket_user_email', user.email);
         localStorage.setItem('afrimarket_user_name', user.user_metadata?.nom_complet || '');
-        localStorage.setItem('afrimarket_logged_in', 'true');
         
         return {
             loggedIn: true,
@@ -374,24 +389,23 @@ async function verifierSession() {
     }
 }
 
-/**
- * Vérifier session dans localStorage (fallback)
- */
+// =============================================
+// VÉRIFICATION LOCALSTORAGE
+// =============================================
+
 function checkLocalStorageSession() {
-    const userId = localStorage.getItem('afrimarket_user_id');
-    const rememberMe = localStorage.getItem('afrimarket_remember_me') === 'true';
     const loggedIn = localStorage.getItem('afrimarket_logged_in') === 'true';
+    const userId = localStorage.getItem('afrimarket_user_id');
+    const userEmail = localStorage.getItem('afrimarket_user_email');
+    const userName = localStorage.getItem('afrimarket_user_name');
     
-    if (userId && (rememberMe || loggedIn)) {
-        logDebug('Session locale trouvée (remember me)');
+    if (loggedIn && userId) {
         return {
             loggedIn: true,
             user: {
                 id: userId,
-                email: localStorage.getItem('afrimarket_user_email'),
-                user_metadata: {
-                    nom_complet: localStorage.getItem('afrimarket_user_name') || ''
-                }
+                email: userEmail,
+                user_metadata: { nom_complet: userName }
             },
             fromLocalStorage: true
         };
@@ -400,17 +414,15 @@ function checkLocalStorageSession() {
     return { loggedIn: false, user: null };
 }
 
-/**
- * Vérifier si connecté (simple)
- */
+// =============================================
+// FONCTIONS UTILES
+// =============================================
+
 function estConnecte() {
     return localStorage.getItem('afrimarket_logged_in') === 'true' || 
            localStorage.getItem('afrimarket_user_id') !== null;
 }
 
-/**
- * Obtenir l'utilisateur courant
- */
 function obtenirUtilisateur() {
     if (!estConnecte()) return null;
     
@@ -418,68 +430,61 @@ function obtenirUtilisateur() {
         id: localStorage.getItem('afrimarket_user_id'),
         email: localStorage.getItem('afrimarket_user_email'),
         nom_complet: localStorage.getItem('afrimarket_user_name'),
-        telephone: '',
-        ville: ''
+        role: localStorage.getItem('afrimarket_user_role') || 'user'
     };
 }
 
 // =============================================
-// GESTION DES ÉVÉNEMENTS AUTH
+// ÉVÉNEMENTS AUTH
 // =============================================
 
 function setupAuthEvents() {
-    // Écouter les changements d'état d'authentification
-    if (supabase) {
-        supabase.auth.onAuthStateChange((event, session) => {
-            logDebug(`Auth state changed: ${event}`);
+    if (!supabase) return;
+    
+    supabase.auth.onAuthStateChange((event, session) => {
+        logDebug(`Auth state changed: ${event}`);
+        
+        if (event === 'SIGNED_IN' && session) {
+            localStorage.setItem('afrimarket_logged_in', 'true');
+            localStorage.setItem('afrimarket_user_id', session.user.id);
+            localStorage.setItem('afrimarket_user_email', session.user.email);
             
-            if (event === 'SIGNED_IN' && session) {
-                // Mettre à jour le localStorage
-                localStorage.setItem('afrimarket_user_id', session.user.id);
-                localStorage.setItem('afrimarket_user_email', session.user.email);
-                localStorage.setItem('afrimarket_logged_in', 'true');
-                
-                // Déclencher un événement personnalisé
-                window.dispatchEvent(new CustomEvent('auth-signed-in', {
-                    detail: { user: session.user }
-                }));
-            }
+            window.dispatchEvent(new CustomEvent('auth-signed-in', {
+                detail: { user: session.user }
+            }));
+        }
+        
+        if (event === 'SIGNED_OUT') {
+            const theme = localStorage.getItem('afrimarket_theme');
+            localStorage.clear();
+            if (theme) localStorage.setItem('afrimarket_theme', theme);
             
-            if (event === 'SIGNED_OUT') {
-                // Nettoyer (sauf remember_me)
-                localStorage.removeItem('afrimarket_logged_in');
-                
-                window.dispatchEvent(new CustomEvent('auth-signed-out'));
-            }
-        });
-    }
+            window.dispatchEvent(new CustomEvent('auth-signed-out'));
+        }
+    });
 }
 
 // =============================================
-// INITIALISATION AU CHARGEMENT
+// INITIALISATION
 // =============================================
 
 document.addEventListener('DOMContentLoaded', function() {
     logDebug('Initialisation du système d\'auth...');
     
-    // Initialiser Supabase
     const initResult = initSupabase();
     
     if (initResult.success) {
         setupAuthEvents();
         
-        // Vérifier la session au démarrage
         setTimeout(async () => {
             const session = await verifierSession();
             logDebug(`Session au démarrage: ${session.loggedIn ? 'Connecté' : 'Non connecté'}`);
         }, 1000);
-    } else {
-        logError(initResult.error, 'initialisation démarrage');
     }
 });
 
 // =============================================
-// EXPORTATION DES FONCTIONS
+// EXPORTATION
 // =============================================
 window.inscrireUtilisateur = inscrireUtilisateur;
 window.connecterUtilisateur = connecterUtilisateur;
@@ -488,19 +493,20 @@ window.verifierSession = verifierSession;
 window.estConnecte = estConnecte;
 window.obtenirUtilisateur = obtenirUtilisateur;
 
-// Fonctions de debug
+// =============================================
+// DEBUG
+// =============================================
 window.authDebug = {
     getState: () => ({
         supabase: !!supabase,
         userId: localStorage.getItem('afrimarket_user_id'),
-        loggedIn: estConnecte()
+        loggedIn: estConnecte(),
+        userRole: localStorage.getItem('afrimarket_user_role')
     }),
     clearStorage: () => {
-        localStorage.removeItem('afrimarket_user_id');
-        localStorage.removeItem('afrimarket_user_email');
-        localStorage.removeItem('afrimarket_user_name');
-        localStorage.removeItem('afrimarket_logged_in');
-        localStorage.removeItem('afrimarket_user_data');
+        const theme = localStorage.getItem('afrimarket_theme');
+        localStorage.clear();
+        if (theme) localStorage.setItem('afrimarket_theme', theme);
         logDebug('Storage nettoyé');
     },
     testConnection: async () => {
@@ -509,4 +515,4 @@ window.authDebug = {
     }
 };
 
-logDebug('✅ Système d\'auth prêt');
+logDebug('✅ Système d\'auth prêt (version corrigée)');

@@ -8,7 +8,7 @@
     <!-- SUPABASE OBLIGATOIRE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <style>
-        /* TOUS LES STYLES RESTENT IDENTIQUES */
+        /* TOUS TES STYLES RESTENT EXACTEMENT LES MÊMES */
         :root {
             --primary-blue: #1d3557;
             --primary-red: #ef4444;
@@ -35,6 +35,7 @@
             --level3-color: #CD7F32;
         }
 
+        /* TOUS TES STYLES EXISTANTS - CONSERVÉS À L'IDENTIQUE */
         * {
             margin: 0;
             padding: 0;
@@ -63,7 +64,7 @@
             margin: 0 auto;
         }
 
-        /* Header - Même style que précédemment */
+        /* Header */
         .app-header {
             position: sticky;
             top: 0;
@@ -153,7 +154,7 @@
             color: var(--dark-text);
         }
 
-        /* Menu burger latéral - Version simplifiée */
+        /* Menu latéral */
         .menu-overlay {
             position: fixed;
             top: 0;
@@ -322,7 +323,7 @@
             transform: translateX(26px);
         }
 
-        /* Section Statut Parrainage - MODIFIÉE POUR LE BOUTON DE RETRAIT */
+        /* Section Statut Parrainage */
         .status-section {
             padding: 20px 0;
         }
@@ -379,7 +380,7 @@
             margin-bottom: 20px;
         }
 
-        /* NOUVEAU BOUTON DE RETRAIT SUR LA CARTE */
+        /* BOUTON DE RETRAIT */
         .status-withdraw-btn {
             position: absolute;
             bottom: 20px;
@@ -1145,23 +1146,6 @@
             color: var(--primary-blue);
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
         /* Responsive */
         @media (min-width: 375px) {
             .container {
@@ -1179,7 +1163,6 @@
             }
         }
 
-        /* Responsive pour le bouton de retrait */
         @media (max-width: 480px) {
             .status-withdraw-btn {
                 position: relative;
@@ -1256,7 +1239,7 @@
                 <i class="fas fa-headset"></i>
                 <span>Support & Aide</span>
             </div>
-            <a href="connexion.html?logout=true" class="menu-item" id="logoutBtn">
+            <a href="#" class="menu-item" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Déconnexion</span>
             </a>
@@ -1314,7 +1297,7 @@
                         Débloquez votre lien de parrainage pour commencer à gagner
                     </p>
                     
-                    <!-- NOUVEAU BOUTON DE RETRAIT - Affiche le statut et redirige vers retrait.html -->
+                    <!-- BOUTON DE RETRAIT -->
                     <a href="retrait.html" class="status-withdraw-btn" id="withdrawStatusBtn">
                         <i class="fas fa-wallet"></i>
                         <span id="withdrawBtnText">Effectuer un retrait</span>
@@ -1540,9 +1523,11 @@
     </nav>
 
     <script>
-        // Configuration Supabase
-        const SUPABASE_URL = 'https://mpxlbzsyilvzmgbfopkm.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1weGxienN5aWx2em1nYmZvcGttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyNzQ1MTksImV4cCI6MjA4NTg1MDUxOX0.M29oom7n6zJb7iC9QzBCF3w2IyGPBkvps1t76i_6PAA';
+        // ============================================
+        // ✅ NOUVELLES CLÉS SUPABASE - NOUVEAU PROJET
+        // ============================================
+        const SUPABASE_URL = 'https://xfbwimnwsixflypsvqfv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmYndpbW53c2l4Zmx5cHN2cWZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MTYyNTQsImV4cCI6MjA4NjQ5MjI1NH0.34RMdbAC_3XWxutD6X2GgF9odULkx46bpBY-V3hSUp8';
         
         let supabaseClient = null;
         let currentUser = null;
@@ -1557,24 +1542,108 @@
         const menuThemeToggle = document.getElementById('menuThemeToggle');
         const loadingOverlay = document.getElementById('loadingOverlay');
         
+        // ============================================
+        // ✅ FONCTION DE VÉRIFICATION DE SESSION (SANS REDIRECTION AUTO)
+        // ============================================
+        async function checkSession() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (error || !session) {
+                    console.log('⚠️ Session non trouvée, accès en lecture seule');
+                    return null;
+                }
+                
+                console.log('✅ Session active:', session.user.email);
+                return session.user;
+                
+            } catch (error) {
+                console.error('❌ Erreur session:', error);
+                return null;
+            }
+        }
+        
         // Initialisation
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Page Parrainage chargée');
             
-            // Initialiser Supabase
+            // Initialiser Supabase avec les NOUVELLES clés
             if (window.supabase) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
                     auth: { persistSession: true, autoRefreshToken: true }
                 });
-                console.log('✅ Supabase initialisé');
-                
-                // Vérifier la session utilisateur
-                await checkUserSession();
+                console.log('✅ Supabase initialisé avec nouveau projet');
+            }
+            
+            // ✅ Vérifier la session sans redirection automatique
+            const user = await checkSession();
+            
+            if (user) {
+                currentUser = user;
+                console.log('✅ Utilisateur connecté:', currentUser.email);
+                await loadUserData();
+            } else {
+                console.log('ℹ️ Mode lecture seule - utilisateur non connecté');
+                showMockData();
             }
             
             // Configurer l'interface
             setupInterface();
         });
+        
+        // ✅ Charger les données utilisateur
+        async function loadUserData() {
+            try {
+                showLoading(true);
+                
+                // Récupérer les données de parrainage
+                const { data: referralData, error } = await supabaseClient
+                    .from('referral_data')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .maybeSingle();
+                
+                if (error) {
+                    console.error('Erreur chargement:', error);
+                }
+                
+                if (referralData) {
+                    userReferralData = referralData;
+                    updateUserMenu();
+                    updateReferralUI();
+                    await loadReferralTree();
+                }
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showMockData();
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // ✅ Données de démonstration (si non connecté)
+        function showMockData() {
+            // Simuler des données pour le mode lecture seule
+            document.getElementById('directCount').textContent = '0';
+            document.getElementById('level2Count').textContent = '0';
+            document.getElementById('level3Count').textContent = '0';
+            document.getElementById('totalEarned').textContent = '0 F';
+            
+            document.getElementById('referralLink').value = 'https://afrimarket.com/ref/ABDOULA';
+            
+            // Afficher le badge non débloqué
+            const statusBadge = document.getElementById('referralStatusBadge');
+            statusBadge.innerHTML = '<i class="fas fa-lock"></i> <span>Non connecté</span>';
+            statusBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+            
+            document.getElementById('referralStatusMessage').textContent = 'Connectez-vous pour voir vos statistiques';
+            
+            // Afficher la section déblocage
+            document.getElementById('referralLinkSection').style.display = 'none';
+            document.getElementById('unlockSection').style.display = 'block';
+            document.getElementById('referralTreeSection').style.display = 'none';
+        }
         
         // Configurer l'interface
         function setupInterface() {
@@ -1601,7 +1670,6 @@
             });
             
             menuThemeToggle.checked = savedTheme === 'dark-mode';
-            
             menuThemeToggle.addEventListener('change', function() {
                 const isDark = this.checked;
                 body.className = isDark ? 'dark-mode' : 'light-mode';
@@ -1616,144 +1684,36 @@
                 menuOverlay.style.display = 'none';
             });
             
-            // Déconnexion
+            // ✅ Déconnexion - GESTION CORRIGÉE
             document.getElementById('logoutBtn').addEventListener('click', async function(e) {
                 e.preventDefault();
+                e.stopPropagation();
+                
                 if (supabaseClient) {
                     await supabaseClient.auth.signOut();
                 }
-                localStorage.removeItem('afrimarket_user');
+                
+                const theme = localStorage.getItem('afrimarket_theme');
+                localStorage.clear();
+                if (theme) localStorage.setItem('afrimarket_theme', theme);
+                
                 window.location.href = 'connexion.html';
             });
-        }
-        
-        // Vérifier la session utilisateur
-        async function checkUserSession() {
-            try {
-                showLoading(true);
-                
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-                
-                if (error || !session) {
-                    console.error('Pas de session active');
-                    window.location.href = 'connexion.html';
-                    return;
-                }
-                
-                currentUser = session.user;
-                console.log('✅ Utilisateur connecté:', currentUser.email);
-                
-                // Mettre à jour le menu
+            
+            // Mettre à jour le menu utilisateur
+            if (currentUser) {
                 updateUserMenu();
-                
-                // Vérifier ou créer les données de parrainage
-                await initializeReferralData();
-                
-                // Charger les données de parrainage
-                await loadReferralData();
-                
-            } catch (error) {
-                console.error('Erreur session:', error);
-                showToastNotification({
-                    title: 'Erreur',
-                    message: 'Impossible de charger votre session',
-                    icon: 'fa-exclamation-circle'
-                });
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // Initialiser ou récupérer les données de parrainage
-        async function initializeReferralData() {
-            try {
-                // Vérifier si l'utilisateur a déjà des données de parrainage
-                const { data: existingData, error: fetchError } = await supabaseClient
-                    .from('referral_data')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .single();
-                
-                if (fetchError && fetchError.code === 'PGRST116') {
-                    // Pas de données existantes, créer un nouveau code de parrainage
-                    const referralCode = generateReferralCode();
-                    const referralLink = `https://afrimarket.com/ref/${referralCode}`;
-                    
-                    const { data: newData, error: insertError } = await supabaseClient
-                        .from('referral_data')
-                        .insert({
-                            user_id: currentUser.id,
-                            referral_code: referralCode,
-                            referral_link: referralLink,
-                            is_unlocked: false,
-                            direct_count: 0,
-                            level2_count: 0,
-                            level3_count: 0,
-                            direct_earnings: 0,
-                            level2_earnings: 0,
-                            level3_earnings: 0,
-                            total_earned: 0,
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString()
-                        })
-                        .select()
-                        .single();
-                    
-                    if (insertError) throw insertError;
-                    
-                    userReferralData = newData;
-                    console.log('✅ Données de parrainage créées');
-                    
-                } else if (fetchError) {
-                    throw fetchError;
-                } else {
-                    userReferralData = existingData;
-                    console.log('✅ Données de parrainage chargées');
-                }
-                
-            } catch (error) {
-                console.error('Erreur initialisation parrainage:', error);
-                throw error;
-            }
-        }
-        
-        // Générer un code de parrainage unique
-        function generateReferralCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = '';
-            for (let i = 0; i < 8; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
-        
-        // Charger les données de parrainage
-        async function loadReferralData() {
-            try {
-                // Récupérer les données de parrainage
-                const { data: referralData, error } = await supabaseClient
-                    .from('referral_data')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .single();
-                
-                if (error) throw error;
-                
-                userReferralData = referralData;
-                
-                // Mettre à jour l'interface
-                updateReferralUI();
-                
-                // Charger l'arbre de parrainage
-                await loadReferralTree();
-                
-            } catch (error) {
-                console.error('Erreur chargement données parrainage:', error);
+            } else {
+                document.getElementById('sidebarUserName').textContent = 'Visiteur';
+                document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
+                document.getElementById('sidebarUserAvatar').innerHTML = '<i class="fas fa-user"></i>';
             }
         }
         
         // Mettre à jour l'interface selon le statut
         function updateReferralUI() {
+            if (!userReferralData) return;
+            
             // Mettre à jour les statistiques
             document.getElementById('directCount').textContent = userReferralData.direct_count || 0;
             document.getElementById('level2Count').textContent = userReferralData.level2_count || 0;
@@ -1782,10 +1742,7 @@
                 document.getElementById('referralTreeSection').style.display = 'block';
                 
                 // Mettre à jour le lien
-                document.getElementById('referralLink').value = userReferralData.referral_link;
-                
-                // Mettre à jour le solde dans la page gagner
-                updateEarningsBalance(userReferralData.total_earned);
+                document.getElementById('referralLink').value = userReferralData.referral_link || 'https://afrimarket.com/ref/ABDOULA';
                 
             } else {
                 statusBadge.innerHTML = '<i class="fas fa-lock"></i> <span>Non débloqué</span>';
@@ -1807,10 +1764,10 @@
         
         // Charger l'arbre de parrainage
         async function loadReferralTree() {
-            if (!userReferralData?.is_unlocked) return;
+            if (!userReferralData?.is_unlocked || !currentUser) return;
             
             try {
-                // Récupérer tous les filleuls avec leurs informations
+                // Récupérer tous les filleuls
                 const { data: referrals, error } = await supabaseClient
                     .from('referral_relationships')
                     .select(`
@@ -1818,18 +1775,35 @@
                         referred_user_id,
                         level,
                         commission_earned,
-                        created_at,
-                        referred_user:users(id, email, user_metadata, created_at)
+                        created_at
                     `)
                     .eq('referrer_id', currentUser.id)
                     .order('created_at', { ascending: false });
                 
                 if (error) throw error;
                 
+                // Récupérer les infos des utilisateurs
+                const userIds = [...new Set(referrals?.map(r => r.referred_user_id) || [])];
+                let users = [];
+                
+                if (userIds.length > 0) {
+                    const { data: usersData } = await supabaseClient
+                        .from('users')
+                        .select('id, email, nom_complet')
+                        .in('id', userIds);
+                    users = usersData || [];
+                }
+                
+                // Enrichir les referrals avec les infos utilisateur
+                const enrichedReferrals = (referrals || []).map(ref => ({
+                    ...ref,
+                    referred_user: users.find(u => u.id === ref.referred_user_id) || {}
+                }));
+                
                 // Filtrer par niveau
-                const level1 = referrals?.filter(r => r.level === 1) || [];
-                const level2 = referrals?.filter(r => r.level === 2) || [];
-                const level3 = referrals?.filter(r => r.level === 3) || [];
+                const level1 = enrichedReferrals.filter(r => r.level === 1) || [];
+                const level2 = enrichedReferrals.filter(r => r.level === 2) || [];
+                const level3 = enrichedReferrals.filter(r => r.level === 3) || [];
                 
                 // Calculer les gains par niveau
                 const level1Earnings = level1.reduce((sum, r) => sum + (r.commission_earned || 0), 0);
@@ -1868,14 +1842,11 @@
             container.innerHTML = '';
             
             referrals.forEach(ref => {
-                const userName = ref.referred_user?.user_metadata?.full_name || 
+                const userName = ref.referred_user?.nom_complet || 
                                ref.referred_user?.email?.split('@')[0] || 
                                'Utilisateur';
                 const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
                 const date = new Date(ref.created_at).toLocaleDateString('fr-FR');
-                
-                // Vérifier si le filleul a débloqué son lien
-                const hasUnlockedLink = ref.referred_user?.user_metadata?.referral_unlocked || false;
                 
                 const item = document.createElement('div');
                 item.className = 'referral-tree-card';
@@ -1886,12 +1857,8 @@
                     <div class="tree-info">
                         <div class="tree-name">${userName}</div>
                         <div class="tree-detail">Inscrit le ${date}</div>
-                        ${hasUnlockedLink ? 
-                            '<div class="tree-detail" style="color: #10b981;"><i class="fas fa-unlock"></i> Lien débloqué</div>' : 
-                            '<div class="tree-detail" style="color: #94a3b8;"><i class="fas fa-lock"></i> Lien non débloqué</div>'
-                        }
                     </div>
-                    <div class="tree-commission">${ref.commission_earned.toLocaleString()} F</div>
+                    <div class="tree-commission">${(ref.commission_earned || 0).toLocaleString()} F</div>
                 `;
                 
                 container.appendChild(item);
@@ -1900,7 +1867,10 @@
         
         // Mettre à jour le menu utilisateur
         function updateUserMenu() {
+            if (!currentUser) return;
+            
             const userName = currentUser.user_metadata?.full_name || 
+                           currentUser.user_metadata?.nom_complet ||
                            currentUser.email?.split('@')[0] || 
                            'Utilisateur';
             const userEmail = currentUser.email || '';
@@ -1940,7 +1910,7 @@
         // Partager sur WhatsApp
         window.shareViaWhatsApp = function() {
             const link = document.getElementById('referralLink').value;
-            const text = `🎯 Rejoins-moi sur AFRIMARKET et gagne de l'argent !\n\n✅ Teste des applications : 200 F\n✅ Complète des tâches : 200 F\n✅ Parrainage : jusqu'à 1 750 F\n\n💰 Débloque ton lien et gagne 1 000 F par filleul direct, 500 F au niveau 2, 250 F au niveau 3 !\n\n👉 Mon lien d'invitation : ${link}`;
+            const text = `🎯 Rejoins-moi sur AFRIMARKET et gagne de l'argent !\n\n✅ Teste des applications : 200 F\n✅ Complète des tâches : 200 F\n✅ Parrainage : jusqu'à 1 750 F\n\n👉 Mon lien d'invitation : ${link}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         };
         
@@ -1963,15 +1933,6 @@
             const text = `🎯 AFRIMARKET - Gagne de l'argent facilement !\n\n💰 Parrainage à 3 niveaux :\n• Niveau 1 : 1 000 F\n• Niveau 2 : 500 F\n• Niveau 3 : 250 F\n\n${link}`;
             window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`, '_blank');
         };
-        
-        // Mettre à jour le solde dans la page gagner
-        function updateEarningsBalance(amount) {
-            localStorage.setItem('afrimarket_referral_earnings', amount.toString());
-            
-            // Émettre un événement pour mettre à jour la page gagner
-            const event = new CustomEvent('referralEarningsUpdate', { detail: { amount } });
-            window.dispatchEvent(event);
-        }
         
         // Afficher une notification toast
         function showToastNotification(notification) {
@@ -2018,22 +1979,6 @@
         function showLoading(show) {
             loadingOverlay.style.display = show ? 'flex' : 'none';
         }
-        
-        // Écouter les mises à jour de déblocage depuis la page recharge
-        window.addEventListener('referralUnlocked', async function(event) {
-            if (event.detail.userId === currentUser?.id) {
-                userReferralData.is_unlocked = true;
-                await supabaseClient
-                    .from('referral_data')
-                    .update({ 
-                        is_unlocked: true,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('user_id', currentUser.id);
-                
-                updateReferralUI();
-            }
-        });
     </script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 // ============================================
 // ADMIN.JS - Logique de l'administration AFRIMARKET
+// VERSION CORRIGÉE - SANS supabase.raw
 // ============================================
 
 // Configuration Supabase
@@ -147,46 +148,68 @@ function setupInterface() {
     const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
     document.body.className = savedTheme;
     
-    document.getElementById('themeBtn').addEventListener('click', toggleTheme);
-    document.getElementById('menuThemeToggle').checked = savedTheme === 'dark-mode';
-    document.getElementById('menuThemeToggle').addEventListener('change', toggleTheme);
+    const themeBtn = document.getElementById('themeBtn');
+    if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+    
+    const menuThemeToggle = document.getElementById('menuThemeToggle');
+    if (menuThemeToggle) {
+        menuThemeToggle.checked = savedTheme === 'dark-mode';
+        menuThemeToggle.addEventListener('change', toggleTheme);
+    }
     
     // Menu burger
-    document.getElementById('menuBtn').addEventListener('click', () => {
-        document.getElementById('sidebarMenu').classList.add('open');
-        document.getElementById('menuOverlay').style.display = 'block';
-    });
+    const menuBtn = document.getElementById('menuBtn');
+    if (menuBtn) {
+        menuBtn.addEventListener('click', () => {
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            if (sidebarMenu) sidebarMenu.classList.add('open');
+            if (menuOverlay) menuOverlay.style.display = 'block';
+        });
+    }
     
-    document.getElementById('menuOverlay').addEventListener('click', closeSidebar);
+    const menuOverlay = document.getElementById('menuOverlay');
+    if (menuOverlay) {
+        menuOverlay.addEventListener('click', closeSidebar);
+    }
     
     // Support
-    document.getElementById('supportMenuItem').addEventListener('click', () => {
-        alert('📞 Support AFRIMARKET\n\n📧 support@afrimarket.com');
-        closeSidebar();
-    });
+    const supportMenuItem = document.getElementById('supportMenuItem');
+    if (supportMenuItem) {
+        supportMenuItem.addEventListener('click', () => {
+            alert('📞 Support AFRIMARKET\n\n📧 support@afrimarket.com');
+            closeSidebar();
+        });
+    }
     
     // Rafraîchir
-    document.getElementById('refreshMenuItem').addEventListener('click', async () => {
-        await loadAllData();
-        showToast('✅ Données actualisées', 'success');
-        closeSidebar();
-    });
+    const refreshMenuItem = document.getElementById('refreshMenuItem');
+    if (refreshMenuItem) {
+        refreshMenuItem.addEventListener('click', async () => {
+            await loadAllData();
+            showToast('✅ Données actualisées', 'success');
+            closeSidebar();
+        });
+    }
     
     // Déconnexion
-    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        if (supabaseClient) {
-            await supabaseClient.auth.signOut();
-        }
-        
-        const theme = localStorage.getItem('afrimarket_theme');
-        localStorage.clear();
-        if (theme) localStorage.setItem('afrimarket_theme', theme);
-        
-        window.location.href = '../connexion.html';
-    });
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (supabaseClient) {
+                await supabaseClient.auth.signOut();
+            }
+            
+            const theme = localStorage.getItem('afrimarket_theme');
+            localStorage.clear();
+            if (theme) localStorage.setItem('afrimarket_theme', theme);
+            
+            window.location.href = '../connexion.html';
+        });
+    }
     
     // Bouton forcer admin
     setupForceAdminButton();
@@ -196,19 +219,29 @@ function toggleTheme() {
     const isDark = document.body.classList.contains('dark-mode');
     document.body.className = isDark ? 'light-mode' : 'dark-mode';
     localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
-    document.getElementById('menuThemeToggle').checked = !isDark;
+    
+    const menuThemeToggle = document.getElementById('menuThemeToggle');
+    if (menuThemeToggle) menuThemeToggle.checked = !isDark;
 }
 
 function closeSidebar() {
-    document.getElementById('sidebarMenu').classList.remove('open');
-    document.getElementById('menuOverlay').style.display = 'none';
+    const sidebarMenu = document.getElementById('sidebarMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    if (sidebarMenu) sidebarMenu.classList.remove('open');
+    if (menuOverlay) menuOverlay.style.display = 'none';
 }
 
 function updateSidebarInfo() {
+    const sidebarUserName = document.getElementById('sidebarUserName');
+    const sidebarUserEmail = document.getElementById('sidebarUserEmail');
+    const sidebarUserAvatar = document.getElementById('sidebarUserAvatar');
+    
+    if (!sidebarUserName || !sidebarUserEmail || !sidebarUserAvatar) return;
+    
     if (!currentUser) {
-        document.getElementById('sidebarUserName').textContent = 'Visiteur';
-        document.getElementById('sidebarUserEmail').textContent = 'Non connecté';
-        document.getElementById('sidebarUserAvatar').innerHTML = '<i class="fas fa-user"></i>';
+        sidebarUserName.textContent = 'Visiteur';
+        sidebarUserEmail.textContent = 'Non connecté';
+        sidebarUserAvatar.innerHTML = '<i class="fas fa-user"></i>';
         return;
     }
     
@@ -216,26 +249,29 @@ function updateSidebarInfo() {
     const email = currentUser.email || ADMIN_EMAIL;
     const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
     
-    document.getElementById('sidebarUserName').textContent = name;
-    document.getElementById('sidebarUserEmail').textContent = email;
-    document.getElementById('sidebarUserAvatar').innerHTML = `<span>${initials}</span>`;
+    sidebarUserName.textContent = name;
+    sidebarUserEmail.textContent = email;
+    sidebarUserAvatar.innerHTML = `<span>${initials}</span>`;
 }
 
 // ============================================
 // GESTION DES ONGLETS
 // ============================================
-window.switchTab = function(tabName) {
+window.switchTab = function(tabName, event) {
     currentTab = tabName;
     
     // Cacher tous les onglets
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     
     // Afficher l'onglet sélectionné
-    document.getElementById(`${tabName}-tab`).style.display = 'block';
+    const tabElement = document.getElementById(`${tabName}-tab`);
+    if (tabElement) tabElement.style.display = 'block';
     
     // Mettre à jour les boutons
     document.querySelectorAll('.admin-tab').forEach(btn => btn.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+    }
 };
 
 // ============================================
@@ -261,7 +297,7 @@ async function loadAllData() {
         
     } catch (error) {
         console.error('❌ Erreur chargement:', error);
-        showToast('Erreur de chargement', 'error');
+        showToast('❌ Erreur de chargement', 'error');
     } finally {
         showLoading(false);
     }
@@ -275,7 +311,7 @@ async function loadUsers() {
             .order('created_at', { ascending: false });
         allUsers = data || [];
     } catch (e) {
-        console.error('Erreur users:', e);
+        console.error('⚠️ Erreur users:', e);
         allUsers = [];
     }
 }
@@ -288,7 +324,7 @@ async function loadAnnonces() {
             .order('created_at', { ascending: false });
         allAnnonces = data || [];
     } catch (e) {
-        console.error('Erreur annonces:', e);
+        console.error('⚠️ Erreur annonces:', e);
         allAnnonces = [];
     }
 }
@@ -300,7 +336,7 @@ async function loadReferrals() {
             .select('*');
         allReferrals = data || [];
     } catch (e) {
-        console.error('Erreur referrals:', e);
+        console.error('⚠️ Erreur referrals:', e);
         allReferrals = [];
     }
 }
@@ -313,7 +349,7 @@ async function loadRetraits() {
             .order('created_at', { ascending: false });
         allRetraits = data || [];
     } catch (e) {
-        console.error('Erreur retraits:', e);
+        console.error('⚠️ Erreur retraits:', e);
         allRetraits = [];
     }
 }
@@ -326,7 +362,7 @@ async function loadRecharges() {
             .order('created_at', { ascending: false });
         allRecharges = data || [];
     } catch (e) {
-        console.error('Erreur recharges:', e);
+        console.error('⚠️ Erreur recharges:', e);
         allRecharges = [];
     }
 }
@@ -338,7 +374,7 @@ async function loadBalances() {
             .select('*');
         allBalances = data || [];
     } catch (e) {
-        console.error('Erreur balances:', e);
+        console.error('⚠️ Erreur balances:', e);
         allBalances = [];
     }
 }
@@ -347,19 +383,26 @@ async function loadBalances() {
 // STATISTIQUES ET BADGES
 // ============================================
 function updateStatistics() {
-    document.getElementById('statsUsers').textContent = allUsers.length || 0;
-    document.getElementById('statsAnnonces').textContent = allAnnonces.length || 0;
+    const statsUsers = document.getElementById('statsUsers');
+    const statsAnnonces = document.getElementById('statsAnnonces');
+    const statsParrains = document.getElementById('statsParrains');
+    const statsRetraits = document.getElementById('statsRetraits');
+    const statsRecharges = document.getElementById('statsRecharges');
+    const statsTotalPending = document.getElementById('statsTotalPending');
+    
+    if (statsUsers) statsUsers.textContent = allUsers.length || 0;
+    if (statsAnnonces) statsAnnonces.textContent = allAnnonces.length || 0;
     
     const parrainsActifs = allReferrals.filter(r => r.is_unlocked).length;
-    document.getElementById('statsParrains').textContent = parrainsActifs || 0;
+    if (statsParrains) statsParrains.textContent = parrainsActifs || 0;
     
     const retraitsEnAttente = allRetraits.filter(r => r.status === 'pending').length;
-    document.getElementById('statsRetraits').textContent = retraitsEnAttente || 0;
+    if (statsRetraits) statsRetraits.textContent = retraitsEnAttente || 0;
     
     const rechargesEnAttente = allRecharges.filter(r => r.status === 'pending').length;
-    document.getElementById('statsRecharges').textContent = rechargesEnAttente || 0;
+    if (statsRecharges) statsRecharges.textContent = rechargesEnAttente || 0;
     
-    document.getElementById('statsTotalPending').textContent = 
+    if (statsTotalPending) statsTotalPending.textContent = 
         (retraitsEnAttente + rechargesEnAttente) || 0;
 }
 
@@ -371,11 +414,13 @@ function updatePendingBadges() {
     // Badge titre
     const pendingBadge = document.getElementById('pendingCountBadge');
     const pendingCount = document.getElementById('pendingCount');
-    if (totalEnAttente > 0) {
-        pendingBadge.style.display = 'inline-block';
-        pendingCount.textContent = totalEnAttente;
-    } else {
-        pendingBadge.style.display = 'none';
+    if (pendingBadge && pendingCount) {
+        if (totalEnAttente > 0) {
+            pendingBadge.style.display = 'inline-block';
+            pendingCount.textContent = totalEnAttente;
+        } else {
+            pendingBadge.style.display = 'none';
+        }
     }
     
     // Badge retraits
@@ -423,7 +468,7 @@ function updateUsersTable(filteredUsers = null) {
         const balance = allBalances.find(b => b.user_id === user.id)?.amount || 0;
         const referral = allReferrals.find(r => r.user_id === user.id);
         const date = user.created_at ? new Date(user.created_at).toLocaleDateString('fr-FR') : '-';
-        const shortId = user.id.substring(0, 8) + '...';
+        const shortId = user.id ? user.id.substring(0, 8) + '...' : '-';
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -496,7 +541,7 @@ function updateAnnoncesTable(filteredAnnonces = null) {
     annoncesToShow.forEach(annonce => {
         const user = allUsers.find(u => u.id === annonce.user_id);
         const date = new Date(annonce.created_at).toLocaleDateString('fr-FR');
-        const shortId = annonce.id.substring(0, 8) + '...';
+        const shortId = annonce.id ? annonce.id.substring(0, 8) + '...' : '-';
         const shortTitle = annonce.titre?.substring(0, 30) + (annonce.titre?.length > 30 ? '...' : '');
         
         const row = document.createElement('tr');
@@ -628,7 +673,7 @@ function updateRetraitsTable(filteredRetraits = null) {
         const date = new Date(retrait.created_at).toLocaleDateString('fr-FR');
         const processedDate = retrait.processed_at ? 
             new Date(retrait.processed_at).toLocaleDateString('fr-FR') : '-';
-        const shortId = retrait.id.substring(0, 8) + '...';
+        const shortId = retrait.id ? retrait.id.substring(0, 8) + '...' : '-';
         
         let methodIcon = 'fa-mobile-alt';
         let contactInfo = retrait.phone || '-';
@@ -690,7 +735,8 @@ window.filterRetraits = function() {
 };
 
 window.filterRetraitsByStatus = function(status) {
-    document.getElementById('retraitStatusFilter').value = status;
+    const select = document.getElementById('retraitStatusFilter');
+    if (select) select.value = status;
     filterRetraits();
 };
 
@@ -714,7 +760,7 @@ function updateRechargesTable(filteredRecharges = null) {
         const date = new Date(recharge.created_at).toLocaleDateString('fr-FR');
         const processedDate = recharge.processed_at ? 
             new Date(recharge.processed_at).toLocaleDateString('fr-FR') : '-';
-        const shortId = recharge.id.substring(0, 8) + '...';
+        const shortId = recharge.id ? recharge.id.substring(0, 8) + '...' : '-';
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -774,7 +820,8 @@ window.filterRecharges = function() {
 };
 
 window.filterRechargesByStatus = function(status) {
-    document.getElementById('rechargeStatusFilter').value = status;
+    const select = document.getElementById('rechargeStatusFilter');
+    if (select) select.value = status;
     filterRecharges();
 };
 
@@ -786,12 +833,20 @@ window.showAddUserModal = function() {
         showToast('❌ Connexion requise', 'error');
         return;
     }
-    document.getElementById('userModalTitle').textContent = 'Ajouter un utilisateur';
-    document.getElementById('userForm').reset();
-    document.getElementById('userId').value = '';
-    document.getElementById('userPassword').required = true;
-    document.getElementById('passwordField').style.display = 'block';
-    document.getElementById('userBalance').value = 0;
+    const userModalTitle = document.getElementById('userModalTitle');
+    const userId = document.getElementById('userId');
+    const userForm = document.getElementById('userForm');
+    const userPassword = document.getElementById('userPassword');
+    const passwordField = document.getElementById('passwordField');
+    const userBalance = document.getElementById('userBalance');
+    
+    if (userModalTitle) userModalTitle.textContent = 'Ajouter un utilisateur';
+    if (userForm) userForm.reset();
+    if (userId) userId.value = '';
+    if (userPassword) userPassword.required = true;
+    if (passwordField) passwordField.style.display = 'block';
+    if (userBalance) userBalance.value = 0;
+    
     showModal('userModal');
 };
 
@@ -803,17 +858,27 @@ window.editUser = function(userId) {
     const user = allUsers.find(u => u.id === userId);
     if (!user) return;
     
-    document.getElementById('userModalTitle').textContent = 'Modifier l\'utilisateur';
-    document.getElementById('userId').value = user.id;
-    document.getElementById('userName').value = user.nom_complet || '';
-    document.getElementById('userEmail').value = user.email || '';
-    document.getElementById('userRole').value = user.email === ADMIN_EMAIL ? 'admin' : 'user';
-    document.getElementById('userStatus').value = user.statut || 'active';
-    document.getElementById('userPassword').required = false;
-    document.getElementById('passwordField').style.display = 'none';
+    const userModalTitle = document.getElementById('userModalTitle');
+    const userIdInput = document.getElementById('userId');
+    const userName = document.getElementById('userName');
+    const userEmail = document.getElementById('userEmail');
+    const userRole = document.getElementById('userRole');
+    const userStatus = document.getElementById('userStatus');
+    const userPassword = document.getElementById('userPassword');
+    const passwordField = document.getElementById('passwordField');
+    const userBalance = document.getElementById('userBalance');
+    
+    if (userModalTitle) userModalTitle.textContent = 'Modifier l\'utilisateur';
+    if (userIdInput) userIdInput.value = user.id;
+    if (userName) userName.value = user.nom_complet || '';
+    if (userEmail) userEmail.value = user.email || '';
+    if (userRole) userRole.value = user.email === ADMIN_EMAIL ? 'admin' : 'user';
+    if (userStatus) userStatus.value = user.statut || 'active';
+    if (userPassword) userPassword.required = false;
+    if (passwordField) passwordField.style.display = 'none';
     
     const balance = allBalances.find(b => b.user_id === user.id)?.amount || 0;
-    document.getElementById('userBalance').value = balance;
+    if (userBalance) userBalance.value = balance;
     
     showModal('userModal');
 };
@@ -823,13 +888,13 @@ window.saveUser = async function() {
         showToast('❌ Connexion requise', 'error');
         return;
     }
-    const userId = document.getElementById('userId').value;
-    const name = document.getElementById('userName').value;
-    const email = document.getElementById('userEmail').value;
-    const password = document.getElementById('userPassword').value;
-    const role = document.getElementById('userRole').value;
-    const status = document.getElementById('userStatus').value;
-    const balance = parseFloat(document.getElementById('userBalance').value) || 0;
+    const userId = document.getElementById('userId')?.value;
+    const name = document.getElementById('userName')?.value;
+    const email = document.getElementById('userEmail')?.value;
+    const password = document.getElementById('userPassword')?.value;
+    const role = document.getElementById('userRole')?.value;
+    const status = document.getElementById('userStatus')?.value;
+    const balance = parseFloat(document.getElementById('userBalance')?.value) || 0;
     
     if (!name || !email) {
         showToast('❌ Champs obligatoires', 'error');
@@ -843,15 +908,40 @@ window.saveUser = async function() {
             // MODIFICATION
             const { error } = await supabaseClient
                 .from('users')
-                .update({ nom_complet: name, email, role, statut: status })
+                .update({ 
+                    nom_complet: name, 
+                    email, 
+                    role, 
+                    statut: status,
+                    updated_at: new Date().toISOString()
+                })
                 .eq('id', userId);
             
             if (error) throw error;
             
-            await supabaseClient
-                .from('balances')
-                .upsert({ user_id: userId, amount: balance, total_earned: balance })
-                .eq('user_id', userId);
+            // Mettre à jour le solde
+            const existingBalance = allBalances.find(b => b.user_id === userId);
+            
+            if (existingBalance) {
+                await supabaseClient
+                    .from('balances')
+                    .update({ 
+                        amount: balance,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', userId);
+            } else {
+                await supabaseClient
+                    .from('balances')
+                    .insert({
+                        user_id: userId,
+                        amount: balance,
+                        total_earned: balance,
+                        currency: 'FCFA',
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    });
+            }
             
             showToast('✅ Utilisateur modifié', 'success');
             
@@ -860,15 +950,43 @@ window.saveUser = async function() {
             const { data, error } = await supabaseClient.auth.signUp({
                 email,
                 password: password || 'Default123!',
-                options: { data: { nom_complet: name, role } }
+                options: { 
+                    data: { 
+                        nom_complet: name, 
+                        role 
+                    } 
+                }
             });
             
             if (error) throw error;
             
-            if (balance > 0 && data.user) {
+            if (data.user) {
+                // Créer l'utilisateur dans la table users
                 await supabaseClient
-                    .from('balances')
-                    .insert([{ user_id: data.user.id, amount: balance, total_earned: balance }]);
+                    .from('users')
+                    .insert({
+                        id: data.user.id,
+                        email: email,
+                        nom_complet: name,
+                        role: role,
+                        statut: 'active',
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    });
+                
+                // Créer le solde
+                if (balance > 0) {
+                    await supabaseClient
+                        .from('balances')
+                        .insert({
+                            user_id: data.user.id,
+                            amount: balance,
+                            total_earned: balance,
+                            currency: 'FCFA',
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        });
+                }
             }
             
             showToast('✅ Utilisateur ajouté', 'success');
@@ -878,8 +996,8 @@ window.saveUser = async function() {
         await loadAllData();
         
     } catch (error) {
-        console.error('Erreur:', error);
-        showToast('❌ ' + error.message, 'error');
+        console.error('❌ Erreur:', error);
+        showToast('❌ ' + (error.message || 'Erreur lors de l\'opération'), 'error');
     } finally {
         showLoading(false);
     }
@@ -895,11 +1013,19 @@ window.toggleUserStatus = async function(userId, newStatus) {
         async () => {
             showLoading(true);
             try {
-                await supabaseClient.from('users').update({ statut: newStatus }).eq('id', userId);
+                await supabaseClient
+                    .from('users')
+                    .update({ 
+                        statut: newStatus,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', userId);
+                
                 showToast(`✅ Utilisateur ${newStatus === 'active' ? 'activé' : 'désactivé'}`, 'success');
                 await loadUsers();
                 updateUsersTable();
             } catch (error) {
+                console.error('❌ Erreur:', error);
                 showToast('❌ Erreur', 'error');
             } finally {
                 showLoading(false);
@@ -918,10 +1044,15 @@ window.deleteUser = async function(userId) {
         async () => {
             showLoading(true);
             try {
-                await supabaseClient.from('users').delete().eq('id', userId);
+                await supabaseClient
+                    .from('users')
+                    .delete()
+                    .eq('id', userId);
+                
                 showToast('✅ Utilisateur supprimé', 'success');
                 await loadAllData();
             } catch (error) {
+                console.error('❌ Erreur:', error);
                 showToast('❌ Erreur', 'error');
             } finally {
                 showLoading(false);
@@ -945,7 +1076,11 @@ window.unlockReferral = async function(userId) {
             try {
                 await supabaseClient
                     .from('referral_data')
-                    .update({ is_unlocked: true, unlocked_at: new Date().toISOString() })
+                    .update({ 
+                        is_unlocked: true, 
+                        unlocked_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    })
                     .eq('user_id', userId);
                 
                 showToast('✅ Lien débloqué', 'success');
@@ -953,6 +1088,7 @@ window.unlockReferral = async function(userId) {
                 updateReferralsTable();
                 updateUsersTable();
             } catch (error) {
+                console.error('❌ Erreur:', error);
                 showToast('❌ Erreur', 'error');
             } finally {
                 showLoading(false);
@@ -970,18 +1106,25 @@ window.showAddAnnonceModal = async function() {
         return;
     }
     const select = document.getElementById('annonceUserId');
-    select.innerHTML = '';
+    if (select) {
+        select.innerHTML = '';
+        
+        allUsers.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = `${user.email || user.id.substring(0,8)}`;
+            select.appendChild(option);
+        });
+    }
     
-    allUsers.forEach(user => {
-        const option = document.createElement('option');
-        option.value = user.id;
-        option.textContent = `${user.email || user.id.substring(0,8)}`;
-        select.appendChild(option);
-    });
+    const annonceModalTitle = document.getElementById('annonceModalTitle');
+    const annonceForm = document.getElementById('annonceForm');
+    const annonceId = document.getElementById('annonceId');
     
-    document.getElementById('annonceModalTitle').textContent = 'Ajouter une annonce';
-    document.getElementById('annonceForm').reset();
-    document.getElementById('annonceId').value = '';
+    if (annonceModalTitle) annonceModalTitle.textContent = 'Ajouter une annonce';
+    if (annonceForm) annonceForm.reset();
+    if (annonceId) annonceId.value = '';
+    
     showModal('annonceModal');
 };
 
@@ -994,21 +1137,30 @@ window.editAnnonce = function(annonceId) {
     if (!annonce) return;
     
     const select = document.getElementById('annonceUserId');
-    select.innerHTML = '';
-    allUsers.forEach(user => {
-        const option = document.createElement('option');
-        option.value = user.id;
-        option.textContent = `${user.email || user.id.substring(0,8)}`;
-        if (user.id === annonce.user_id) option.selected = true;
-        select.appendChild(option);
-    });
+    if (select) {
+        select.innerHTML = '';
+        allUsers.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = `${user.email || user.id.substring(0,8)}`;
+            if (user.id === annonce.user_id) option.selected = true;
+            select.appendChild(option);
+        });
+    }
     
-    document.getElementById('annonceModalTitle').textContent = 'Modifier l\'annonce';
-    document.getElementById('annonceId').value = annonce.id;
-    document.getElementById('annonceTitre').value = annonce.titre || '';
-    document.getElementById('annonceDescription').value = annonce.description || '';
-    document.getElementById('annonceType').value = annonce.type || 'vente';
-    document.getElementById('annoncePrix').value = annonce.prix || '';
+    const annonceModalTitle = document.getElementById('annonceModalTitle');
+    const annonceIdInput = document.getElementById('annonceId');
+    const annonceTitre = document.getElementById('annonceTitre');
+    const annonceDescription = document.getElementById('annonceDescription');
+    const annonceType = document.getElementById('annonceType');
+    const annoncePrix = document.getElementById('annoncePrix');
+    
+    if (annonceModalTitle) annonceModalTitle.textContent = 'Modifier l\'annonce';
+    if (annonceIdInput) annonceIdInput.value = annonce.id;
+    if (annonceTitre) annonceTitre.value = annonce.titre || '';
+    if (annonceDescription) annonceDescription.value = annonce.description || '';
+    if (annonceType) annonceType.value = annonce.type || 'vente';
+    if (annoncePrix) annoncePrix.value = annonce.prix || '';
     
     showModal('annonceModal');
 };
@@ -1018,12 +1170,12 @@ window.saveAnnonce = async function() {
         showToast('❌ Connexion requise', 'error');
         return;
     }
-    const annonceId = document.getElementById('annonceId').value;
-    const titre = document.getElementById('annonceTitre').value;
-    const description = document.getElementById('annonceDescription').value;
-    const type = document.getElementById('annonceType').value;
-    const prix = document.getElementById('annoncePrix').value;
-    const userId = document.getElementById('annonceUserId').value;
+    const annonceId = document.getElementById('annonceId')?.value;
+    const titre = document.getElementById('annonceTitre')?.value;
+    const description = document.getElementById('annonceDescription')?.value;
+    const type = document.getElementById('annonceType')?.value;
+    const prix = document.getElementById('annoncePrix')?.value;
+    const userId = document.getElementById('annonceUserId')?.value;
     
     if (!titre || !description || !userId) {
         showToast('❌ Champs obligatoires', 'error');
@@ -1036,7 +1188,13 @@ window.saveAnnonce = async function() {
         if (annonceId) {
             await supabaseClient
                 .from('annonces')
-                .update({ titre, description, type, prix: prix ? parseFloat(prix) : null })
+                .update({ 
+                    titre, 
+                    description, 
+                    type, 
+                    prix: prix ? parseFloat(prix) : null,
+                    updated_at: new Date().toISOString()
+                })
                 .eq('id', annonceId);
             
             showToast('✅ Annonce modifiée', 'success');
@@ -1044,12 +1202,17 @@ window.saveAnnonce = async function() {
             await supabaseClient
                 .from('annonces')
                 .insert([{
-                    titre, description, type,
+                    id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+                    titre, 
+                    description, 
+                    type,
                     prix: prix ? parseFloat(prix) : null,
                     user_id: userId,
                     statut: 'actif',
                     views: 0,
-                    contacts: 0
+                    contacts: 0,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
                 }]);
             
             showToast('✅ Annonce ajoutée', 'success');
@@ -1060,8 +1223,8 @@ window.saveAnnonce = async function() {
         updateAnnoncesTable();
         
     } catch (error) {
-        console.error('Erreur:', error);
-        showToast('❌ Erreur', 'error');
+        console.error('❌ Erreur:', error);
+        showToast('❌ ' + (error.message || 'Erreur'), 'error');
     } finally {
         showLoading(false);
     }
@@ -1075,20 +1238,23 @@ window.viewAnnonceDetails = function(annonceId) {
     const user = allUsers.find(u => u.id === annonce.user_id);
     const date = new Date(annonce.created_at).toLocaleString('fr-FR');
     
-    document.getElementById('annonceDetailsContent').innerHTML = `
-        <div class="transaction-details">
-            <div class="detail-row"><span class="detail-label">ID:</span><span class="detail-value">${annonce.id}</span></div>
-            <div class="detail-row"><span class="detail-label">Titre:</span><span class="detail-value">${annonce.titre || '-'}</span></div>
-            <div class="detail-row"><span class="detail-label">Description:</span><span class="detail-value">${annonce.description || '-'}</span></div>
-            <div class="detail-row"><span class="detail-label">Type:</span><span class="detail-value"><span class="badge ${annonce.type === 'vente' ? 'badge-vente' : 'badge-actualite'}">${annonce.type}</span></span></div>
-            <div class="detail-row"><span class="detail-label">Prix:</span><span class="detail-value"><strong>${annonce.prix ? annonce.prix.toLocaleString() + ' F' : 'Gratuit'}</strong></span></div>
-            <div class="detail-row"><span class="detail-label">Statut:</span><span class="detail-value"><span class="badge ${annonce.statut === 'actif' ? 'badge-active' : 'badge-inactive'}">${annonce.statut}</span></span></div>
-            <div class="detail-row"><span class="detail-label">Vues:</span><span class="detail-value">${annonce.views || 0}</span></div>
-            <div class="detail-row"><span class="detail-label">Contacts:</span><span class="detail-value">${annonce.contacts || 0}</span></div>
-            <div class="detail-row"><span class="detail-label">Utilisateur:</span><span class="detail-value">${user?.email || annonce.user_id}</span></div>
-            <div class="detail-row"><span class="detail-label">Date:</span><span class="detail-value">${date}</span></div>
-        </div>
-    `;
+    const contentDiv = document.getElementById('annonceDetailsContent');
+    if (contentDiv) {
+        contentDiv.innerHTML = `
+            <div class="transaction-details">
+                <div class="detail-row"><span class="detail-label">ID:</span><span class="detail-value">${annonce.id}</span></div>
+                <div class="detail-row"><span class="detail-label">Titre:</span><span class="detail-value">${annonce.titre || '-'}</span></div>
+                <div class="detail-row"><span class="detail-label">Description:</span><span class="detail-value">${annonce.description || '-'}</span></div>
+                <div class="detail-row"><span class="detail-label">Type:</span><span class="detail-value"><span class="badge ${annonce.type === 'vente' ? 'badge-vente' : 'badge-actualite'}">${annonce.type}</span></span></div>
+                <div class="detail-row"><span class="detail-label">Prix:</span><span class="detail-value"><strong>${annonce.prix ? annonce.prix.toLocaleString() + ' F' : 'Gratuit'}</strong></span></div>
+                <div class="detail-row"><span class="detail-label">Statut:</span><span class="detail-value"><span class="badge ${annonce.statut === 'actif' ? 'badge-active' : 'badge-inactive'}">${annonce.statut}</span></span></div>
+                <div class="detail-row"><span class="detail-label">Vues:</span><span class="detail-value">${annonce.views || 0}</span></div>
+                <div class="detail-row"><span class="detail-label">Contacts:</span><span class="detail-value">${annonce.contacts || 0}</span></div>
+                <div class="detail-row"><span class="detail-label">Utilisateur:</span><span class="detail-value">${user?.email || annonce.user_id}</span></div>
+                <div class="detail-row"><span class="detail-label">Date:</span><span class="detail-value">${date}</span></div>
+            </div>
+        `;
+    }
     
     showModal('annonceDetailsModal');
 };
@@ -1110,11 +1276,19 @@ window.toggleAnnonceStatus = async function(annonceId, newStatus) {
     }
     showLoading(true);
     try {
-        await supabaseClient.from('annonces').update({ statut: newStatus }).eq('id', annonceId);
+        await supabaseClient
+            .from('annonces')
+            .update({ 
+                statut: newStatus,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', annonceId);
+        
         showToast(`✅ Annonce ${newStatus === 'actif' ? 'activée' : 'désactivée'}`, 'success');
         await loadAnnonces();
         updateAnnoncesTable();
     } catch (error) {
+        console.error('❌ Erreur:', error);
         showToast('❌ Erreur', 'error');
     } finally {
         showLoading(false);
@@ -1129,11 +1303,16 @@ window.deleteAnnonce = async function(annonceId) {
     showConfirm('⚠️ Supprimer cette annonce ?', async () => {
         showLoading(true);
         try {
-            await supabaseClient.from('annonces').delete().eq('id', annonceId);
+            await supabaseClient
+                .from('annonces')
+                .delete()
+                .eq('id', annonceId);
+            
             showToast('✅ Annonce supprimée', 'success');
             await loadAnnonces();
             updateAnnoncesTable();
         } catch (error) {
+            console.error('❌ Erreur:', error);
             showToast('❌ Erreur', 'error');
         } finally {
             showLoading(false);
@@ -1149,11 +1328,16 @@ window.deleteAllInactiveAnnonces = async function() {
     showConfirm('⚠️ Supprimer toutes les annonces inactives ?', async () => {
         showLoading(true);
         try {
-            await supabaseClient.from('annonces').delete().eq('statut', 'inactif');
+            await supabaseClient
+                .from('annonces')
+                .delete()
+                .eq('statut', 'inactif');
+            
             showToast('✅ Annonces inactives supprimées', 'success');
             await loadAnnonces();
             updateAnnoncesTable();
         } catch (error) {
+            console.error('❌ Erreur:', error);
             showToast('❌ Erreur', 'error');
         } finally {
             showLoading(false);
@@ -1162,7 +1346,7 @@ window.deleteAllInactiveAnnonces = async function() {
 };
 
 // ============================================
-// ACTIONS RETRAITS
+// ACTIONS RETRAITS - CORRIGÉES (SANS supabase.raw)
 // ============================================
 window.viewRetraitDetails = function(retraitId) {
     const retrait = allRetraits.find(r => r.id === retraitId);
@@ -1186,23 +1370,26 @@ window.viewRetraitDetails = function(retraitId) {
         `;
     }
     
-    document.getElementById('retraitDetailsContent').innerHTML = `
-        <div class="transaction-details">
-            <div class="detail-row"><span class="detail-label">ID:</span><span class="detail-value">${retrait.id}</span></div>
-            <div class="detail-row"><span class="detail-label">Utilisateur:</span><span class="detail-value">${user?.email || retrait.user_id}</span></div>
-            <div class="detail-row"><span class="detail-label">Montant:</span><span class="detail-value"><strong style="color: var(--primary-red);">${retrait.amount.toLocaleString()} F</strong></span></div>
-            <div class="detail-row"><span class="detail-label">Méthode:</span><span class="detail-value">${retrait.method === 'mobile' ? 'Mobile Money' : 'Crypto'}</span></div>
-            ${methodDetails}
-            <div class="detail-row"><span class="detail-label">Nom du compte:</span><span class="detail-value">${retrait.account_name || '-'}</span></div>
-            <div class="detail-row"><span class="detail-label">Date:</span><span class="detail-value">${date}</span></div>
-            <div class="detail-row"><span class="detail-label">Statut:</span><span class="detail-value">
-                <span class="badge ${retrait.status === 'pending' ? 'badge-pending' : 
-                                  retrait.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">
-                    ${retrait.status}
-                </span>
-            </span></div>
-        </div>
-    `;
+    const contentDiv = document.getElementById('retraitDetailsContent');
+    if (contentDiv) {
+        contentDiv.innerHTML = `
+            <div class="transaction-details">
+                <div class="detail-row"><span class="detail-label">ID:</span><span class="detail-value">${retrait.id}</span></div>
+                <div class="detail-row"><span class="detail-label">Utilisateur:</span><span class="detail-value">${user?.email || retrait.user_id}</span></div>
+                <div class="detail-row"><span class="detail-label">Montant:</span><span class="detail-value"><strong style="color: var(--primary-red);">${retrait.amount.toLocaleString()} F</strong></span></div>
+                <div class="detail-row"><span class="detail-label">Méthode:</span><span class="detail-value">${retrait.method === 'mobile' ? 'Mobile Money' : 'Crypto'}</span></div>
+                ${methodDetails}
+                <div class="detail-row"><span class="detail-label">Nom du compte:</span><span class="detail-value">${retrait.account_name || '-'}</span></div>
+                <div class="detail-row"><span class="detail-label">Date:</span><span class="detail-value">${date}</span></div>
+                <div class="detail-row"><span class="detail-label">Statut:</span><span class="detail-value">
+                    <span class="badge ${retrait.status === 'pending' ? 'badge-pending' : 
+                                      retrait.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">
+                        ${retrait.status}
+                    </span>
+                </span></div>
+            </div>
+        `;
+    }
     
     showModal('retraitDetailsModal');
 };
@@ -1219,30 +1406,70 @@ window.approveRetrait = async function(retraitId) {
     showConfirm(`✅ Approuver ce retrait de ${retrait.amount.toLocaleString()} F ?`, async () => {
         showLoading(true);
         try {
-            await supabaseClient
+            // 1. Mettre à jour le statut du retrait
+            const { error: updateError } = await supabaseClient
                 .from('retraits')
                 .update({ 
                     status: 'approved', 
                     processed_at: new Date().toISOString(),
-                    processed_by: currentUser.id
+                    processed_by: currentUser.id,
+                    updated_at: new Date().toISOString()
                 })
                 .eq('id', retraitId);
             
-            await supabaseClient
+            if (updateError) throw updateError;
+            
+            // 2. Récupérer le solde actuel
+            const { data: balanceData, error: balanceError } = await supabaseClient
                 .from('balances')
-                .update({ 
-                    amount: supabase.raw('amount - ' + retrait.amount),
-                    total_withdrawn: supabase.raw('COALESCE(total_withdrawn, 0) + ' + retrait.amount)
+                .select('amount, total_withdrawn')
+                .eq('user_id', retrait.user_id)
+                .maybeSingle();
+            
+            if (balanceError && balanceError.code !== 'PGRST116') {
+                throw balanceError;
+            }
+            
+            const currentAmount = balanceData?.amount || 0;
+            const currentWithdrawn = balanceData?.total_withdrawn || 0;
+            const newAmount = Math.max(0, currentAmount - retrait.amount);
+            const newWithdrawn = (currentWithdrawn || 0) + retrait.amount;
+            
+            // 3. Mettre à jour ou créer le solde
+            if (balanceData) {
+                await supabaseClient
+                    .from('balances')
+                    .update({ 
+                        amount: newAmount,
+                        total_withdrawn: newWithdrawn,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', retrait.user_id);
+            }
+            
+            // 4. Créer une transaction
+            await supabaseClient
+                .from('transactions')
+                .insert({
+                    user_id: retrait.user_id,
+                    amount: retrait.amount,
+                    type: 'withdrawal',
+                    status: 'completed',
+                    reference_id: retraitId,
+                    description: 'Retrait approuvé',
+                    balance_before: currentAmount,
+                    balance_after: newAmount,
+                    created_at: new Date().toISOString()
                 })
-                .eq('user_id', retrait.user_id);
+                .maybeSingle();
             
             showToast('✅ Retrait approuvé', 'success');
             closeModal('retraitDetailsModal');
             await loadAllData();
             
         } catch (error) {
-            console.error('Erreur:', error);
-            showToast('❌ ' + error.message, 'error');
+            console.error('❌ Erreur:', error);
+            showToast('❌ ' + (error.message || 'Erreur lors de l\'approbation'), 'error');
         } finally {
             showLoading(false);
         }
@@ -1270,7 +1497,8 @@ window.rejectRetrait = async function(retraitId) {
                 .update({ 
                     status: 'rejected', 
                     processed_at: new Date().toISOString(),
-                    processed_by: currentUser.id
+                    processed_by: currentUser.id,
+                    updated_at: new Date().toISOString()
                 })
                 .eq('id', retraitId);
             
@@ -1279,7 +1507,8 @@ window.rejectRetrait = async function(retraitId) {
             await loadAllData();
             
         } catch (error) {
-            showToast('❌ Erreur', 'error');
+            console.error('❌ Erreur:', error);
+            showToast('❌ ' + (error.message || 'Erreur'), 'error');
         } finally {
             showLoading(false);
         }
@@ -1291,7 +1520,7 @@ window.rejectRetraitFromModal = function() {
 };
 
 // ============================================
-// ACTIONS RECHARGES
+// ACTIONS RECHARGES - CORRIGÉES (SANS supabase.raw)
 // ============================================
 window.viewRechargeDetails = function(rechargeId) {
     const recharge = allRecharges.find(r => r.id === rechargeId);
@@ -1301,24 +1530,27 @@ window.viewRechargeDetails = function(rechargeId) {
     const user = allUsers.find(u => u.id === recharge.user_id);
     const date = new Date(recharge.created_at).toLocaleString('fr-FR');
     
-    document.getElementById('rechargeDetailsContent').innerHTML = `
-        <div class="transaction-details">
-            <div class="detail-row"><span class="detail-label">ID:</span><span class="detail-value">${recharge.id}</span></div>
-            <div class="detail-row"><span class="detail-label">Utilisateur:</span><span class="detail-value">${user?.email || recharge.user_id}</span></div>
-            <div class="detail-row"><span class="detail-label">Montant:</span><span class="detail-value"><strong style="color: var(--primary-green);">+${recharge.amount.toLocaleString()} F</strong></span></div>
-            <div class="detail-row"><span class="detail-label">Opérateur:</span><span class="detail-value">${recharge.method || 'Mobile Money'}</span></div>
-            <div class="detail-row"><span class="detail-label">Téléphone:</span><span class="detail-value">${recharge.phone || '-'}</span></div>
-            <div class="detail-row"><span class="detail-label">Nom du compte:</span><span class="detail-value">${recharge.account_name || '-'}</span></div>
-            <div class="detail-row"><span class="detail-label">Déblocage:</span><span class="detail-value">${recharge.unlock_referral ? '✅ Oui' : '❌ Non'}</span></div>
-            <div class="detail-row"><span class="detail-label">Date:</span><span class="detail-value">${date}</span></div>
-            <div class="detail-row"><span class="detail-label">Statut:</span><span class="detail-value">
-                <span class="badge ${recharge.status === 'pending' ? 'badge-pending' : 
-                                  recharge.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">
-                    ${recharge.status}
-                </span>
-            </span></div>
-        </div>
-    `;
+    const contentDiv = document.getElementById('rechargeDetailsContent');
+    if (contentDiv) {
+        contentDiv.innerHTML = `
+            <div class="transaction-details">
+                <div class="detail-row"><span class="detail-label">ID:</span><span class="detail-value">${recharge.id}</span></div>
+                <div class="detail-row"><span class="detail-label">Utilisateur:</span><span class="detail-value">${user?.email || recharge.user_id}</span></div>
+                <div class="detail-row"><span class="detail-label">Montant:</span><span class="detail-value"><strong style="color: var(--primary-green);">+${recharge.amount.toLocaleString()} F</strong></span></div>
+                <div class="detail-row"><span class="detail-label">Opérateur:</span><span class="detail-value">${recharge.method || 'Mobile Money'}</span></div>
+                <div class="detail-row"><span class="detail-label">Téléphone:</span><span class="detail-value">${recharge.phone || '-'}</span></div>
+                <div class="detail-row"><span class="detail-label">Nom du compte:</span><span class="detail-value">${recharge.account_name || '-'}</span></div>
+                <div class="detail-row"><span class="detail-label">Déblocage:</span><span class="detail-value">${recharge.unlock_referral ? '✅ Oui' : '❌ Non'}</span></div>
+                <div class="detail-row"><span class="detail-label">Date:</span><span class="detail-value">${date}</span></div>
+                <div class="detail-row"><span class="detail-label">Statut:</span><span class="detail-value">
+                    <span class="badge ${recharge.status === 'pending' ? 'badge-pending' : 
+                                      recharge.status === 'approved' ? 'badge-approved' : 'badge-rejected'}">
+                        ${recharge.status}
+                    </span>
+                </span></div>
+            </div>
+        `;
+    }
     
     showModal('rechargeDetailsModal');
 };
@@ -1335,37 +1567,93 @@ window.approveRecharge = async function(rechargeId) {
     showConfirm(`✅ Approuver cette recharge de ${recharge.amount.toLocaleString()} F ?`, async () => {
         showLoading(true);
         try {
-            await supabaseClient
+            // 1. Mettre à jour le statut de la recharge
+            const { error: updateError } = await supabaseClient
                 .from('recharges')
                 .update({ 
                     status: 'approved', 
                     processed_at: new Date().toISOString(),
-                    processed_by: currentUser.id
+                    processed_by: currentUser.id,
+                    updated_at: new Date().toISOString()
                 })
                 .eq('id', rechargeId);
             
-            await supabaseClient
-                .from('balances')
-                .update({ 
-                    amount: supabase.raw('amount + ' + recharge.amount),
-                    total_earned: supabase.raw('total_earned + ' + recharge.amount)
-                })
-                .eq('user_id', recharge.user_id);
+            if (updateError) throw updateError;
             
+            // 2. Récupérer le solde actuel
+            const { data: balanceData, error: balanceError } = await supabaseClient
+                .from('balances')
+                .select('amount, total_earned')
+                .eq('user_id', recharge.user_id)
+                .maybeSingle();
+            
+            if (balanceError && balanceError.code !== 'PGRST116') {
+                throw balanceError;
+            }
+            
+            const currentAmount = balanceData?.amount || 0;
+            const currentEarned = balanceData?.total_earned || 0;
+            const newAmount = currentAmount + recharge.amount;
+            const newEarned = currentEarned + recharge.amount;
+            
+            // 3. Mettre à jour ou créer le solde
+            if (balanceData) {
+                await supabaseClient
+                    .from('balances')
+                    .update({ 
+                        amount: newAmount,
+                        total_earned: newEarned,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', recharge.user_id);
+            } else {
+                await supabaseClient
+                    .from('balances')
+                    .insert({
+                        user_id: recharge.user_id,
+                        amount: recharge.amount,
+                        total_earned: recharge.amount,
+                        currency: 'FCFA',
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    });
+            }
+            
+            // 4. Débloquer le parrainage si demandé
             if (recharge.unlock_referral) {
                 await supabaseClient
                     .from('referral_data')
-                    .update({ is_unlocked: true, unlocked_at: new Date().toISOString() })
+                    .update({ 
+                        is_unlocked: true, 
+                        unlocked_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    })
                     .eq('user_id', recharge.user_id);
             }
+            
+            // 5. Créer une transaction
+            await supabaseClient
+                .from('transactions')
+                .insert({
+                    user_id: recharge.user_id,
+                    amount: recharge.amount,
+                    type: 'deposit',
+                    status: 'completed',
+                    reference_id: rechargeId,
+                    description: 'Recharge approuvée' + (recharge.unlock_referral ? ' + Déblocage parrainage' : ''),
+                    balance_before: currentAmount,
+                    balance_after: newAmount,
+                    created_at: new Date().toISOString()
+                })
+                .maybeSingle();
             
             showToast('✅ Recharge approuvée', 'success');
             closeModal('rechargeDetailsModal');
             await loadAllData();
             
         } catch (error) {
-            console.error('Erreur:', error);
-            showToast('❌ ' + error.message, 'error');
+            console.error('❌ Erreur:', error);
+            showToast('❌ ' + (error.message || 'Erreur lors de l\'approbation'), 'error');
         } finally {
             showLoading(false);
         }
@@ -1393,7 +1681,8 @@ window.rejectRecharge = async function(rechargeId) {
                 .update({ 
                     status: 'rejected', 
                     processed_at: new Date().toISOString(),
-                    processed_by: currentUser.id
+                    processed_by: currentUser.id,
+                    updated_at: new Date().toISOString()
                 })
                 .eq('id', rechargeId);
             
@@ -1402,7 +1691,8 @@ window.rejectRecharge = async function(rechargeId) {
             await loadAllData();
             
         } catch (error) {
-            showToast('❌ Erreur', 'error');
+            console.error('❌ Erreur:', error);
+            showToast('❌ ' + (error.message || 'Erreur'), 'error');
         } finally {
             showLoading(false);
         }
@@ -1418,42 +1708,72 @@ window.rejectRechargeFromModal = function() {
 // ============================================
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
     const toast = document.createElement('div');
     toast.className = `toast-notification ${type}`;
+    
+    let icon = 'fa-check-circle';
+    let title = 'Succès';
+    
+    if (type === 'error') {
+        icon = 'fa-exclamation-circle';
+        title = 'Erreur';
+    } else if (type === 'warning') {
+        icon = 'fa-exclamation-triangle';
+        title = 'Attention';
+    } else if (type === 'info') {
+        icon = 'fa-info-circle';
+        title = 'Information';
+    }
+    
     toast.innerHTML = `
-        <div class="toast-icon"><i class="fas ${type === 'success' ? 'fa-check-circle' : 
-            type === 'error' ? 'fa-exclamation-circle' : 
-            type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i></div>
+        <div class="toast-icon"><i class="fas ${icon}"></i></div>
         <div class="toast-content">
-            <div class="toast-title">${type === 'success' ? 'Succès' : 
-                type === 'error' ? 'Erreur' : 
-                type === 'warning' ? 'Attention' : 'Information'}</div>
+            <div class="toast-title">${title}</div>
             <div class="toast-message">${message}</div>
         </div>
         <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
     `;
+    
     container.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
+    
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 4000);
 }
 
 function showLoading(show) {
-    document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = show ? 'flex' : 'none';
 }
 
 window.showModal = function(id) {
-    document.getElementById(id).style.display = 'flex';
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = 'flex';
 };
 
 window.closeModal = function(id) {
-    document.getElementById(id).style.display = 'none';
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = 'none';
 };
 
 function showConfirm(message, onConfirm) {
-    document.getElementById('confirmMessage').textContent = message;
-    document.getElementById('confirmBtn').onclick = async () => {
-        await onConfirm();
-        closeModal('confirmModal');
-    };
+    const confirmMessage = document.getElementById('confirmMessage');
+    const confirmBtn = document.getElementById('confirmBtn');
+    
+    if (confirmMessage) confirmMessage.textContent = message;
+    if (confirmBtn) {
+        confirmBtn.onclick = async () => {
+            await onConfirm();
+            closeModal('confirmModal');
+        };
+    }
+    
     showModal('confirmModal');
 }
 
@@ -1464,38 +1784,38 @@ window.exportTableToCSV = function(tableType) {
     switch(tableType) {
         case 'users':
             data = allUsers.map(u => ({
-                Email: u.email,
+                Email: u.email || '',
                 Nom: u.nom_complet || '',
                 Rôle: u.email === ADMIN_EMAIL ? 'Admin' : 'User',
                 Statut: u.statut || 'active',
                 Solde: allBalances.find(b => b.user_id === u.id)?.amount || 0,
-                Date: u.created_at
+                Date: u.created_at || ''
             }));
             break;
         case 'annonces':
             data = allAnnonces.map(a => ({
-                Titre: a.titre,
-                Type: a.type,
-                Prix: a.prix,
-                Vues: a.views,
-                Statut: a.statut,
-                Date: a.created_at
+                Titre: a.titre || '',
+                Type: a.type || '',
+                Prix: a.prix || 0,
+                Vues: a.views || 0,
+                Statut: a.statut || '',
+                Date: a.created_at || ''
             }));
             break;
         case 'retraits':
             data = allRetraits.map(r => ({
-                Montant: r.amount,
-                Méthode: r.method,
-                Statut: r.status,
-                Date: r.created_at
+                Montant: r.amount || 0,
+                Méthode: r.method || '',
+                Statut: r.status || '',
+                Date: r.created_at || ''
             }));
             break;
         case 'recharges':
             data = allRecharges.map(r => ({
-                Montant: r.amount,
-                Opérateur: r.operator,
-                Statut: r.status,
-                Date: r.created_at
+                Montant: r.amount || 0,
+                Opérateur: r.operator || '',
+                Statut: r.status || '',
+                Date: r.created_at || ''
             }));
             break;
         case 'referrals':
@@ -1503,7 +1823,7 @@ window.exportTableToCSV = function(tableType) {
                 const user = allUsers.find(u => u.id === r.user_id);
                 return {
                     Utilisateur: user?.email || '',
-                    Code: r.referral_code,
+                    Code: r.referral_code || '',
                     Statut: r.is_unlocked ? 'Débloqué' : 'Verrouillé',
                     Gains: r.total_earned || 0
                 };
@@ -1516,18 +1836,17 @@ window.exportTableToCSV = function(tableType) {
         return;
     }
     
-    const csv = [
-        Object.keys(data[0]).join(','),
-        ...data.map(row => Object.values(row).join(','))
-    ].join('\n');
+    const headers = Object.keys(data[0]).join(',');
+    const rows = data.map(row => Object.values(row).join(',')).join('\n');
+    const csv = headers + '\n' + rows;
     
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
     a.click();
-    window.URL.revokeObjectURL(url);
+    URL.revokeObjectURL(url);
     
     showToast(`✅ Export ${tableType} réussi`, 'success');
 };

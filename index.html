@@ -430,35 +430,6 @@
             }
         }
 
-        /* Tooltip */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: var(--dark-bg);
-            color: #fff;
-            text-align: center;
-            border-radius: var(--radius-sm);
-            padding: 8px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 12px;
-        }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-
         /* Stats mini */
         .mini-stats {
             display: flex;
@@ -607,7 +578,8 @@
             auth: {
                 autoRefreshToken: true,
                 persistSession: true,
-                detectSessionInUrl: true
+                detectSessionInUrl: true,
+                flowType: 'pkce'
             }
         });
         
@@ -669,16 +641,15 @@
             return code ? code.toUpperCase() : null;
         }
 
-        // ✅ Valider le code de parrainage (ACCEPTE TOUS LES CODES)
+        // ✅ Valider le code de parrainage
         async function validateReferralCode(code) {
-            if (!code || !supabase) {
-                // ✅ MODE DÉMO - Accepter les codes de test
-                const demoCode = ['ADMIN2026', 'TEST123', 'DEMO', 'AFRIMARKET'];
-                if (demoCode.includes(code)) {
-                    console.log('✅ Code démo accepté:', code);
-                    return true;
-                }
-                return false;
+            if (!code || !supabase) return false;
+            
+            // Codes de démo
+            const demoCode = ['ADMIN2026', 'TEST123', 'DEMO', 'AFRIMARKET'];
+            if (demoCode.includes(code)) {
+                console.log('✅ Code démo accepté:', code);
+                return true;
             }
             
             try {
@@ -717,7 +688,7 @@
             return prefix + randomNum;
         }
 
-        // ✅ INSCRIPTION COMPLÈTE - VERSION CORRIGÉE
+        // ✅ INSCRIPTION - VERSION CORRIGÉE SANS CONFIRMATION EMAIL
         async function inscrireUtilisateur(userData) {
             try {
                 console.log('📝 Début inscription pour:', userData.email);
@@ -730,8 +701,7 @@
                         data: {
                             nom_complet: userData.nom_complet,
                             phone: userData.telephone || ''
-                        },
-                        emailRedirectTo: window.location.origin + '/dashboard.html'
+                        }
                     }
                 });
                 
@@ -740,28 +710,6 @@
                     
                     // ✅ GÉRER L'ERREUR "User already registered"
                     if (authError.message.includes('already registered')) {
-                        // TENTATIVE DE CONNEXION DIRECTE
-                        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-                            email: userData.email,
-                            password: userData.password
-                        });
-                        
-                        if (!signInError && signInData.user) {
-                            console.log('✅ Utilisateur déjà existant, connexion réussie');
-                            
-                            localStorage.setItem('afrimarket_logged_in', 'true');
-                            localStorage.setItem('afrimarket_user_email', signInData.user.email);
-                            localStorage.setItem('afrimarket_user_name', userData.nom_complet);
-                            localStorage.setItem('afrimarket_user_id', signInData.user.id);
-                            localStorage.setItem('afrimarket_user_role', 'user');
-                            
-                            return { 
-                                success: true, 
-                                message: '✅ Connexion réussie !',
-                                user: signInData.user 
-                            };
-                        }
-                        
                         return { success: false, error: 'Un compte existe déjà avec cet email' };
                     }
                     
@@ -773,6 +721,7 @@
                 }
                 
                 console.log('✅ Utilisateur créé dans auth:', authData.user.id);
+                console.log('✅ Email confirmé automatiquement');
                 
                 // ✅ 2. INSÉRER DANS LA TABLE users
                 try {
@@ -869,7 +818,18 @@
                     console.error('⚠️ Erreur balances:', e);
                 }
                 
-                // ✅ 7. STOCKAGE LOCAL
+                // ✅ 7. CONNEXION AUTOMATIQUE
+                const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+                    email: userData.email,
+                    password: userData.password
+                });
+                
+                if (!signInError && signInData.user) {
+                    console.log('✅ Connexion automatique réussie');
+                    authData.user = signInData.user;
+                }
+                
+                // ✅ 8. STOCKAGE LOCAL
                 localStorage.setItem('afrimarket_logged_in', 'true');
                 localStorage.setItem('afrimarket_user_id', authData.user.id);
                 localStorage.setItem('afrimarket_user_email', authData.user.email);
@@ -1019,22 +979,11 @@
                         </div>
                     `;
                     
-                    // Notification avec le code personnel
-                    setTimeout(() => {
-                        alert(`🎉 FÉLICITATIONS ${userData.nom_complet} !\n\n` +
-                              `✅ Votre inscription est réussie.\n\n` +
-                              `🔑 VOTRE CODE DE PARRAINAGE PERSONNEL EST :\n\n` +
-                              `📌 ${result.code}\n\n` +
-                              `💰 Ce code est VERROUILLÉ pour le moment.\n` +
-                              `🔓 Pour le DÉBLOQUER et commencer à gagner :\n` +
-                              `➡️ Faites une recharge de 2 150 F dans votre tableau de bord.\n\n` +
-                              `📢 Partagez ce code avec vos amis pour gagner jusqu'à 1 750 F par parrainage !`);
-                    }, 500);
-                    
-                    // Redirection
+                    // ✅ SUPPRIMER LE CODE DE CONNEXION MANUELLE
+                    // ✅ REDIRECTION IMMÉDIATE VERS DASHBOARD
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
-                    }, 2000);
+                    }, 1500);
                     
                 } else {
                     messageDiv.innerHTML = `<div class="message error"><i class="fas fa-exclamation-circle"></i> ${result.error}</div>`;

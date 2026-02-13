@@ -2,147 +2,650 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Connexion - AFRIMARKET</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-    <script src="auth.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
+        /* ============================================
+           STYLES AFRIMARKET - IDENTIQUE AU SITE
+           ============================================ */
+        :root {
+            --primary-blue: #1d3557;
+            --primary-red: #ef4444;
+            --primary-orange: #f97316;
+            --primary-green: #10b981;
+            --light-bg: #f8fafc;
+            --light-card: #ffffff;
+            --light-text: #1e293b;
+            --light-border: #e2e8f0;
+            --light-gray: #94a3b8;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #f1f5f9;
+            --dark-border: #334155;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            background: linear-gradient(135deg, #1d3557 0%, #2a5298 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            position: relative;
         }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
         .container {
-            background: white;
+            background: var(--light-card);
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
+            animation: fadeIn 0.5s ease;
+            border: 1px solid var(--light-border);
+            position: relative;
+            overflow: hidden;
         }
+
+        .dark-mode .container {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Logo */
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+            margin: 0 auto 15px;
+            box-shadow: var(--shadow);
+        }
+
         h1 {
-            color: #1d3557;
+            color: var(--primary-blue);
             text-align: center;
             margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
+
+        .dark-mode h1 {
+            color: var(--dark-text);
+        }
+
+        h1 span {
+            color: var(--primary-orange);
+        }
+
         .subtitle {
             text-align: center;
-            color: #64748b;
+            color: var(--light-gray);
             margin-bottom: 30px;
+            font-size: 14px;
         }
+
+        .dark-mode .subtitle {
+            color: #94a3b8;
+        }
+
+        /* Formulaire */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--light-text);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dark-mode label {
+            color: var(--dark-text);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--light-gray);
+            font-size: 16px;
+        }
+
         input {
             width: 100%;
-            padding: 14px;
-            margin: 8px 0;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
+            padding: 14px 14px 14px 45px;
+            border: 2px solid var(--light-border);
+            border-radius: var(--radius-md);
             font-size: 14px;
             box-sizing: border-box;
-            transition: all 0.3s;
+            transition: var(--transition);
+            background: var(--light-bg);
+            color: var(--light-text);
         }
+
+        .dark-mode input {
+            background: var(--dark-bg);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
         input:focus {
-            border-color: #1d3557;
+            border-color: var(--primary-blue);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(29,53,87,0.1);
+            box-shadow: 0 0 0 3px rgba(29, 53, 87, 0.1);
         }
+
+        .dark-mode input:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        /* Bouton */
         button {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #1d3557, #2a5298);
+            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
             margin-top: 20px;
-            transition: all 0.3s;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3);
         }
+
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(29,53,87,0.3);
+            box-shadow: 0 10px 25px rgba(29, 53, 87, 0.4);
         }
+
+        button i {
+            font-size: 18px;
+        }
+
+        /* Messages */
         .message {
             margin-top: 20px;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: var(--radius-md);
             text-align: center;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
         }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .success {
-            background: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border-left: 4px solid #10b981;
         }
+
         .error {
-            background: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #dc3545;
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
         }
+
+        .warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #92400e;
+            border-left: 4px solid #f59e0b;
+        }
+
+        /* Liens */
         .link {
             text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid var(--light-border);
         }
+
+        .dark-mode .link {
+            border-color: var(--dark-border);
+        }
+
         .link a {
-            color: #1d3557;
+            color: var(--primary-blue);
             text-decoration: none;
             font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
+
+        .dark-mode .link a {
+            color: #60a5fa;
+        }
+
         .link a:hover {
+            color: var(--primary-orange);
             text-decoration: underline;
         }
+
+        /* Badge admin */
         .admin-hint {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 20px;
             font-size: 12px;
+            color: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            background: rgba(29, 53, 87, 0.05);
+            border-radius: var(--radius-sm);
+        }
+
+        .dark-mode .admin-hint {
+            background: rgba(255, 255, 255, 0.05);
             color: #94a3b8;
+        }
+
+        .admin-hint i {
+            color: var(--primary-orange);
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(15deg);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔐 AFRIMARKET</h1>
-        <div class="subtitle">Connectez-vous à votre compte</div>
-        
-        <form id="loginForm">
-            <input type="email" id="email" placeholder="Adresse email" required>
-            <input type="password" id="password" placeholder="Mot de passe" required>
-            <button type="submit">Se connecter</button>
-        </form>
-        
-        <div id="message"></div>
-        
-        <div class="link">
-            <a href="index.html">Pas encore de compte ? S'inscrire</a>
+        <!-- Theme toggle -->
+        <button class="theme-toggle" id="themeBtn">
+            <i class="fas fa-moon"></i>
+        </button>
+
+        <!-- Logo -->
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-store"></i>
+            </div>
+            <h1>AFRI<span>MARKET</span></h1>
+            <div class="subtitle">Connectez-vous à votre compte</div>
         </div>
         
+        <!-- Formulaire de connexion -->
+        <form id="loginForm">
+            <div class="form-group">
+                <label>
+                    <i class="fas fa-envelope"></i> Adresse email
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="email" placeholder="exemple@email.com" required autocomplete="email">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <i class="fas fa-lock"></i> Mot de passe
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                    <button type="button" class="toggle-password" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--light-gray); cursor: pointer; width: auto; padding: 0; margin: 0; box-shadow: none;">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <button type="submit" id="submitBtn">
+                <i class="fas fa-sign-in-alt"></i> Se connecter
+            </button>
+        </form>
+        
+        <!-- Zone de message -->
+        <div id="message"></div>
+        
+        <!-- Lien inscription -->
+        <div class="link">
+            <a href="index.html">
+                <i class="fas fa-user-plus"></i> Pas encore de compte ? S'inscrire
+            </a>
+        </div>
+        
+        <!-- Badge admin -->
         <div class="admin-hint">
-            <i class="fas fa-shield-alt"></i> Administrateur: abdoula14cherif@gmail.com
+            <i class="fas fa-shield-alt"></i>
+            <span>Administrateur: abdoula14cherif@gmail.com</span>
         </div>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // ============================================
+        // CONFIGURATION SUPABASE
+        // ============================================
+        const SUPABASE_URL = 'https://xfbwimnwsixflypsvqfv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmYndpbW53c2l4Zmx5cHN2cWZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MTYyNTQsImV4cCI6MjA4NjQ5MjI1NH0.34RMdbAC_3XWxutD6X2GgF9odULkx46bpBY-V3hSUp8';
+        
+        const ADMIN_EMAIL = 'abdoula14cherif@gmail.com';
+        let supabase = null;
+
+        // ============================================
+        // INITIALISATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser Supabase
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             
-            const email = document.getElementById('email').value.trim().toLowerCase();
-            const password = document.getElementById('password').value;
+            // Configurer le thème
+            setupTheme();
             
-            const result = await window.connecterUtilisateur(email, password);
+            // Configurer le toggle password
+            setupPasswordToggle();
             
-            if (result.success) {
-                document.getElementById('message').innerHTML = `<div class="message success">${result.message}</div>`;
-                setTimeout(() => window.location.href = result.redirect, 1500);
-            } else {
-                document.getElementById('message').innerHTML = `<div class="message error">❌ ${result.error}</div>`;
-            }
+            // Configurer le formulaire
+            setupLoginForm();
         });
+
+        // ============================================
+        // GESTION DU THÈME
+        // ============================================
+        function setupTheme() {
+            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
+            document.body.className = savedTheme;
+            
+            const themeBtn = document.getElementById('themeBtn');
+            const icon = themeBtn.querySelector('i');
+            
+            if (savedTheme === 'dark-mode') {
+                icon.className = 'fas fa-sun';
+            }
+            
+            themeBtn.addEventListener('click', function() {
+                const isDark = document.body.classList.contains('dark-mode');
+                document.body.className = isDark ? 'light-mode' : 'dark-mode';
+                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
+                icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            });
+        }
+
+        // ============================================
+        // TOGGLE PASSWORD
+        // ============================================
+        function setupPasswordToggle() {
+            const toggleBtn = document.querySelector('.toggle-password');
+            const passwordInput = document.getElementById('password');
+            
+            if (toggleBtn && passwordInput) {
+                toggleBtn.addEventListener('click', function() {
+                    const type = passwordInput.type === 'password' ? 'text' : 'password';
+                    passwordInput.type = type;
+                    this.innerHTML = type === 'password' ? 
+                        '<i class="fas fa-eye"></i>' : 
+                        '<i class="fas fa-eye-slash"></i>';
+                });
+            }
+        }
+
+        // ============================================
+        // FONCTION DE CONNEXION
+        // ============================================
+        async function connecterUtilisateur(email, password) {
+            try {
+                console.log('🔐 Tentative de connexion:', email);
+                
+                // 1. AUTHENTIFICATION SUPABASE
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    console.error('❌ Erreur auth:', error);
+                    
+                    if (error.message.includes('Invalid login credentials')) {
+                        return { 
+                            success: false, 
+                            error: 'Email ou mot de passe incorrect' 
+                        };
+                    }
+                    
+                    return { 
+                        success: false, 
+                        error: error.message 
+                    };
+                }
+                
+                if (!data.user) {
+                    return { 
+                        success: false, 
+                        error: 'Erreur de connexion' 
+                    };
+                }
+                
+                console.log('✅ Connexion réussie:', data.user.email);
+                
+                // 2. RÉCUPÉRER LES INFORMATIONS UTILISATEUR
+                let userData = null;
+                try {
+                    const { data: profile } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('id', data.user.id)
+                        .single();
+                    
+                    userData = profile;
+                } catch (e) {
+                    console.log('ℹ️ Profil non trouvé dans users');
+                }
+                
+                // 3. DÉTERMINER LE RÔLE
+                const isAdmin = data.user.email === ADMIN_EMAIL;
+                const role = isAdmin ? 'admin' : (userData?.role || 'user');
+                const nomComplet = userData?.nom_complet || 
+                                 data.user.user_metadata?.nom_complet || 
+                                 data.user.email?.split('@')[0] || 
+                                 'Utilisateur';
+                
+                // 4. STOCKER DANS LOCALSTORAGE
+                localStorage.setItem('afrimarket_logged_in', 'true');
+                localStorage.setItem('afrimarket_user_email', data.user.email);
+                localStorage.setItem('afrimarket_user_name', nomComplet);
+                localStorage.setItem('afrimarket_user_role', role);
+                localStorage.setItem('afrimarket_user_id', data.user.id);
+                
+                // 5. RÉCUPÉRER LE CODE DE PARRAINAGE
+                try {
+                    const { data: referral } = await supabase
+                        .from('referral_data')
+                        .select('referral_code, is_unlocked')
+                        .eq('user_id', data.user.id)
+                        .single();
+                    
+                    if (referral) {
+                        localStorage.setItem('afrimarket_my_referral_code', referral.referral_code);
+                        localStorage.setItem('afrimarket_referral_unlocked', referral.is_unlocked ? 'true' : 'false');
+                    }
+                } catch (e) {
+                    console.log('ℹ️ Pas de code de parrainage');
+                }
+                
+                // 6. REDIRECTION
+                const redirect = isAdmin ? 'admin.html' : 'dashboard.html';
+                
+                return {
+                    success: true,
+                    message: isAdmin ? '✅ Connexion administrateur réussie' : '✅ Connexion réussie',
+                    redirect: redirect,
+                    user: data.user,
+                    isAdmin: isAdmin
+                };
+                
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                return {
+                    success: false,
+                    error: 'Erreur technique'
+                };
+            }
+        }
+
+        // ============================================
+        // CONFIGURATION FORMULAIRE
+        // ============================================
+        function setupLoginForm() {
+            const form = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim().toLowerCase();
+                const password = document.getElementById('password').value;
+                
+                if (!email || !password) {
+                    messageDiv.innerHTML = '<div class="message error"><i class="fas fa-exclamation-circle"></i> Tous les champs sont requis</div>';
+                    return;
+                }
+                
+                // Désactiver le bouton
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="loading"></span> Connexion en cours...';
+                
+                // Tentative de connexion
+                const result = await connecterUtilisateur(email, password);
+                
+                if (result.success) {
+                    messageDiv.innerHTML = `<div class="message success"><i class="fas fa-check-circle"></i> ${result.message}</div>`;
+                    
+                    // Redirection
+                    setTimeout(() => {
+                        window.location.href = result.redirect;
+                    }, 1500);
+                    
+                } else {
+                    messageDiv.innerHTML = `<div class="message error"><i class="fas fa-exclamation-circle"></i> ${result.error}</div>`;
+                    
+                    // Réactiver le bouton
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Se connecter';
+                }
+            });
+        }
+
+        // Exposer la fonction pour le débogage
+        window.connecterUtilisateur = connecterUtilisateur;
     </script>
 </body>
 </html>

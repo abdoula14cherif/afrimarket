@@ -48,6 +48,7 @@
             margin: 0;
             padding: 20px;
             position: relative;
+            transition: var(--transition);
         }
 
         body.dark-mode {
@@ -75,6 +76,36 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(15deg);
+        }
+
+        .dark-mode .theme-toggle {
+            background: rgba(0,0,0,0.2);
+            color: var(--dark-text);
         }
 
         /* Logo */
@@ -190,6 +221,27 @@
             box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
         }
 
+        /* Toggle password */
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--light-gray);
+            cursor: pointer;
+            width: auto;
+            padding: 0;
+            margin: 0;
+            box-shadow: none;
+            font-size: 16px;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary-blue);
+        }
+
         /* Bouton */
         button {
             width: 100%;
@@ -210,13 +262,14 @@
             box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3);
         }
 
-        button:hover {
+        button:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(29, 53, 87, 0.4);
         }
 
-        button i {
-            font-size: 18px;
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         /* Messages */
@@ -311,7 +364,7 @@
             color: var(--primary-orange);
         }
 
-        /* Loading */
+        /* Loading spinner */
         .loading {
             display: inline-block;
             width: 20px;
@@ -324,30 +377,6 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-
-        /* Theme toggle */
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-
-        .theme-toggle:hover {
-            background: rgba(255,255,255,0.3);
-            transform: rotate(15deg);
         }
 
         /* Responsive */
@@ -402,7 +431,7 @@
                 <div class="input-wrapper">
                     <i class="fas fa-lock input-icon"></i>
                     <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
-                    <button type="button" class="toggle-password" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--light-gray); cursor: pointer; width: auto; padding: 0; margin: 0; box-shadow: none;">
+                    <button type="button" class="toggle-password">
                         <i class="fas fa-eye"></i>
                     </button>
                 </div>
@@ -441,11 +470,39 @@
         let supabase = null;
 
         // ============================================
+        // VÉRIFIER SI DÉJÀ CONNECTÉ
+        // ============================================
+        function checkAlreadyLoggedIn() {
+            const isLoggedIn = localStorage.getItem('afrimarket_logged_in') === 'true';
+            const userEmail = localStorage.getItem('afrimarket_user_email');
+            const userRole = localStorage.getItem('afrimarket_user_role');
+            
+            if (isLoggedIn && userEmail) {
+                console.log('✅ Utilisateur déjà connecté, redirection automatique');
+                const redirect = userRole === 'admin' ? 'admin.html' : 'dashboard.html';
+                window.location.href = redirect;
+                return true;
+            }
+            return false;
+        }
+
+        // ============================================
         // INITIALISATION
         // ============================================
         document.addEventListener('DOMContentLoaded', function() {
+            // ✅ VÉRIFICATION PRIORITAIRE
+            if (checkAlreadyLoggedIn()) {
+                return; // STOP - On redirige
+            }
+            
             // Initialiser Supabase
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                auth: {
+                    autoRefreshToken: true,
+                    persistSession: true,
+                    detectSessionInUrl: true
+                }
+            });
             
             // Configurer le thème
             setupTheme();
@@ -487,7 +544,8 @@
             const passwordInput = document.getElementById('password');
             
             if (toggleBtn && passwordInput) {
-                toggleBtn.addEventListener('click', function() {
+                toggleBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
                     const type = passwordInput.type === 'password' ? 'text' : 'password';
                     passwordInput.type = type;
                     this.innerHTML = type === 'password' ? 
@@ -643,9 +701,6 @@
                 }
             });
         }
-
-        // Exposer la fonction pour le débogage
-        window.connecterUtilisateur = connecterUtilisateur;
     </script>
 </body>
 </html>

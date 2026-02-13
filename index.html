@@ -1,997 +1,593 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Inscription - AFRIMARKET</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* ============================================
-           STYLES AFRIMARKET - DESIGN UNIFORME
-           ============================================ */
-        :root {
-            --primary-blue: #1d3557;
-            --primary-red: #ef4444;
-            --primary-orange: #f97316;
-            --primary-green: #10b981;
-            --light-bg: #f8fafc;
-            --light-card: #ffffff;
-            --light-text: #1e293b;
-            --light-border: #e2e8f0;
-            --light-gray: #94a3b8;
-            --dark-bg: #0f172a;
-            --dark-card: #1e293b;
-            --dark-text: #f1f5f9;
-            --dark-border: #334155;
-            --radius-lg: 16px;
-            --radius-md: 12px;
-            --radius-sm: 8px;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
-            --transition: all 0.3s ease;
-        }
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import Head from 'next/head'
+import Link from 'next/link'
+import { supabase } from '../lib/supabase'
+import { 
+  FaStore, FaMoon, FaSun, FaGift, FaUser, 
+  FaEnvelope, FaLock, FaEye, FaEyeSlash, 
+  FaCheckCircle, FaTimesCircle, FaExclamationCircle,
+  FaExclamationTriangle, FaSpinner, FaSignInAlt,
+  FaUserPlus, FaShieldAlt
+} from 'react-icons/fa'
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+export default function Inscription() {
+  const router = useRouter()
+  const { ref } = router.query
+  
+  // États
+  const [referralCode, setReferralCode] = useState('')
+  const [currentReferralCode, setCurrentReferralCode] = useState<string | null>(null)
+  const [isValid, setIsValid] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isVerifying, setIsVerifying] = useState(true)
+  const [message, setMessage] = useState<{type: string, text: string} | null>(null)
+  
+  // Formulaire
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  
+  // Theme
+  const [isDarkMode, setIsDarkMode] = useState(false)
+  
+  // Password visibility
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  
+  // Stats
+  const [stats, setStats] = useState({
+    users: '2 500+',
+    gains: '10M+ F',
+    levels: '3'
+  })
 
-        body {
-            background: linear-gradient(135deg, #1d3557 0%, #2a5298 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            position: relative;
-            transition: var(--transition);
-        }
+  // ============================================
+  // CHARGEMENT DU THÈME
+  // ============================================
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('afrimarket_theme')
+    const isDark = savedTheme === 'dark-mode'
+    setIsDarkMode(isDark)
+    if (isDark) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [])
 
-        body.dark-mode {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
+  const toggleTheme = () => {
+    const newDarkMode = !isDarkMode
+    setIsDarkMode(newDarkMode)
+    localStorage.setItem('afrimarket_theme', newDarkMode ? 'dark-mode' : 'light-mode')
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }
 
-        .container {
-            background: var(--light-card);
-            padding: 40px;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            width: 100%;
-            max-width: 480px;
-            animation: fadeIn 0.5s ease;
-            border: 1px solid var(--light-border);
-            position: relative;
-            overflow: hidden;
-        }
+  // ============================================
+  // VALIDATION DU CODE DE PARRAINAGE
+  // ============================================
+  useEffect(() => {
+    if (ref) {
+      validateReferralCode(ref as string)
+    }
+  }, [ref])
 
-        .dark-mode .container {
-            background: var(--dark-card);
-            border-color: var(--dark-border);
-        }
+  const validateReferralCode = async (code: string) => {
+    setIsVerifying(true)
+    setReferralCode(code.toUpperCase())
+    setCurrentReferralCode(code.toUpperCase())
+    
+    // Codes de démo
+    const demoCode = ['ADMIN2026', 'TEST123', 'DEMO', 'AFRIMARKET']
+    if (demoCode.includes(code.toUpperCase())) {
+      setIsValid(true)
+      setIsVerifying(false)
+      return
+    }
+    
+    try {
+      const { data, error } = await supabase
+        .from('referral_data')
+        .select('referral_code')
+        .eq('referral_code', code.toUpperCase())
+        .maybeSingle()
+      
+      if (error) throw error
+      setIsValid(!!data)
+    } catch (error) {
+      console.error('❌ Erreur validation:', error)
+      setIsValid(false)
+    } finally {
+      setIsVerifying(false)
+    }
+  }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+  // ============================================
+  // GÉNÉRER CODE PERSONNEL
+  // ============================================
+  const generatePersonalCode = (nomComplet: string): string => {
+    const prenom = nomComplet.split(' ')[0].toUpperCase()
+    const prefix = prenom.substring(0, Math.min(4, prenom.length))
+    const randomNum = Math.floor(Math.random() * 9000 + 1000)
+    return prefix + randomNum
+  }
 
-        /* Theme toggle */
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            z-index: 10;
+  // ============================================
+  // INSCRIPTION
+  // ============================================
+  const inscrireUtilisateur = async (userData: any) => {
+    try {
+      console.log('📝 Début inscription:', userData.email)
+      
+      // 1. CRÉER L'UTILISATEUR
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          data: {
+            nom_complet: userData.nom_complet,
+            phone: userData.telephone || ''
+          }
         }
-
-        .theme-toggle:hover {
-            background: rgba(255,255,255,0.3);
-            transform: rotate(15deg);
+      })
+      
+      if (authError) {
+        if (authError.message.includes('already registered')) {
+          return { success: false, error: 'Un compte existe déjà avec cet email' }
         }
-
-        .dark-mode .theme-toggle {
-            background: rgba(0,0,0,0.2);
-            color: var(--dark-text);
+        return { success: false, error: authError.message }
+      }
+      
+      if (!authData.user) {
+        return { success: false, error: 'Erreur création utilisateur' }
+      }
+      
+      // 2. INSÉRER DANS users
+      try {
+        await supabase
+          .from('users')
+          .insert({
+            id: authData.user.id,
+            email: authData.user.email,
+            nom_complet: userData.nom_complet,
+            phone: userData.telephone || '',
+            role: 'user',
+            is_admin: false,
+            statut: 'active',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+      } catch (e) {
+        console.error('⚠️ Erreur users:', e)
+      }
+      
+      // 3. GÉNÉRER CODE PERSONNEL
+      const personalCode = generatePersonalCode(userData.nom_complet)
+      const referralLink = `${window.location.origin}/?ref=${personalCode}`
+      
+      // 4. CRÉER CODE PARRAINAGE
+      try {
+        await supabase
+          .from('referral_data')
+          .insert({
+            user_id: authData.user.id,
+            referral_code: personalCode,
+            referral_link: referralLink,
+            is_unlocked: false,
+            unlocked_at: null,
+            direct_count: 0,
+            level2_count: 0,
+            level3_count: 0,
+            direct_earnings: 0,
+            level2_earnings: 0,
+            level3_earnings: 0,
+            total_earned: 0,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+      } catch (e) {
+        console.error('⚠️ Erreur referral_data:', e)
+      }
+      
+      // 5. CRÉER RELATION PARRAINAGE
+      if (currentReferralCode) {
+        try {
+          const { data: referrerData } = await supabase
+            .from('referral_data')
+            .select('user_id')
+            .eq('referral_code', currentReferralCode)
+            .maybeSingle()
+          
+          if (referrerData) {
+            await supabase
+              .from('referral_relationships')
+              .insert({
+                referrer_id: referrerData.user_id,
+                referred_user_id: authData.user.id,
+                level: 1,
+                commission_earned: 0,
+                created_at: new Date().toISOString()
+              })
+          }
+        } catch (e) {
+          console.error('⚠️ Erreur création relation:', e)
         }
+      }
+      
+      // 6. CRÉER SOLDE
+      try {
+        await supabase
+          .from('balances')
+          .insert({
+            user_id: authData.user.id,
+            amount: 0,
+            currency: 'FCFA',
+            total_earned: 0,
+            total_withdrawn: 0,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+      } catch (e) {
+        console.error('⚠️ Erreur balances:', e)
+      }
+      
+      // 7. CONNEXION AUTOMATIQUE
+      await supabase.auth.signInWithPassword({
+        email: userData.email,
+        password: userData.password
+      })
+      
+      // 8. STOCKAGE LOCAL
+      localStorage.setItem('afrimarket_logged_in', 'true')
+      localStorage.setItem('afrimarket_user_id', authData.user.id)
+      localStorage.setItem('afrimarket_user_email', authData.user.email)
+      localStorage.setItem('afrimarket_user_name', userData.nom_complet)
+      localStorage.setItem('afrimarket_user_role', 'user')
+      localStorage.setItem('afrimarket_my_referral_code', personalCode)
+      localStorage.setItem('afrimarket_referral_unlocked', 'false')
+      
+      return { 
+        success: true, 
+        message: '✅ Inscription réussie !',
+        code: personalCode
+      }
+      
+    } catch (error) {
+      console.error('❌ ERREUR:', error)
+      return { success: false, error: 'Erreur technique' }
+    }
+  }
 
-        /* Logo */
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+  // ============================================
+  // SOUMISSION FORMULAIRE
+  // ============================================
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Validations
+    if (!currentReferralCode) {
+      setMessage({ type: 'error', text: 'Code de parrainage invalide' })
+      return
+    }
+    
+    if (password.length < 6) {
+      setMessage({ type: 'error', text: 'Le mot de passe doit contenir au moins 6 caractères' })
+      return
+    }
+    
+    if (password !== confirmPassword) {
+      setMessage({ type: 'error', text: 'Les mots de passe ne correspondent pas' })
+      return
+    }
+    
+    if (!email.includes('@') || !email.includes('.')) {
+      setMessage({ type: 'error', text: 'Email invalide' })
+      return
+    }
+    
+    if (fullName.length < 3) {
+      setMessage({ type: 'error', text: 'Nom complet trop court' })
+      return
+    }
+    
+    setIsLoading(true)
+    setMessage(null)
+    
+    const result = await inscrireUtilisateur({
+      nom_complet: fullName,
+      email: email.toLowerCase(),
+      password,
+      telephone: ''
+    })
+    
+    if (result.success) {
+      setMessage({ type: 'success', text: result.message || 'Inscription réussie !' })
+      
+      // Notification avec le code personnel
+      setTimeout(() => {
+        alert(`🎉 FÉLICITATIONS ${fullName} !\n\n` +
+          `✅ Votre inscription est réussie.\n\n` +
+          `🔑 VOTRE CODE DE PARRAINAGE PERSONNEL EST :\n\n` +
+          `📌 ${result.code}\n\n` +
+          `💰 Ce code est VERROUILLÉ pour le moment.\n` +
+          `🔓 Pour le DÉBLOQUER et commencer à gagner :\n` +
+          `➡️ Faites une recharge de 2 150 F dans votre tableau de bord.\n\n` +
+          `📢 Partagez ce code avec vos amis pour gagner jusqu'à 1 750 F par parrainage !`)
+      }, 500)
+      
+      // Redirection
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 1500)
+      
+    } else {
+      setMessage({ type: 'error', text: result.error })
+      setIsLoading(false)
+    }
+  }
 
-        .logo-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
-            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 30px;
-            margin: 0 auto 15px;
-            box-shadow: var(--shadow);
-        }
+  return (
+    <>
+      <Head>
+        <title>Inscription - AFRIMARKET</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      </Head>
 
-        h1 {
-            color: var(--primary-blue);
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 32px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .dark-mode h1 {
-            color: var(--dark-text);
-        }
-
-        h1 span {
-            color: var(--primary-orange);
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--light-gray);
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        .dark-mode .subtitle {
-            color: #94a3b8;
-        }
-
-        /* Badge de code */
-        .code-badge {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            padding: 16px 20px;
-            border-radius: var(--radius-md);
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-        }
-
-        .code-badge.valid {
-            background: linear-gradient(135deg, #10b981, #059669);
-            animation: pulse-green 2s infinite;
-        }
-
-        @keyframes pulse-green {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-
-        .code-badge i {
-            font-size: 20px;
-        }
-
-        /* Formulaire */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--light-text);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .dark-mode label {
-            color: var(--dark-text);
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--light-gray);
-            font-size: 16px;
-        }
-
-        input {
-            width: 100%;
-            padding: 14px 14px 14px 45px;
-            margin: 8px 0;
-            border: 2px solid var(--light-border);
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            box-sizing: border-box;
-            transition: var(--transition);
-            background: var(--light-bg);
-            color: var(--light-text);
-        }
-
-        .dark-mode input {
-            background: var(--dark-bg);
-            border-color: var(--dark-border);
-            color: var(--dark-text);
-        }
-
-        input:focus {
-            border-color: var(--primary-blue);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(29, 53, 87, 0.1);
-        }
-
-        .dark-mode input:focus {
-            border-color: #60a5fa;
-            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-        }
-
-        input[readonly] {
-            background: #f1f5f9;
-            cursor: not-allowed;
-            font-weight: 600;
-            color: var(--primary-blue);
-            border-color: var(--primary-blue);
-            padding-left: 14px;
-        }
-
-        .dark-mode input[readonly] {
-            background: var(--dark-bg);
-            color: #60a5fa;
-            border-color: #60a5fa;
-        }
-
-        /* Toggle password */
-        .toggle-password {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--light-gray);
-            cursor: pointer;
-            width: auto;
-            padding: 0;
-            margin: 0;
-            box-shadow: none;
-            font-size: 16px;
-        }
-
-        .toggle-password:hover {
-            color: var(--primary-blue);
-            background: none;
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        /* Bouton */
-        button {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--primary-blue), #2a5298);
-            color: white;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(29, 53, 87, 0.3);
-        }
-
-        button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(29, 53, 87, 0.4);
-        }
-
-        button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Messages */
-        .message {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: var(--radius-md);
-            text-align: center;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #065f46;
-            border-left: 4px solid #10b981;
-        }
-
-        .error {
-            background: rgba(239, 68, 68, 0.1);
-            color: #991b1b;
-            border-left: 4px solid #ef4444;
-        }
-
-        .warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: #92400e;
-            border-left: 4px solid #f59e0b;
-        }
-
-        /* Lien */
-        .link {
-            text-align: center;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid var(--light-border);
-        }
-
-        .dark-mode .link {
-            border-color: var(--dark-border);
-        }
-
-        .link a {
-            color: var(--primary-blue);
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .dark-mode .link a {
-            color: #60a5fa;
-        }
-
-        .link a:hover {
-            color: var(--primary-orange);
-            text-decoration: underline;
-        }
-
-        /* Loading */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .container {
-                padding: 30px 20px;
-            }
-            
-            h1 {
-                font-size: 28px;
-            }
-            
-            .theme-toggle {
-                top: 10px;
-                right: 10px;
-            }
-        }
-
-        /* Stats mini */
-        .mini-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--light-border);
-        }
-
-        .dark-mode .mini-stats {
-            border-color: var(--dark-border);
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary-green);
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: var(--light-gray);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Theme toggle -->
-        <button class="theme-toggle" id="themeBtn">
-            <i class="fas fa-moon"></i>
-        </button>
-
-        <!-- Logo -->
-        <div class="logo">
-            <div class="logo-icon">
-                <i class="fas fa-store"></i>
-            </div>
-            <h1>AFRI<span>MARKET</span></h1>
-            <div class="subtitle">Rejoignez la communauté et commencez à gagner</div>
-        </div>
+      <div className={`min-h-screen bg-gradient-to-br from-[#1d3557] to-[#2a5298] flex items-center justify-center p-5 transition-colors duration-300 ${isDarkMode ? 'dark:from-[#0f172a] dark:to-[#1e293b]' : ''}`}>
         
-        <!-- Badge de code de parrainage -->
-        <div id="codeBadge" class="code-badge">
-            <i class="fas fa-spinner fa-spin"></i> Vérification du code de parrainage...
-        </div>
+        <div className="bg-white dark:bg-[#1e293b] w-full max-w-[480px] p-10 rounded-2xl shadow-2xl border border-[#e2e8f0] dark:border-[#334155] relative overflow-hidden animate-fadeIn">
+          
+          {/* Theme Toggle */}
+          <button 
+            onClick={toggleTheme}
+            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-all z-10 hover:rotate-15"
+          >
+            {isDarkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
+          </button>
 
-        <!-- Formulaire d'inscription -->
-        <form id="inscriptionForm">
-            <div class="form-group">
-                <label>
-                    <i class="fas fa-gift"></i> Code de parrainage
-                </label>
-                <input type="text" id="referralCode" placeholder="Code de parrainage" readonly>
+          {/* Logo */}
+          <div className="text-center mb-5">
+            <div className="w-[60px] h-[60px] rounded-[15px] bg-gradient-to-br from-[#1d3557] to-[#2a5298] flex items-center justify-center text-white text-3xl mx-auto mb-4 shadow-md">
+              <FaStore />
+            </div>
+            <h1 className="text-[#1d3557] dark:text-white text-3xl font-extrabold flex items-center justify-center gap-2.5 mb-2.5">
+              AFRI<span className="text-[#f97316]">MARKET</span>
+            </h1>
+            <p className="text-[#94a3b8] dark:text-[#94a3b8] text-sm mb-7">
+              Rejoignez la communauté et commencez à gagner
+            </p>
+          </div>
+
+          {/* Code Badge */}
+          <div className={`
+            text-white p-4 px-5 rounded-xl mb-6 text-center font-semibold flex items-center justify-center gap-2.5 shadow-md border border-white/20
+            ${isVerifying ? 'bg-gradient-to-r from-[#f59e0b] to-[#d97706] animate-pulse' : ''}
+            ${isValid ? 'bg-gradient-to-r from-[#10b981] to-[#059669] animate-pulse-green' : ''}
+            ${!isValid && !isVerifying && referralCode ? 'bg-gradient-to-r from-[#ef4444] to-[#dc2626]' : ''}
+            ${!referralCode ? 'bg-gradient-to-r from-[#ef4444] to-[#dc2626]' : ''}
+          `}>
+            {isVerifying ? (
+              <><FaSpinner className="animate-spin" /> Vérification du code...</>
+            ) : isValid ? (
+              <><FaCheckCircle /> Code valide: <strong>{referralCode}</strong></>
+            ) : referralCode ? (
+              <><FaTimesCircle /> Code invalide: {referralCode}</>
+            ) : (
+              <><FaExclamationTriangle /> Code de parrainage requis</>
+            )}
+          </div>
+
+          {/* Formulaire */}
+          <form onSubmit={handleSubmit}>
+            {/* Code parrainage */}
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-[#1e293b] dark:text-white mb-2 flex items-center gap-2">
+                <FaGift /> Code de parrainage
+              </label>
+              <input
+                type="text"
+                value={referralCode}
+                readOnly
+                className={`w-full p-3.5 px-4 border-2 rounded-xl text-sm bg-[#f8fafc] dark:bg-[#0f172a] dark:text-white focus:outline-none focus:shadow-lg transition-all
+                  ${isValid ? 'border-[#10b981] dark:border-[#60a5fa] text-[#1d3557] dark:text-[#60a5fa] font-semibold' : ''}
+                  ${!isValid && referralCode ? 'border-[#ef4444]' : 'border-[#e2e8f0] dark:border-[#334155]'}
+                `}
+              />
             </div>
 
-            <div class="form-group">
-                <label>
-                    <i class="fas fa-user"></i> Nom complet
-                </label>
-                <div class="input-wrapper">
-                    <i class="fas fa-user input-icon"></i>
-                    <input type="text" id="fullName" placeholder="Ex: Jean Dupont" required>
-                </div>
+            {/* Nom complet */}
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-[#1e293b] dark:text-white mb-2 flex items-center gap-2">
+                <FaUser /> Nom complet
+              </label>
+              <div className="relative">
+                <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8] text-base" />
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Ex: Jean Dupont"
+                  required
+                  className="w-full p-3.5 pl-11 border-2 border-[#e2e8f0] dark:border-[#334155] rounded-xl text-sm bg-[#f8fafc] dark:bg-[#0f172a] text-[#1e293b] dark:text-white focus:border-[#1d3557] dark:focus:border-[#60a5fa] focus:outline-none focus:shadow-lg transition-all"
+                />
+              </div>
             </div>
 
-            <div class="form-group">
-                <label>
-                    <i class="fas fa-envelope"></i> Adresse email
-                </label>
-                <div class="input-wrapper">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="email" placeholder="exemple@email.com" required>
-                </div>
+            {/* Email */}
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-[#1e293b] dark:text-white mb-2 flex items-center gap-2">
+                <FaEnvelope /> Adresse email
+              </label>
+              <div className="relative">
+                <FaEnvelope className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8] text-base" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="exemple@email.com"
+                  required
+                  className="w-full p-3.5 pl-11 border-2 border-[#e2e8f0] dark:border-[#334155] rounded-xl text-sm bg-[#f8fafc] dark:bg-[#0f172a] text-[#1e293b] dark:text-white focus:border-[#1d3557] dark:focus:border-[#60a5fa] focus:outline-none focus:shadow-lg transition-all"
+                />
+              </div>
             </div>
 
-            <div class="form-group">
-                <label>
-                    <i class="fas fa-lock"></i> Mot de passe
-                </label>
-                <div class="input-wrapper">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="password" placeholder="6 caractères minimum" minlength="6" required>
-                    <button type="button" class="toggle-password">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
+            {/* Mot de passe */}
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-[#1e293b] dark:text-white mb-2 flex items-center gap-2">
+                <FaLock /> Mot de passe
+              </label>
+              <div className="relative">
+                <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8] text-base" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="6 caractères minimum"
+                  minLength={6}
+                  required
+                  className="w-full p-3.5 pl-11 border-2 border-[#e2e8f0] dark:border-[#334155] rounded-xl text-sm bg-[#f8fafc] dark:bg-[#0f172a] text-[#1e293b] dark:text-white focus:border-[#1d3557] dark:focus:border-[#60a5fa] focus:outline-none focus:shadow-lg transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#1d3557] dark:hover:text-[#60a5fa] transition-all"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
             </div>
 
-            <div class="form-group">
-                <label>
-                    <i class="fas fa-lock"></i> Confirmer
-                </label>
-                <div class="input-wrapper">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="confirmPassword" placeholder="Confirmez votre mot de passe" required>
-                    <button type="button" class="toggle-password">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
+            {/* Confirmer mot de passe */}
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-[#1e293b] dark:text-white mb-2 flex items-center gap-2">
+                <FaLock /> Confirmer
+              </label>
+              <div className="relative">
+                <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8] text-base" />
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirmez votre mot de passe"
+                  required
+                  className="w-full p-3.5 pl-11 border-2 border-[#e2e8f0] dark:border-[#334155] rounded-xl text-sm bg-[#f8fafc] dark:bg-[#0f172a] text-[#1e293b] dark:text-white focus:border-[#1d3557] dark:focus:border-[#60a5fa] focus:outline-none focus:shadow-lg transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#1d3557] dark:hover:text-[#60a5fa] transition-all"
+                >
+                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
             </div>
-            
-            <button type="submit" id="submitBtn">
-                <i class="fas fa-user-plus"></i> S'inscrire
+
+            {/* Message d'erreur/succès */}
+            {message && (
+              <div className={`
+                mt-5 p-4 rounded-xl text-center font-medium flex items-center justify-center gap-2.5 animate-slideIn
+                ${message.type === 'success' ? 'bg-[#10b981]/10 text-[#065f46] border-l-4 border-[#10b981]' : ''}
+                ${message.type === 'error' ? 'bg-[#ef4444]/10 text-[#991b1b] border-l-4 border-[#ef4444]' : ''}
+              `}>
+                {message.type === 'success' ? <FaCheckCircle /> : <FaExclamationCircle />}
+                {message.text}
+              </div>
+            )}
+
+            {/* Bouton submit */}
+            <button
+              type="submit"
+              disabled={!isValid || isLoading}
+              className="w-full p-4 bg-gradient-to-r from-[#1d3557] to-[#2a5298] text-white border-none rounded-xl text-base font-bold cursor-pointer mt-5 transition-all flex items-center justify-center gap-2.5 shadow-lg hover:-translate-y-1 hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {isLoading ? (
+                <><FaSpinner className="animate-spin" /> Inscription en cours...</>
+              ) : (
+                <><FaUserPlus /> S'inscrire</>
+              )}
             </button>
-        </form>
+          </form>
 
-        <!-- Zone de message -->
-        <div id="message"></div>
-        
-        <!-- Lien connexion -->
-        <div class="link">
-            <a href="connexion.html">
-                <i class="fas fa-sign-in-alt"></i> Déjà un compte ? Se connecter
-            </a>
+          {/* Lien connexion */}
+          <div className="text-center mt-6 pt-6 border-t border-[#e2e8f0] dark:border-[#334155]">
+            <Link href="/connexion" className="text-[#1d3557] dark:text-[#60a5fa] no-underline font-semibold inline-flex items-center gap-1.5 hover:text-[#f97316] dark:hover:text-[#f97316] transition-all">
+              <FaSignInAlt /> Déjà un compte ? Se connecter
+            </Link>
+          </div>
+
+          {/* Mini statistiques */}
+          <div className="flex justify-around mt-5 pt-5 border-t border-[#e2e8f0] dark:border-[#334155]">
+            <div className="text-center">
+              <div className="text-lg font-bold text-[#10b981]">{stats.users}</div>
+              <div className="text-xs text-[#94a3b8]">Membres</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-[#10b981]">{stats.gains}</div>
+              <div className="text-xs text-[#94a3b8]">Gagnés</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-[#10b981]">{stats.levels}</div>
+              <div className="text-xs text-[#94a3b8]">Niveaux</div>
+            </div>
+          </div>
+
+          {/* Admin hint */}
+          <div className="text-center mt-5 text-xs text-[#94a3b8] flex items-center justify-center gap-2 p-2.5 bg-[#1d3557]/5 dark:bg-white/5 rounded-lg">
+            <FaShieldAlt className="text-[#f97316]" />
+            <span>Administrateur: abdoula14cherif@gmail.com</span>
+          </div>
+
         </div>
+      </div>
 
-        <!-- Mini statistiques -->
-        <div class="mini-stats">
-            <div class="stat-item">
-                <div class="stat-value" id="statsUsers">+2 500</div>
-                <div class="stat-label">Membres</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="statsGains">10M+ F</div>
-                <div class="stat-label">Gagnés</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" id="statsParrainages">3</div>
-                <div class="stat-label">Niveaux</div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ============================================
-        // CONFIGURATION SUPABASE
-        // ============================================
-        const SUPABASE_URL = 'https://xfbwimnwsixflypsvqfv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmYndpbW53c2l4Zmx5cHN2cWZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MTYyNTQsImV4cCI6MjA4NjQ5MjI1NH0.34RMdbAC_3XWxutD6X2GgF9odULkx46bpBY-V3hSUp8';
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-            auth: {
-                autoRefreshToken: true,
-                persistSession: true,
-                detectSessionInUrl: true,
-                flowType: 'pkce'
-            }
-        });
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
         
-        let currentReferralCode = null;
-
-        // ============================================
-        // GESTION DU THÈME
-        // ============================================
-        function setupTheme() {
-            const savedTheme = localStorage.getItem('afrimarket_theme') || 'light-mode';
-            document.body.className = savedTheme;
-            
-            const themeBtn = document.getElementById('themeBtn');
-            const icon = themeBtn.querySelector('i');
-            
-            if (savedTheme === 'dark-mode') {
-                icon.className = 'fas fa-sun';
-            }
-            
-            themeBtn.addEventListener('click', function() {
-                const isDark = document.body.classList.contains('dark-mode');
-                document.body.className = isDark ? 'light-mode' : 'dark-mode';
-                localStorage.setItem('afrimarket_theme', isDark ? 'light-mode' : 'dark-mode');
-                icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
-            });
+        @keyframes pulse {
+          0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+          70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
         }
-
-        // ============================================
-        // TOGGLE PASSWORD
-        // ============================================
-        function setupPasswordToggles() {
-            document.querySelectorAll('.toggle-password').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const input = this.closest('.input-wrapper').querySelector('input');
-                    const type = input.type === 'password' ? 'text' : 'password';
-                    input.type = type;
-                    this.innerHTML = type === 'password' ? 
-                        '<i class="fas fa-eye"></i>' : 
-                        '<i class="fas fa-eye-slash"></i>';
-                });
-            });
-        }
-
-        // ============================================
-        // FONCTIONS UTILITAIRES
-        // ============================================
         
-        // ✅ Récupérer le code de parrainage depuis l'URL
-        function getReferralCodeFromURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            let code = urlParams.get('ref');
-            
-            if (!code && window.location.pathname.includes('/ref/')) {
-                code = window.location.pathname.split('/ref/')[1];
-                if (code) code = code.split('/')[0].split('?')[0];
-            }
-            
-            return code ? code.toUpperCase() : null;
+        @keyframes pulse-green {
+          0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+          70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
-
-        // ✅ Valider le code de parrainage
-        async function validateReferralCode(code) {
-            if (!code || !supabase) return false;
-            
-            // Codes de démo
-            const demoCode = ['ADMIN2026', 'TEST123', 'DEMO', 'AFRIMARKET'];
-            if (demoCode.includes(code)) {
-                console.log('✅ Code démo accepté:', code);
-                return true;
-            }
-            
-            try {
-                console.log('🔍 Validation du code:', code);
-                
-                const { data, error } = await supabase
-                    .from('referral_data')
-                    .select('referral_code')
-                    .eq('referral_code', code)
-                    .maybeSingle();
-                
-                if (error) {
-                    console.error('❌ Erreur validation:', error);
-                    return false;
-                }
-                
-                if (data) {
-                    console.log('✅ Code trouvé:', code);
-                    return true;
-                }
-                
-                console.log('❌ Code non trouvé:', code);
-                return false;
-                
-            } catch (e) {
-                console.error('❌ Exception:', e);
-                return false;
-            }
+        
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease;
         }
-
-        // ✅ Générer un code de parrainage personnel
-        function generatePersonalCode(nomComplet) {
-            const prenom = nomComplet.split(' ')[0].toUpperCase();
-            const prefix = prenom.substring(0, Math.min(4, prenom.length));
-            const randomNum = Math.floor(Math.random() * 9000 + 1000);
-            return prefix + randomNum;
+        
+        .animate-slideIn {
+          animation: slideIn 0.3s ease;
         }
-
-        // ✅ INSCRIPTION - VERSION CORRIGÉE SANS CONFIRMATION EMAIL
-        async function inscrireUtilisateur(userData) {
-            try {
-                console.log('📝 Début inscription pour:', userData.email);
-                
-                // ✅ 1. CRÉER L'UTILISATEUR DANS SUPABASE AUTH
-                const { data: authData, error: authError } = await supabase.auth.signUp({
-                    email: userData.email,
-                    password: userData.password,
-                    options: {
-                        data: {
-                            nom_complet: userData.nom_complet,
-                            phone: userData.telephone || ''
-                        }
-                    }
-                });
-                
-                if (authError) {
-                    console.error('❌ Erreur auth:', authError);
-                    
-                    // ✅ GÉRER L'ERREUR "User already registered"
-                    if (authError.message.includes('already registered')) {
-                        return { success: false, error: 'Un compte existe déjà avec cet email' };
-                    }
-                    
-                    return { success: false, error: authError.message };
-                }
-                
-                if (!authData.user) {
-                    return { success: false, error: 'Erreur création utilisateur' };
-                }
-                
-                console.log('✅ Utilisateur créé dans auth:', authData.user.id);
-                console.log('✅ Email confirmé automatiquement');
-                
-                // ✅ 2. INSÉRER DANS LA TABLE users
-                try {
-                    await supabase
-                        .from('users')
-                        .insert({
-                            id: authData.user.id,
-                            email: authData.user.email,
-                            nom_complet: userData.nom_complet,
-                            phone: userData.telephone || '',
-                            role: 'user',
-                            is_admin: false,
-                            statut: 'active',
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString()
-                        });
-                    console.log('✅ users OK');
-                } catch (e) {
-                    console.error('⚠️ Erreur users:', e);
-                }
-                
-                // ✅ 3. GÉNÉRER UN CODE DE PARRAINAGE PERSONNALISÉ
-                const personalCode = generatePersonalCode(userData.nom_complet);
-                const referralLink = `${window.location.origin}/index.html?ref=${personalCode}`;
-                
-                console.log('🔑 Code personnel généré:', personalCode);
-                
-                // ✅ 4. CRÉER LE CODE DE PARRAINAGE (VERROUILLÉ)
-                try {
-                    await supabase
-                        .from('referral_data')
-                        .insert({
-                            user_id: authData.user.id,
-                            referral_code: personalCode,
-                            referral_link: referralLink,
-                            is_unlocked: false,
-                            unlocked_at: null,
-                            direct_count: 0,
-                            level2_count: 0,
-                            level3_count: 0,
-                            direct_earnings: 0,
-                            level2_earnings: 0,
-                            level3_earnings: 0,
-                            total_earned: 0,
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString()
-                        });
-                    console.log('✅ referral_data OK - Code:', personalCode);
-                } catch (e) {
-                    console.error('⚠️ Erreur referral_data:', e);
-                }
-                
-                // ✅ 5. CRÉER LA RELATION DE PARRAINAGE
-                if (currentReferralCode) {
-                    try {
-                        const { data: referrerData } = await supabase
-                            .from('referral_data')
-                            .select('user_id')
-                            .eq('referral_code', currentReferralCode)
-                            .maybeSingle();
-                        
-                        if (referrerData) {
-                            await supabase
-                                .from('referral_relationships')
-                                .insert({
-                                    referrer_id: referrerData.user_id,
-                                    referred_user_id: authData.user.id,
-                                    level: 1,
-                                    commission_earned: 0,
-                                    created_at: new Date().toISOString()
-                                });
-                            console.log('✅ Relation parrainage créée avec:', currentReferralCode);
-                        }
-                    } catch (e) {
-                        console.error('⚠️ Erreur création relation:', e);
-                    }
-                }
-                
-                // ✅ 6. CRÉER LE SOLDE
-                try {
-                    await supabase
-                        .from('balances')
-                        .insert({
-                            user_id: authData.user.id,
-                            amount: 0,
-                            currency: 'FCFA',
-                            total_earned: 0,
-                            total_withdrawn: 0,
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString()
-                        });
-                    console.log('✅ balances OK');
-                } catch (e) {
-                    console.error('⚠️ Erreur balances:', e);
-                }
-                
-                // ✅ 7. CONNEXION AUTOMATIQUE
-                const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-                    email: userData.email,
-                    password: userData.password
-                });
-                
-                if (!signInError && signInData.user) {
-                    console.log('✅ Connexion automatique réussie');
-                    authData.user = signInData.user;
-                }
-                
-                // ✅ 8. STOCKAGE LOCAL
-                localStorage.setItem('afrimarket_logged_in', 'true');
-                localStorage.setItem('afrimarket_user_id', authData.user.id);
-                localStorage.setItem('afrimarket_user_email', authData.user.email);
-                localStorage.setItem('afrimarket_user_name', userData.nom_complet);
-                localStorage.setItem('afrimarket_user_role', 'user');
-                localStorage.setItem('afrimarket_my_referral_code', personalCode);
-                localStorage.setItem('afrimarket_referral_unlocked', 'false');
-                
-                console.log('🎉 INSCRIPTION RÉUSSIE !');
-                
-                return { 
-                    success: true, 
-                    message: '✅ Inscription réussie !',
-                    code: personalCode,
-                    user: authData.user 
-                };
-                
-            } catch (error) {
-                console.error('❌ ERREUR CRITIQUE:', error);
-                return { success: false, error: 'Erreur technique lors de l\'inscription' };
-            }
+        
+        .animate-pulse {
+          animation: pulse 2s infinite;
         }
-
-        // ============================================
-        // INITIALISATION DE LA PAGE
-        // ============================================
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 Page d\'inscription chargée');
-            
-            // Configurer le thème
-            setupTheme();
-            
-            // Configurer les toggles password
-            setupPasswordToggles();
-            
-            // Éléments DOM
-            const codeInput = document.getElementById('referralCode');
-            const codeBadge = document.getElementById('codeBadge');
-            const submitBtn = document.getElementById('submitBtn');
-            const messageDiv = document.getElementById('message');
-            
-            // ✅ 1. RÉCUPÉRER LE CODE DE L'URL
-            const codeFromURL = getReferralCodeFromURL();
-            
-            if (!codeFromURL) {
-                codeBadge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Code de parrainage requis';
-                codeBadge.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-                codeBadge.classList.remove('valid');
-                codeInput.value = 'CODE REQUIS';
-                codeInput.style.borderColor = '#ef4444';
-                submitBtn.disabled = true;
-                return;
-            }
-            
-            codeInput.value = codeFromURL;
-            currentReferralCode = codeFromURL;
-            
-            // ✅ 2. VALIDER LE CODE
-            codeBadge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification du code...';
-            codeBadge.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-            codeBadge.classList.remove('valid');
-            
-            const isValid = await validateReferralCode(codeFromURL);
-            
-            if (isValid) {
-                codeBadge.innerHTML = `<i class="fas fa-check-circle"></i> Code valide: <strong>${codeFromURL}</strong>`;
-                codeBadge.classList.add('valid');
-                codeBadge.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                codeInput.style.borderColor = '#10b981';
-                submitBtn.disabled = false;
-            } else {
-                codeBadge.innerHTML = `<i class="fas fa-times-circle"></i> Code invalide: ${codeFromURL}`;
-                codeBadge.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-                codeBadge.classList.remove('valid');
-                codeInput.style.borderColor = '#ef4444';
-                submitBtn.disabled = true;
-            }
-
-            // ✅ 3. VALIDATION MOT DE PASSE
-            const password = document.getElementById('password');
-            const confirm = document.getElementById('confirmPassword');
-            
-            function checkPasswordMatch() {
-                if (confirm.value.length > 0) {
-                    if (password.value !== confirm.value) {
-                        messageDiv.innerHTML = '<div class="message error"><i class="fas fa-times-circle"></i> Les mots de passe ne correspondent pas</div>';
-                    } else {
-                        messageDiv.innerHTML = '';
-                    }
-                }
-            }
-            
-            password.addEventListener('input', checkPasswordMatch);
-            confirm.addEventListener('input', checkPasswordMatch);
-
-            // ✅ 4. SOUMISSION DU FORMULAIRE
-            document.getElementById('inscriptionForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                // Vérifications
-                if (!currentReferralCode) {
-                    messageDiv.innerHTML = '<div class="message error"><i class="fas fa-exclamation-circle"></i> Code de parrainage invalide</div>';
-                    return;
-                }
-                
-                if (password.value.length < 6) {
-                    messageDiv.innerHTML = '<div class="message error"><i class="fas fa-exclamation-circle"></i> Le mot de passe doit contenir au moins 6 caractères</div>';
-                    return;
-                }
-                
-                if (password.value !== confirm.value) {
-                    messageDiv.innerHTML = '<div class="message error"><i class="fas fa-times-circle"></i> Les mots de passe ne correspondent pas</div>';
-                    return;
-                }
-                
-                const email = document.getElementById('email').value.trim().toLowerCase();
-                if (!email.includes('@') || !email.includes('.')) {
-                    messageDiv.innerHTML = '<div class="message error"><i class="fas fa-exclamation-circle"></i> Email invalide</div>';
-                    return;
-                }
-                
-                const fullName = document.getElementById('fullName').value.trim();
-                if (fullName.length < 3) {
-                    messageDiv.innerHTML = '<div class="message error"><i class="fas fa-exclamation-circle"></i> Nom complet trop court</div>';
-                    return;
-                }
-                
-                // Désactiver le bouton
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="loading"></span> Inscription en cours...';
-                
-                // Données utilisateur
-                const userData = {
-                    nom_complet: fullName,
-                    email: email,
-                    password: password.value,
-                    telephone: ''
-                };
-                
-                // Inscription
-                const result = await inscrireUtilisateur(userData);
-                
-                if (result.success) {
-                    messageDiv.innerHTML = `
-                        <div class="message success">
-                            <i class="fas fa-check-circle"></i> ${result.message || 'Inscription réussie !'}
-                        </div>
-                    `;
-                    
-                    // ✅ SUPPRIMER LE CODE DE CONNEXION MANUELLE
-                    // ✅ REDIRECTION IMMÉDIATE VERS DASHBOARD
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
-                    
-                } else {
-                    messageDiv.innerHTML = `<div class="message error"><i class="fas fa-exclamation-circle"></i> ${result.error}</div>`;
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> S\'inscrire';
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+        
+        .animate-pulse-green {
+          animation: pulse-green 2s infinite;
+        }
+        
+        .hover\:rotate-15:hover {
+          transform: rotate(15deg);
+        }
+      `}</style>
+    </>
+  )
+}

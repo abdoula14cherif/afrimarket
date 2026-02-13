@@ -1,9 +1,10 @@
 {
-  "rewrites": [
-    {
-      "source": "/ref/:code",
-      "destination": "/ref.html"
+  "functions": {
+    "api/*.php": {
+      "runtime": "vercel-php@0.6.0"
     }
-  ],
-  "cleanUrls": false
+  },
+  "routes": [
+    { "src": "/(.*)", "dest": "/$1.php" }
+  ]
 }

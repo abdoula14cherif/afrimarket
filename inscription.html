@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AFRIMARKET - Inscription</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --primary-red: #dc2626;
+            --primary-orange: #f97316;
+            --primary-white: #ffffff;
+            --light-bg: #f8fafc;
+            --light-card: #ffffff;
+            --light-text: #1e293b;
+            --light-border: #e2e8f0;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #f1f5f9;
+            --dark-border: #334155;
+            --radius-lg: 20px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+            --error-color: #ef4444;
+            --success-color: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            transition: var(--transition);
+            overflow-x: hidden;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 16px;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        /* Header */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--light-card);
+            padding: 16px 0;
+            border-bottom: 1px solid var(--light-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .dark-mode .app-header {
+            background-color: rgba(30, 41, 59, 0.9);
+            border-color: var(--dark-border);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Contrôles de langue et thème */
+        .control-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            background: var(--light-card);
+            border: 1px solid var(--light-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--light-text);
+            transition: var(--transition);
+        }
+
+        .dark-mode .control-btn {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .control-btn:hover, .control-btn.active {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        /* Menu langue */
+        .lang-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--light-card);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            width: 160px;
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+            border: 1px solid var(--light-border);
+        }
+
+        .dark-mode .lang-menu {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .lang-menu.active {
+            display: block;
+        }
+
+        .lang-option {
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 1px solid var(--light-border);
+        }
+
+        .dark-mode .lang-option {
+            border-color: var(--dark-border);
+        }
+
+        .lang-option:last-child {
+            border-bottom: none;
+        }
+
+        .lang-option:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .lang-option.active {
+            background: rgba(37, 99, 235, 0.15);
+            font-weight: 600;
+        }
+
+        /* Contenu principal */
+        .main-content {
+            flex: 1;
+            padding: 30px 0 50px;
+            width: 100%;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .form-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-subtitle {
+            font-size: 16px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .dark-mode .form-subtitle {
+            color: #94a3b8;
+        }
+
+        /* Formulaire */
+        .signup-form {
+            background: var(--light-card);
+            border-radius: var(--radius-lg);
+            padding: 32px 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-border);
+        }
+
+        .dark-mode .signup-form {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            width: 100%;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 15px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .form-label {
+            color: var(--dark-text);
+        }
+
+        .required::after {
+            content: " *";
+            color: var(--error-color);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--light-border);
+            background: var(--light-card);
+            color: var(--light-text);
+            font-size: 16px;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .dark-mode .form-input,
+        .dark-mode .form-select,
+        .dark-mode .form-textarea {
+            background: var(--dark-card);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input.error, .form-select.error {
+            border-color: var(--error-color);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 14px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Options checkbox */
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: rgba(37, 99, 235, 0.05);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--light-border);
+        }
+
+        .dark-mode .option-row {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: var(--dark-border);
+        }
+
+        .option-label {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .option-label {
+            color: var(--dark-text);
+        }
+
+        /* Switch toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Bouton de soumission */
+        .submit-btn {
+            width: 100%;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
+            color: white;
+            border: none;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 24px 0;
+            border-top: 1px solid var(--light-border);
+            margin-top: 40px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .dark-mode .footer {
+            border-color: var(--dark-border);
+            color: #94a3b8;
+        }
+
+        .footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (min-width: 480px) {
+            .container {
+                padding: 0 20px;
+            }
+            
+            .signup-form {
+                padding: 40px 32px;
+            }
+            
+            .form-row {
+                display: flex;
+                gap: 20px;
+            }
+            
+            .form-row .form-group {
+                flex: 1;
+                margin-bottom: 24px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 720px;
+                padding: 0 24px;
+            }
+            
+            .form-title {
+                font-size: 36px;
+            }
+            
+            .form-subtitle {
+                font-size: 18px;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .submit-btn.loading .spinner {
+            display: inline-block;
+        }
+
+        .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        /* Animation */
+        .signup-form {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-globe-africa"></i>
+                    </div>
+                    <div class="logo-text">AFRIMARKET</div>
+                </a>
+                
+                <div class="header-controls">
+                    <!-- Bouton langue -->
+                    <div class="lang-container" style="position: relative;">
+                        <button class="control-btn" id="langBtn">
+                            <i class="fas fa-language"></i>
+                        </button>
+                        <div class="lang-menu" id="langMenu">
+                            <div class="lang-option active" data-lang="fr">
+                                <span>🇫🇷</span> Français
+                            </div>
+                            <div class="lang-option" data-lang="en">
+                                <span>🇬🇧</span> English
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bouton thème -->
+                    <button class="control-btn" id="themeBtn">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="container">
+            <div class="form-container">
+                <div class="form-header">
+                    <h1 class="form-title" id="formTitle">Créer un compte</h1>
+                    <p class="form-subtitle" id="formSubtitle">Rejoignez la plus grande communauté de petites annonces en Afrique</p>
+                </div>
+                
+                <form class="signup-form" id="signupForm">
+                    <!-- Informations de base -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required" for="firstName" id="firstNameLabel">Prénom</label>
+                            <input type="text" id="firstName" class="form-input" placeholder="" required>
+                            <div class="error-message" id="firstNameError"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required" for="lastName" id="lastNameLabel">Nom</label>
+                            <input type="text" id="lastName" class="form-input" placeholder="" required>
+                            <div class="error-message" id="lastNameError"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required" for="email" id="emailLabel">Adresse email</label>
+                        <input type="email" id="email" class="form-input" placeholder="exemple@email.com" required>
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required" for="phone" id="phoneLabel">Numéro de téléphone</label>
+                        <input type="tel" id="phone" class="form-input" placeholder="+237 6XX XX XX XX" required>
+                        <div class="error-message" id="phoneError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required" for="password" id="passwordLabel">Mot de passe</label>
+                        <input type="password" id="password" class="form-input" placeholder="" required>
+                        <div class="error-message" id="passwordError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required" for="confirmPassword" id="confirmPasswordLabel">Confirmer le mot de passe</label>
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="" required>
+                        <div class="error-message" id="confirmPasswordError"></div>
+                    </div>
+                    
+                    <!-- Informations pour les annonces -->
+                    <div class="form-group">
+                        <label class="form-label required" for="country" id="countryLabel">Pays</label>
+                        <select id="country" class="form-select" required>
+                            <option value="">Sélectionnez votre pays</option>
+                            <option value="mali">Mali</option>
+                            <option value="senegal">Sénégal</option>
+                            <option value="cote-ivoire">Côte d'Ivoire</option>
+                            <option value="cameroun" selected>Cameroun</option>
+                            <option value="burkina">Burkina Faso</option>
+                            <option value="togo">Togo</option>
+                            <option value="gabon">Gabon</option>
+                            <option value="congo">Congo</option>
+                            <option value="rca">République centrafricaine</option>
+                            <option value="tchad">Tchad</option>
+                            <option value="guinee">Guinée</option>
+                        </select>
+                        <div class="error-message" id="countryError"></div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required" for="city" id="cityLabel">Ville</label>
+                            <input type="text" id="city" class="form-input" placeholder="" required>
+                            <div class="error-message" id="cityError"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required" for="neighborhood" id="neighborhoodLabel">Quartier</label>
+                            <input type="text" id="neighborhood" class="form-input" placeholder="" required>
+                            <div class="error-message" id="neighborhoodError"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Coordonnées supplémentaires -->
+                    <div class="form-group">
+                        <label class="form-label" for="whatsapp" id="whatsappLabel">Numéro WhatsApp (optionnel)</label>
+                        <input type="tel" id="whatsapp" class="form-input" placeholder="+237 6XX XX XX XX">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="telegram" id="telegramLabel">Nom d'utilisateur Telegram (optionnel)</label>
+                        <input type="text" id="telegram" class="form-input" placeholder="@votre_nom">
+                    </div>
+                    
+                    <!-- Options pour les futures annonces -->
+                    <div class="form-group">
+                        <h3 style="margin-bottom: 16px; color: var(--primary-blue);" id="preferencesTitle">Préférences pour vos futures annonces</h3>
+                        
+                        <div class="options-group">
+                            <div class="option-row">
+                                <span class="option-label" id="negotiableLabel">Prix négociable par défaut</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="negotiableDefault" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="option-row">
+                                <span class="option-label" id="urgentLabel">Marquer comme urgent par défaut</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="urgentDefault">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Conditions générales -->
+                    <div class="form-group">
+                        <div style="display: flex; align-items: flex-start; gap: 12px;">
+                            <input type="checkbox" id="terms" style="margin-top: 4px;" required>
+                            <label for="terms" style="font-size: 14px; color: #64748b; line-height: 1.5;" id="termsLabel">
+                                J'accepte les <a href="#" style="color: var(--primary-blue); text-decoration: none; font-weight: 600;">conditions générales</a> et la <a href="#" style="color: var(--primary-blue); text-decoration: none; font-weight: 600;">politique de confidentialité</a> de AFRIMARKET
+                            </label>
+                        </div>
+                        <div class="error-message" id="termsError"></div>
+                    </div>
+                    
+                    <!-- Bouton de soumission -->
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span class="spinner"></span>
+                        <span class="btn-text" id="submitText">Créer mon compte</span>
+                    </button>
+                </form>
+                
+                <div class="footer">
+                    <p id="loginLinkText">Vous avez déjà un compte? <a href="login.html" id="loginLink">Connectez-vous ici</a></p>
+                    <p style="margin-top: 8px;" id="footerText">En créant un compte, vous pourrez publier des annonces immédiatement</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Éléments DOM
+        const body = document.body;
+        const langBtn = document.getElementById('langBtn');
+        const langMenu = document.getElementById('langMenu');
+        const themeBtn = document.getElementById('themeBtn');
+        const themeIcon = themeBtn.querySelector('i');
+        const signupForm = document.getElementById('signupForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const countrySelect = document.getElementById('country');
+        
+        // Données de traduction
+        const translations = {
+            fr: {
+                formTitle: "Créer un compte",
+                formSubtitle: "Rejoignez la plus grande communauté de petites annonces en Afrique",
+                firstNameLabel: "Prénom",
+                firstNamePlaceholder: "Votre prénom",
+                firstNameError: "Veuillez entrer votre prénom",
+                lastNameLabel: "Nom",
+                lastNamePlaceholder: "Votre nom",
+                lastNameError: "Veuillez entrer votre nom",
+                emailLabel: "Adresse email",
+                emailPlaceholder: "exemple@email.com",
+                emailError: "Veuillez entrer une adresse email valide",
+                phoneLabel: "Numéro de téléphone",
+                phonePlaceholder: "+237 6XX XX XX XX",
+                phoneError: "Veuillez entrer un numéro de téléphone valide",
+                passwordLabel: "Mot de passe",
+                passwordPlaceholder: "Minimum 8 caractères",
+                passwordError: "Le mot de passe doit contenir au moins 8 caractères",
+                confirmPasswordLabel: "Confirmer le mot de passe",
+                confirmPasswordPlaceholder: "Répétez votre mot de passe",
+                confirmPasswordError: "Les mots de passe ne correspondent pas",
+                countryLabel: "Pays",
+                countryPlaceholder: "Sélectionnez votre pays",
+                countryError: "Veuillez sélectionner votre pays",
+                cityLabel: "Ville",
+                cityPlaceholder: "Votre ville",
+                cityError: "Veuillez entrer votre ville",
+                neighborhoodLabel: "Quartier",
+                neighborhoodPlaceholder: "Votre quartier",
+                neighborhoodError: "Veuillez entrer votre quartier",
+                whatsappLabel: "Numéro WhatsApp (optionnel)",
+                whatsappPlaceholder: "+237 6XX XX XX XX",
+                telegramLabel: "Nom d'utilisateur Telegram (optionnel)",
+                telegramPlaceholder: "@votre_nom",
+                preferencesTitle: "Préférences pour vos futures annonces",
+                negotiableLabel: "Prix négociable par défaut",
+                urgentLabel: "Marquer comme urgent par défaut",
+                termsLabel: "J'accepte les <a href='#'>conditions générales</a> et la <a href='#'>politique de confidentialité</a> de AFRIMARKET",
+                termsError: "Vous devez accepter les conditions générales",
+                submitText: "Créer mon compte",
+                loginLinkText: "Vous avez déjà un compte?",
+                loginLink: "Connectez-vous ici",
+                footerText: "En créant un compte, vous pourrez publier des annonces immédiatement"
+            },
+            en: {
+                formTitle: "Create Account",
+                formSubtitle: "Join Africa's largest classifieds community",
+                firstNameLabel: "First Name",
+                firstNamePlaceholder: "Your first name",
+                firstNameError: "Please enter your first name",
+                lastNameLabel: "Last Name",
+                lastNamePlaceholder: "Your last name",
+                lastNameError: "Please enter your last name",
+                emailLabel: "Email Address",
+                emailPlaceholder: "example@email.com",
+                emailError: "Please enter a valid email address",
+                phoneLabel: "Phone Number",
+                phonePlaceholder: "+237 6XX XX XX XX",
+                phoneError: "Please enter a valid phone number",
+                passwordLabel: "Password",
+                passwordPlaceholder: "Minimum 8 characters",
+                passwordError: "Password must be at least 8 characters",
+                confirmPasswordLabel: "Confirm Password",
+                confirmPasswordPlaceholder: "Repeat your password",
+                confirmPasswordError: "Passwords do not match",
+                countryLabel: "Country",
+                countryPlaceholder: "Select your country",
+                countryError: "Please select your country",
+                cityLabel: "City",
+                cityPlaceholder: "Your city",
+                cityError: "Please enter your city",
+                neighborhoodLabel: "Neighborhood",
+                neighborhoodPlaceholder: "Your neighborhood",
+                neighborhoodError: "Please enter your neighborhood",
+                whatsappLabel: "WhatsApp Number (optional)",
+                whatsappPlaceholder: "+237 6XX XX XX XX",
+                telegramLabel: "Telegram Username (optional)",
+                telegramPlaceholder: "@your_username",
+                preferencesTitle: "Preferences for your future ads",
+                negotiableLabel: "Negotiable price by default",
+                urgentLabel: "Mark as urgent by default",
+                termsLabel: "I accept the <a href='#'>Terms of Service</a> and <a href='#'>Privacy Policy</a> of AFRIMARKET",
+                termsError: "You must accept the terms and conditions",
+                submitText: "Create my account",
+                loginLinkText: "Already have an account?",
+                loginLink: "Login here",
+                footerText: "By creating an account, you can post ads immediately"
+            }
+        };
+        
+        // Gestion de la langue
+        function initLanguage() {
+            const savedLang = localStorage.getItem('afrimarket_lang') || 'fr';
+            const langOptions = document.querySelectorAll('.lang-option');
+            
+            // Définir la langue active
+            langOptions.forEach(option => {
+                if (option.dataset.lang === savedLang) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            
+            // Appliquer la langue
+            applyLanguage(savedLang);
+            
+            // Gestion du clic sur le bouton langue
+            langBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langMenu.classList.toggle('active');
+                langBtn.classList.toggle('active');
+            });
+            
+            // Gestion du clic sur une option de langue
+            langOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const lang = option.dataset.lang;
+                    
+                    // Mettre à jour l'interface
+                    langOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    
+                    // Appliquer la langue
+                    applyLanguage(lang);
+                    
+                    // Sauvegarder la préférence
+                    localStorage.setItem('afrimarket_lang', lang);
+                    
+                    // Fermer le menu
+                    langMenu.classList.remove('active');
+                    langBtn.classList.remove('active');
+                });
+            });
+            
+            // Fermer le menu en cliquant ailleurs
+            document.addEventListener('click', (e) => {
+                if (!langBtn.contains(e.target) && !langMenu.contains(e.target)) {
+                    langMenu.classList.remove('active');
+                    langBtn.classList.remove('active');
+                }
+            });
+        }
+        
+        // Appliquer la traduction
+        function applyLanguage(lang) {
+            const t = translations[lang];
+            
+            // Mettre à jour tous les éléments avec des IDs
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (key.includes('Label') && !key.includes('terms')) {
+                        // Pour les labels, mettre seulement le texte
+                        element.textContent = t[key];
+                    } else if (key.includes('Placeholder')) {
+                        // Pour les placeholders
+                        const fieldId = key.replace('Placeholder', '');
+                        const field = document.getElementById(fieldId);
+                        if (field) {
+                            field.placeholder = t[key];
+                        }
+                    } else if (key === 'termsLabel') {
+                        // Traitement spécial pour le label des conditions
+                        element.innerHTML = t[key];
+                    } else {
+                        // Pour les autres éléments
+                        element.textContent = t[key];
+                    }
+                }
+            });
+        }
+        
+        // Gestion du thème
+        function initTheme() {
+            // Charger le thème sauvegardé ou détecter la préférence système
+            const savedTheme = localStorage.getItem('afrimarket_theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            let theme = 'light';
+            if (savedTheme) {
+                theme = savedTheme;
+            } else if (systemPrefersDark) {
+                theme = 'dark';
+            }
+            
+            // Appliquer le thème
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                themeIcon.className = 'fas fa-sun';
+            }
+            
+            // Sauvegarder le thème
+            localStorage.setItem('afrimarket_theme', theme);
+            
+            // Gestion du clic sur le bouton thème
+            themeBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                
+                // Changer l'icône et sauvegarder
+                if (body.classList.contains('dark-mode')) {
+                    themeIcon.className = 'fas fa-sun';
+                    localStorage.setItem('afrimarket_theme', 'dark');
+                } else {
+                    themeIcon.className = 'fas fa-moon';
+                    localStorage.setItem('afrimarket_theme', 'light');
+                }
+                
+                // Feedback visuel
+                themeBtn.classList.add('active');
+                setTimeout(() => {
+                    themeBtn.classList.remove('active');
+                }, 300);
+            });
+        }
+        
+        // Initialisation du formulaire
+        function initForm() {
+            // Gestion de la soumission du formulaire
+            signupForm.addEventListener('submit', handleSubmit);
+            
+            // Validation en temps réel
+            setupRealTimeValidation();
+            
+            // Mise à jour des suggestions de ville selon le pays
+            countrySelect.addEventListener('change', updateCitySuggestions);
+            
+            // Initialiser les suggestions de ville
+            updateCitySuggestions();
+        }
+        
+        // Mettre à jour les suggestions de ville
+        function updateCitySuggestions() {
+            const country = countrySelect.value;
+            const cityInput = document.getElementById('city');
+            
+            // Données de villes par pays
+            const citiesByCountry = {
+                'cameroun': ['Douala', 'Yaoundé', 'Garoua', 'Bamenda', 'Maroua', 'Bafoussam', 'Ngaoundéré'],
+                'senegal': ['Dakar', 'Thiès', 'Kaolack', 'Ziguinchor', 'Saint-Louis', 'Mbour', 'Diourbel'],
+                'cote-ivoire': ['Abidjan', 'Bouaké', 'Daloa', 'Korhogo', 'San-Pédro', 'Yamoussoukro', 'Man'],
+                'mali': ['Bamako', 'Sikasso', 'Mopti', 'Koutiala', 'Ségou', 'Gao', 'Kayes'],
+                'burkina': ['Ouagadougou', 'Bobo-Dioulasso', 'Koudougou', 'Banfora', 'Ouahigouya', 'Kaya'],
+                'togo': ['Lomé', 'Sokodé', 'Kara', 'Kpalimé', 'Atakpamé', 'Bassar', 'Tsévié'],
+                'gabon': ['Libreville', 'Port-Gentil', 'Franceville', 'Oyem', 'Moanda', 'Mouila'],
+                'congo': ['Brazzaville', 'Pointe-Noire', 'Dolisie', 'Nkayi', 'Impfondo', 'Ouesso'],
+                'rca': ['Bangui', 'Bimbo', 'Mbaïki', 'Berbérati', 'Carnot', 'Bambari', 'Bouar'],
+                'tchad': ['N\'Djamena', 'Moundou', 'Sarh', 'Abéché', 'Kélo', 'Koumra', 'Pala'],
+                'guinee': ['Conakry', 'Nzérékoré', 'Kankan', 'Kindia', 'Mamou', 'Labé', 'Fria']
+            };
+            
+            if (country && citiesByCountry[country]) {
+                // Créer une datalist pour les suggestions
+                let datalist = document.getElementById('citySuggestions');
+                if (!datalist) {
+                    datalist = document.createElement('datalist');
+                    datalist.id = 'citySuggestions';
+                    document.body.appendChild(datalist);
+                }
+                
+                // Vider et remplir la datalist
+                datalist.innerHTML = '';
+                citiesByCountry[country].forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    datalist.appendChild(option);
+                });
+                
+                // Associer la datalist à l'input
+                cityInput.setAttribute('list', 'citySuggestions');
+            } else {
+                cityInput.removeAttribute('list');
+            }
+        }
+        
+        // Validation en temps réel
+        function setupRealTimeValidation() {
+            const inputs = signupForm.querySelectorAll('input[required], select[required]');
+            
+            inputs.forEach(input => {
+                // Valider quand l'utilisateur quitte le champ
+                input.addEventListener('blur', () => {
+                    validateField(input);
+                });
+                
+                // Effacer l'erreur quand l'utilisateur tape
+                input.addEventListener('input', () => {
+                    const errorElement = document.getElementById(input.id + 'Error');
+                    if (errorElement) {
+                        errorElement.classList.remove('show');
+                        input.classList.remove('error');
+                    }
+                });
+            });
+        }
+        
+        // Valider un champ spécifique
+        function validateField(field) {
+            const errorElement = document.getElementById(field.id + 'Error');
+            if (!errorElement) return true;
+            
+            // Réinitialiser l'état d'erreur
+            field.classList.remove('error');
+            errorElement.classList.remove('show');
+            
+            let isValid = true;
+            let errorMessage = '';
+            
+            if (!field.value.trim()) {
+                isValid = false;
+                errorMessage = field.id === 'firstName' ? translations[getCurrentLang()].firstNameError :
+                             field.id === 'lastName' ? translations[getCurrentLang()].lastNameError :
+                             field.id === 'email' ? translations[getCurrentLang()].emailError :
+                             field.id === 'phone' ? translations[getCurrentLang()].phoneError :
+                             field.id === 'password' ? translations[getCurrentLang()].passwordError :
+                             field.id === 'confirmPassword' ? translations[getCurrentLang()].confirmPasswordError :
+                             field.id === 'country' ? translations[getCurrentLang()].countryError :
+                             field.id === 'city' ? translations[getCurrentLang()].cityError :
+                             field.id === 'neighborhood' ? translations[getCurrentLang()].neighborhoodError :
+                             'Ce champ est obligatoire';
+            } else if (field.type === 'email' && !isValidEmail(field.value)) {
+                isValid = false;
+                errorMessage = translations[getCurrentLang()].emailError;
+            } else if (field.id === 'password' && field.value.length < 8) {
+                isValid = false;
+                errorMessage = translations[getCurrentLang()].passwordError;
+            } else if (field.id === 'confirmPassword') {
+                const password = document.getElementById('password').value;
+                if (field.value !== password) {
+                    isValid = false;
+                    errorMessage = translations[getCurrentLang()].confirmPasswordError;
+                }
+            } else if (field.id === 'phone' && !isValidPhone(field.value)) {
+                isValid = false;
+                errorMessage = translations[getCurrentLang()].phoneError;
+            }
+            
+            if (!isValid) {
+                field.classList.add('error');
+                errorElement.textContent = errorMessage;
+                errorElement.classList.add('show');
+            }
+            
+            return isValid;
+        }
+        
+        // Valider l'email
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // Valider le téléphone
+        function isValidPhone(phone) {
+            const phoneRegex = /^[+\d][\d\s\-()]{7,}$/;
+            return phoneRegex.test(phone);
+        }
+        
+        // Obtenir la langue courante
+        function getCurrentLang() {
+            const activeLangOption = document.querySelector('.lang-option.active');
+            return activeLangOption ? activeLangOption.dataset.lang : 'fr';
+        }
+        
+        // Valider tout le formulaire
+        function validateForm() {
+            let isValid = true;
+            
+            // Valider tous les champs obligatoires
+            const requiredFields = signupForm.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                if (!validateField(field)) {
+                    isValid = false;
+                }
+            });
+            
+            // Valider la confirmation du mot de passe
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirmPassword');
+            
+            if (password.value && confirmPassword.value && password.value !== confirmPassword.value) {
+                confirmPassword.classList.add('error');
+                document.getElementById('confirmPasswordError').textContent = translations[getCurrentLang()].confirmPasswordError;
+                document.getElementById('confirmPasswordError').classList.add('show');
+                isValid = false;
+            }
+            
+            // Valider les conditions générales
+            const termsCheckbox = document.getElementById('terms');
+            if (!termsCheckbox.checked) {
+                document.getElementById('termsError').textContent = translations[getCurrentLang()].termsError;
+                document.getElementById('termsError').classList.add('show');
+                isValid = false;
+            } else {
+                document.getElementById('termsError').classList.remove('show');
+            }
+            
+            return isValid;
+        }
+        
+        // Gérer la soumission du formulaire
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            // Valider le formulaire
+            if (!validateForm()) {
+                // Faire défiler jusqu'à la première erreur
+                const firstError = signupForm.querySelector('.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+            
+            // Afficher l'état de chargement
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            
+            // Simuler un appel API
+            setTimeout(() => {
+                // Récupérer les données du formulaire
+                const formData = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    country: document.getElementById('country').value,
+                    city: document.getElementById('city').value,
+                    neighborhood: document.getElementById('neighborhood').value,
+                    whatsapp: document.getElementById('whatsapp').value,
+                    telegram: document.getElementById('telegram').value,
+                    negotiableDefault: document.getElementById('negotiableDefault').checked,
+                    urgentDefault: document.getElementById('urgentDefault').checked
+                };
+                
+                console.log('Données d\'inscription:', formData);
+                
+                // Afficher un message de succès
+                showMessage(translations[getCurrentLang()].submitText + ' réussi! Redirection...', 'success');
+                
+                // Redirection vers le tableau de bord (simulée)
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+            }, 2000);
+        }
+        
+        // Afficher un message temporaire
+        function showMessage(text, type = 'info') {
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: fixed;
+                top: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'success' ? 'linear-gradient(135deg, #10b981, #059669)' : 
+                           type === 'error' ? '#ef4444' : 
+                           'linear-gradient(135deg, var(--primary-blue), var(--primary-red))'};
+                color: white;
+                padding: 14px 24px;
+                border-radius: var(--radius-sm);
+                box-shadow: var(--shadow);
+                z-index: 1000;
+                animation: slideDown 0.3s ease-out;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-weight: 600;
+                font-size: 14px;
+            `;
+            
+            message.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${text}
+            `;
+            
+            document.body.appendChild(message);
+            
+            // Supprimer le message après 3 secondes
+            setTimeout(() => {
+                message.style.animation = 'slideUp 0.3s ease-out';
+                setTimeout(() => message.remove(), 300);
+            }, 3000);
+        }
+        
+        // Initialisation au chargement
+        document.addEventListener('DOMContentLoaded', () => {
+            initLanguage();
+            initTheme();
+            initForm();
+            
+            // Ajouter les animations CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideDown {
+                    from {
+                        opacity: 0;
+                        transform: translate(-50%, -20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translate(-50%, 0);
+                    }
+                }
+                @keyframes slideUp {
+                    from {
+                        opacity: 1;
+                        transform: translate(-50%, 0);
+                    }
+                    to {
+                        opacity: 0;
+                        transform: translate(-50%, -20px);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

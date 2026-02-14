@@ -7,9 +7,14 @@
     <meta name="description" content="Afrimarket est la plus grande plateforme d'annonces en Afrique. Achetez et vendez facilement vos produits.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- CSS INTÉGRÉ DIRECTEMENT -->
+    <!-- CSS INTÉGRÉ -->
     <style>
-        /* ===== VARIABLES ET RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --bleu: #0066cc;
             --bleu-fonce: #004999;
@@ -30,7 +35,6 @@
             --gris-clair: #e9ecef;
             --gris-fonce: #343a40;
             --noir: #1a1a1a;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
             --shadow: 0 4px 6px rgba(0,0,0,0.1);
             --shadow-md: 0 6px 12px rgba(0,0,0,0.15);
             --shadow-lg: 0 10px 25px rgba(0,0,0,0.2);
@@ -42,18 +46,8 @@
             --spacing-md: 1.5rem;
             --spacing-lg: 2rem;
             --spacing-xl: 3rem;
-            --radius-sm: 8px;
             --radius: 12px;
-            --radius-md: 16px;
-            --radius-lg: 24px;
-            --radius-xl: 32px;
             --radius-full: 9999px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
 
         body {
@@ -61,7 +55,6 @@
             background: var(--blanc-casse);
             color: var(--noir);
             line-height: 1.6;
-            overflow-x: hidden;
         }
 
         .container {
@@ -70,42 +63,17 @@
             padding: 0 var(--spacing-md);
         }
 
-        h1, h2, h3, h4 {
-            font-weight: 700;
-            line-height: 1.2;
-        }
-
         h1 { font-size: 3.5rem; }
         h2 { font-size: 2.5rem; }
         h3 { font-size: 1.5rem; }
-        h4 { font-size: 1.25rem; }
 
         .gradient-text {
             background: var(--gradient-rainbow);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
-        .highlight {
-            color: var(--bleu);
-            position: relative;
-            display: inline-block;
-        }
-
-        .highlight::after {
-            content: '';
-            position: absolute;
-            bottom: 5px;
-            left: 0;
-            width: 100%;
-            height: 8px;
-            background: var(--gradient-rainbow);
-            opacity: 0.3;
-            z-index: -1;
-        }
-
-        /* ===== NAVIGATION ===== */
+        /* Navigation */
         .navbar {
             background: var(--blanc);
             box-shadow: var(--shadow);
@@ -113,8 +81,6 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            backdrop-filter: blur(10px);
-            background: rgba(255,255,255,0.95);
         }
 
         .nav-container {
@@ -131,9 +97,6 @@
             font-size: 1.8rem;
             font-weight: 800;
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 2px;
         }
 
         .logo-afri {
@@ -148,63 +111,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .logo-badge {
-            font-size: 0.8rem;
-            background: var(--gradient-primary);
-            color: var(--blanc);
-            padding: 2px 6px;
-            border-radius: var(--radius-full);
-            margin-left: 4px;
-        }
-
-        .search-bar {
-            flex: 1;
-            max-width: 500px;
-            display: flex;
-            align-items: center;
-            background: var(--clair);
-            border-radius: var(--radius-full);
-            padding: 0.3rem;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .search-bar:focus-within {
-            border-color: var(--bleu);
-            background: var(--blanc);
-            box-shadow: var(--shadow);
-        }
-
-        .search-bar i {
-            color: var(--gris);
-            margin-left: var(--spacing-sm);
-        }
-
-        .search-bar input {
-            flex: 1;
-            padding: 0.8rem var(--spacing-sm);
-            border: none;
-            background: transparent;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        .btn-search {
-            background: var(--gradient-primary);
-            color: var(--blanc);
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-search:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow);
-        }
-
         .nav-links {
             display: flex;
             align-items: center;
@@ -217,13 +123,7 @@
             padding: 0.6rem 1.2rem;
             border-radius: var(--radius-full);
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .nav-links a i {
-            font-size: 1.1rem;
+            cursor: pointer;
         }
 
         .nav-links a:not(.btn-primary):not(.btn-outline) {
@@ -238,6 +138,7 @@
         .btn-outline {
             border: 2px solid var(--bleu);
             color: var(--bleu);
+            background: transparent;
         }
 
         .btn-outline:hover {
@@ -249,6 +150,8 @@
             background: var(--gradient-primary);
             color: var(--blanc) !important;
             box-shadow: var(--shadow);
+            border: none;
+            cursor: pointer;
         }
 
         .btn-primary:hover {
@@ -265,79 +168,150 @@
             cursor: pointer;
         }
 
-        /* ===== HERO SECTION ===== */
+        /* Menu burger */
+        .burger-menu {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 400px;
+            height: 100vh;
+            background: var(--blanc);
+            z-index: 2000;
+            transition: left 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-lg);
+        }
+
+        .burger-menu.active {
+            left: 0;
+        }
+
+        .burger-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--clair);
+        }
+
+        .burger-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .close-burger {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gris);
+            cursor: pointer;
+        }
+
+        .burger-links {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .burger-links a {
+            padding: 1rem;
+            text-decoration: none;
+            color: var(--noir);
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 500;
+        }
+
+        .burger-links a i {
+            width: 24px;
+            color: var(--bleu);
+        }
+
+        .burger-links a:hover {
+            background: var(--clair);
+        }
+
+        .burger-divider {
+            height: 2px;
+            background: var(--clair);
+            margin: var(--spacing-md) 0;
+        }
+
+        .burger-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+
+        .burger-btn {
+            padding: 1rem;
+            border-radius: var(--radius);
+            text-align: center;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .burger-btn.primary {
+            background: var(--gradient-primary);
+            color: var(--blanc);
+        }
+
+        .burger-btn.outline {
+            border: 2px solid var(--bleu);
+            color: var(--bleu);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1500;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Hero Section */
         .hero {
             background: linear-gradient(135deg, var(--bleu-clair) 0%, var(--orange-clair) 50%, var(--vert-clair) 100%);
             min-height: 600px;
             display: flex;
             align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 80%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-            transform: rotate(20deg);
+            text-align: center;
         }
 
         .hero-content {
             max-width: 800px;
             margin: 0 auto;
-            text-align: center;
             padding: var(--spacing-xl) var(--spacing-md);
-            position: relative;
-            z-index: 1;
         }
 
         .hero h1 {
             margin-bottom: var(--spacing-md);
-            animation: fadeInUp 1s ease;
         }
 
         .hero p {
             font-size: 1.2rem;
             color: var(--gris-fonce);
             margin-bottom: var(--spacing-lg);
-            animation: fadeInUp 1s ease 0.2s both;
-        }
-
-        .hero-stats {
-            display: flex;
-            justify-content: center;
-            gap: var(--spacing-xl);
-            margin-bottom: var(--spacing-xl);
-            animation: fadeInUp 1s ease 0.3s both;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            display: block;
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: var(--gradient-rainbow);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-label {
-            color: var(--gris);
-            font-weight: 500;
         }
 
         .hero-buttons {
             display: flex;
             gap: var(--spacing-md);
             justify-content: center;
-            animation: fadeInUp 1s ease 0.4s both;
         }
 
         .btn-hero-primary {
@@ -350,14 +324,8 @@
             padding: 1rem 2rem;
             border-radius: var(--radius-full);
             font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow);
-        }
-
-        .btn-hero-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            border: none;
         }
 
         .btn-hero-secondary {
@@ -370,36 +338,19 @@
             padding: 1rem 2rem;
             border-radius: var(--radius-full);
             font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
             border: 2px solid var(--bleu);
+            cursor: pointer;
         }
 
-        .btn-hero-secondary:hover {
-            background: var(--bleu);
-            color: var(--blanc);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow);
-        }
-
-        /* ===== SECTIONS ===== */
-        .section-header {
-            text-align: center;
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .section-header h2 {
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .section-header p {
-            color: var(--gris);
-            font-size: 1.1rem;
-        }
-
+        /* Catégories */
         .categories-section {
             padding: var(--spacing-xl) 0;
             background: var(--blanc);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
         }
 
         .categories-grid {
@@ -416,37 +367,18 @@
             text-align: center;
             text-decoration: none;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .category-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--gradient-rainbow);
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
+            cursor: pointer;
         }
 
         .category-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-md);
-            border-color: transparent;
-        }
-
-        .category-card:hover::before {
-            transform: translateX(0);
+            border-color: var(--bleu);
         }
 
         .category-card i {
             font-size: 2.5rem;
-            background: var(--gradient-rainbow);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--bleu);
             margin-bottom: var(--spacing-sm);
         }
 
@@ -454,464 +386,93 @@
             display: block;
             font-weight: 600;
             color: var(--noir);
-            margin-bottom: 4px;
         }
 
-        .category-card small {
-            color: var(--gris);
-            font-size: 0.9rem;
-        }
-
-        .featured-section {
-            padding: var(--spacing-xl) 0;
-            background: var(--clair);
-        }
-
-        .featured-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .featured-card {
-            background: var(--blanc);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .featured-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .featured-badge {
-            position: absolute;
-            top: var(--spacing-sm);
-            right: var(--spacing-sm);
-            background: var(--gradient-primary);
-            color: var(--blanc);
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            font-size: 0.9rem;
-            font-weight: 600;
-            z-index: 1;
-        }
-
-        .featured-image {
-            height: 200px;
-            background: linear-gradient(135deg, var(--bleu-clair), var(--orange-clair));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .featured-image i {
-            font-size: 4rem;
-            color: var(--bleu);
-            opacity: 0.5;
-        }
-
-        .featured-content {
-            padding: var(--spacing-md);
-        }
-
-        .featured-content h3 {
-            margin-bottom: var(--spacing-xs);
-            font-size: 1.2rem;
-        }
-
-        .featured-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--vert-fonce);
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .featured-location {
-            color: var(--gris);
-            font-size: 0.9rem;
-            margin-bottom: var(--spacing-sm);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .featured-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: var(--spacing-sm);
-            border-top: 2px solid var(--clair);
-        }
-
-        .featured-date {
-            color: var(--gris);
-            font-size: 0.9rem;
-        }
-
-        .btn-like {
-            background: none;
-            border: none;
-            color: var(--gris);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-        }
-
-        .btn-like:hover {
-            color: var(--rouge);
-            transform: scale(1.1);
-        }
-
-        .btn-load-more {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--blanc);
-            color: var(--bleu);
-            text-decoration: none;
-            padding: 1rem 2.5rem;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            border: 2px solid var(--bleu);
-            transition: all 0.3s ease;
-        }
-
-        .btn-load-more:hover {
-            background: var(--bleu);
-            color: var(--blanc);
-            gap: 12px;
-        }
-
-        .how-it-works {
-            padding: var(--spacing-xl) 0;
-            background: var(--blanc);
-        }
-
-        .steps-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--spacing-lg);
-        }
-
-        .step-card {
-            text-align: center;
-            padding: var(--spacing-lg);
-            border-radius: var(--radius-lg);
-            background: var(--blanc);
-            border: 2px solid var(--clair);
-            transition: all 0.3s ease;
-        }
-
-        .step-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--bleu);
-            box-shadow: var(--shadow);
-        }
-
-        .step-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto var(--spacing-md);
-            background: var(--gradient-rainbow);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--blanc);
-            font-size: 2rem;
-            position: relative;
-        }
-
-        .step-icon::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: inherit;
-            opacity: 0.3;
-            animation: pulse 2s infinite;
-        }
-
-        .step-card h3 {
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .step-card p {
-            color: var(--gris);
-        }
-
-        .app-section {
-            padding: var(--spacing-xl) 0;
-            background: linear-gradient(135deg, var(--bleu-fonce), var(--rouge-fonce));
-            color: var(--blanc);
-        }
-
-        .app-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-xl);
-            align-items: center;
-        }
-
-        .app-text h2 {
-            font-size: 2.5rem;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .app-text p {
-            font-size: 1.2rem;
-            margin-bottom: var(--spacing-lg);
-            opacity: 0.9;
-        }
-
-        .app-badges {
-            display: flex;
-            gap: var(--spacing-md);
-        }
-
-        .app-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            color: var(--blanc);
-            text-decoration: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .app-badge:hover {
-            background: var(--blanc);
-            color: var(--bleu-fonce);
-            transform: translateY(-3px);
-        }
-
-        .app-badge i {
-            font-size: 1.5rem;
-        }
-
-        .app-image {
-            text-align: center;
-        }
-
-        .app-image i {
-            font-size: 15rem;
-            color: var(--blanc);
-            opacity: 0.8;
-            filter: drop-shadow(0 20px 20px rgba(0,0,0,0.3));
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .footer {
-            background: var(--noir);
-            color: var(--blanc);
-            padding: var(--spacing-xl) 0 var(--spacing-md);
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--spacing-xl);
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .footer-col p {
-            color: var(--gris-clair);
-            margin: var(--spacing-md) 0;
-        }
-
-        .footer-logo {
-            font-size: 2rem;
-            font-weight: 800;
-        }
-
-        .footer-col h4 {
-            margin-bottom: var(--spacing-md);
-            color: var(--blanc);
-        }
-
-        .footer-col ul {
-            list-style: none;
-        }
-
-        .footer-col ul li {
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .footer-col ul li a {
-            color: var(--gris-clair);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .footer-col ul li a:hover {
-            color: var(--bleu);
-            transform: translateX(5px);
-        }
-
-        .footer-col ul li i {
-            width: 20px;
-            color: var(--orange);
-        }
-
-        .social-links {
-            display: flex;
-            gap: var(--spacing-sm);
-        }
-
-        .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            color: var(--blanc);
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            background: var(--gradient-primary);
-            transform: translateY(-3px);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: var(--spacing-lg);
-            border-top: 2px solid rgba(255,255,255,0.1);
-            color: var(--gris-clair);
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 0.3;
-            }
-            50% {
-                transform: scale(1.2);
-                opacity: 0.1;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 0.3;
-            }
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        @media (max-width: 1024px) {
-            h1 { font-size: 3rem; }
-            h2 { font-size: 2rem; }
-            .search-bar { max-width: 300px; }
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .mobile-menu { display: block; }
-            .search-bar { display: none; }
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
             h1 { font-size: 2.5rem; }
-            h2 { font-size: 1.8rem; }
-            .hero-stats { flex-direction: column; gap: var(--spacing-md); }
-            .hero-buttons { flex-direction: column; }
-            .app-content { grid-template-columns: 1fr; text-align: center; }
-            .app-badges { justify-content: center; }
-            .app-image i { font-size: 10rem; }
-        }
-
-        @media (max-width: 480px) {
-            h1 { font-size: 2rem; }
-            h2 { font-size: 1.5rem; }
-            .container { padding: 0 var(--spacing-sm); }
-            .categories-grid { grid-template-columns: repeat(2, 1fr); }
-            .featured-grid { grid-template-columns: 1fr; }
-            .steps-container { grid-template-columns: 1fr; }
+            h2 { font-size: 2rem; }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+            
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/" class="logo">
+            <a href="index.html" class="logo">
                 <span class="logo-afri">Afri</span><span class="logo-market">Market</span>
-                <span class="logo-badge">.CM</span>
             </a>
-            
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Rechercher des annonces..." id="searchInput">
-                <button class="btn-search">Rechercher</button>
-            </div>
 
             <div class="nav-links">
-                <a href="categories.html"><i class="fas fa-th-large"></i> Catégories</a>
+                <a href="categories.html">Catégories</a>
                 <a href="connexion.html" class="btn-outline">Connexion</a>
-                <a href="inscriptions.html" class="btn-primary">Déposer une annonce</a>
+                <a onclick="redirectToDeposer()" class="btn-primary" style="cursor: pointer;">Déposer une annonce</a>
             </div>
             
-            <button class="mobile-menu">
+            <button class="mobile-menu" onclick="openBurger()">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
     </nav>
 
+    <!-- Menu Burger -->
+    <div class="overlay" id="overlay" onclick="closeBurger()"></div>
+    <div class="burger-menu" id="burgerMenu">
+        <div class="burger-header">
+            <span class="burger-logo">
+                <span class="logo-afri">Afri</span><span class="logo-market">Market</span>
+            </span>
+            <button class="close-burger" onclick="closeBurger()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="burger-links">
+            <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+            <a href="categories.html"><i class="fas fa-th-large"></i> Catégories</a>
+            <a href="recherche.html"><i class="fas fa-search"></i> Rechercher</a>
+            <a href="aide.html"><i class="fas fa-question-circle"></i> Aide</a>
+        </div>
+        
+        <div class="burger-divider"></div>
+        
+        <div class="burger-buttons">
+            <a href="connexion.html" class="burger-btn outline">
+                <i class="fas fa-sign-in-alt"></i> Connexion
+            </a>
+            <a onclick="redirectToDeposer()" class="burger-btn primary">
+                <i class="fas fa-plus-circle"></i> Déposer une annonce
+            </a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
             <h1>Achetez et vendez <span class="gradient-text">en toute simplicité</span></h1>
             <p>La plus grande plateforme d'annonces en Afrique. Des milliers d'offres près de chez vous.</p>
             
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <span class="stat-number" id="statAnnonces">50K+</span>
-                    <span class="stat-label">Annonces</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="statUtilisateurs">100K+</span>
-                    <span class="stat-label">Utilisateurs</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="statVentes">10K+</span>
-                    <span class="stat-label">Ventes/jour</span>
-                </div>
-            </div>
-
             <div class="hero-buttons">
-                <a href="inscriptions.html" class="btn-hero-primary">
+                <button onclick="redirectToDeposer()" class="btn-hero-primary">
                     <i class="fas fa-plus-circle"></i>
                     Déposer une annonce
-                </a>
+                </button>
                 <a href="recherche.html" class="btn-hero-secondary">
                     <i class="fas fa-search"></i>
                     Explorer les annonces
@@ -920,139 +481,83 @@
         </div>
     </section>
 
+    <!-- Catégories -->
     <section class="categories-section">
         <div class="container">
             <div class="section-header">
-                <h2>Catégories <span class="highlight">populaires</span></h2>
+                <h2>Catégories populaires</h2>
                 <p>Découvrez les catégories les plus recherchées</p>
             </div>
             <div class="categories-grid" id="categoriesGrid"></div>
         </div>
     </section>
 
-    <section class="featured-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>Annonces à la <span class="highlight">une</span></h2>
-                <p>Les meilleures offres du moment</p>
-            </div>
-            <div class="featured-grid" id="featuredAnnonces"></div>
-            <div class="text-center">
-                <a href="recherche.html" class="btn-load-more">
-                    Voir toutes les annonces
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <section class="how-it-works">
-        <div class="container">
-            <div class="section-header">
-                <h2>Comment ça <span class="highlight">marche ?</span></h2>
-                <p>Vendez ou achetez en 3 étapes simples</p>
-            </div>
-            <div class="steps-container">
-                <div class="step-card">
-                    <div class="step-icon"><i class="fas fa-user-plus"></i></div>
-                    <h3>1. Créez un compte</h3>
-                    <p>Inscrivez-vous gratuitement en quelques secondes</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-icon"><i class="fas fa-camera"></i></div>
-                    <h3>2. Publiez votre annonce</h3>
-                    <p>Ajoutez des photos et une description détaillée</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-icon"><i class="fas fa-handshake"></i></div>
-                    <h3>3. Vendez et gagnez</h3>
-                    <p>Contactez les acheteurs et réalisez vos ventes</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="app-section">
-        <div class="container">
-            <div class="app-content">
-                <div class="app-text">
-                    <h2>Téléchargez l'application Afrimarket</h2>
-                    <p>Restez connecté et gérez vos annonces où que vous soyez</p>
-                    <div class="app-badges">
-                        <a href="#" class="app-badge"><i class="fab fa-google-play"></i> Google Play</a>
-                        <a href="#" class="app-badge"><i class="fab fa-apple"></i> App Store</a>
-                    </div>
-                </div>
-                <div class="app-image">
-                    <i class="fas fa-mobile-alt"></i>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <div class="footer-logo">
-                        <span class="logo-afri">Afri</span><span class="logo-market">Market</span>
-                    </div>
-                    <p>La plateforme d'annonces n°1 en Afrique</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
-                    </div>
-                </div>
-                <div class="footer-col">
-                    <h4>Liens rapides</h4>
-                    <ul>
-                        <li><a href="categories.html">Catégories</a></li>
-                        <li><a href="deposer-annonce.html">Déposer une annonce</a></li>
-                        <li><a href="recherche.html">Rechercher</a></li>
-                        <li><a href="#">Aide</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Informations</h4>
-                    <ul>
-                        <li><a href="#">À propos</a></li>
-                        <li><a href="#">Conditions d'utilisation</a></li>
-                        <li><a href="#">Politique de confidentialité</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Contact</h4>
-                    <ul>
-                        <li><i class="fas fa-phone"></i> +225 00 00 00 00</li>
-                        <li><i class="fas fa-envelope"></i> contact@afrimarket.ci</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Abidjan, Côte d'Ivoire</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Afrimarket. Tous droits réservés.</p>
-            </div>
+    <!-- Footer simplifié -->
+    <footer class="footer" style="background: var(--noir); color: var(--blanc); padding: var(--spacing-xl) 0;">
+        <div class="container" style="text-align: center;">
+            <p>&copy; 2025 Afrimarket. Tous droits réservés.</p>
         </div>
     </footer>
 
-    <!-- JAVASCRIPT INTÉGRÉ DIRECTEMENT -->
+    <!-- JAVASCRIPT INTÉGRÉ -->
     <script>
         // ============================================
-        // SCRIPT PRINCIPAL AFREMARKET
+        // REDIRECTIONS
+        // ============================================
+        
+        // Fonction principale pour rediriger vers dépôt d'annonce
+        function redirectToDeposer() {
+            // Vérifier si l'utilisateur est connecté (via Supabase)
+            checkUserStatus().then(isConnected => {
+                if (isConnected) {
+                    // Connecté → va vers déposer une annonce
+                    window.location.href = 'deposer-annonce.html';
+                } else {
+                    // Pas connecté → va vers inscription
+                    window.location.href = 'inscriptions.html';
+                }
+            });
+        }
+
+        // Vérification du statut de connexion
+        async function checkUserStatus() {
+            try {
+                // Initialisation Supabase avec vos clés
+                const supabase = window.supabase.createClient(
+                    'https://kfbstzlauxdwezgtzdsx.supabase.co',
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmYnN0emxhdXhkd2V6Z3R6ZHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODYzMDQsImV4cCI6MjA4NjU2MjMwNH0.a43ze2_uKyaEgodntEvMRFEH7mNgByyfUHfzQpEKDFM'
+                );
+                
+                const { data: { session } } = await supabase.auth.getSession();
+                return !!session; // true si connecté, false sinon
+            } catch (error) {
+                console.log('Erreur vérification:', error);
+                return false;
+            }
+        }
+
+        // ============================================
+        // MENU BURGER
+        // ============================================
+        function openBurger() {
+            document.getElementById('burgerMenu').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBurger() {
+            document.getElementById('burgerMenu').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ============================================
+        // CHARGEMENT DES CATÉGORIES
         // ============================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Afrimarket chargé avec succès');
             loadCategories();
-            loadFeaturedAnnonces();
-            initMobileMenu();
-            initSearch();
-            initCounters();
         });
 
-        // Chargement des catégories
         function loadCategories() {
             const grid = document.getElementById('categoriesGrid');
             if (!grid) return;
@@ -1072,100 +577,13 @@
                 <a href="recherche.html?categorie=${cat.name}" class="category-card">
                     <i class="fas ${cat.icon}"></i>
                     <span>${cat.name}</span>
-                    <small>${cat.count} annonces</small>
+                    <small style="color: var(--gris);">${cat.count} annonces</small>
                 </a>
             `).join('');
         }
-
-        // Chargement des annonces à la une
-        function loadFeaturedAnnonces() {
-            const grid = document.getElementById('featuredAnnonces');
-            if (!grid) return;
-            
-            const annonces = [
-                { title: 'iPhone 14 Pro Max 256GB', price: '450 000', location: 'Abidjan, Cocody', date: 'Il y a 2h', category: 'Multimédia' },
-                { title: 'Toyota Camry 2020', price: '12 500 000', location: 'Abidjan, Plateau', date: 'Il y a 5h', category: 'Véhicules' },
-                { title: 'Appartement 3 pièces', price: '85 000 000', location: 'Abidjan, Marcory', date: 'Il y a 1j', category: 'Immobilier' },
-                { title: 'Tenue traditionnelle homme', price: '25 000', location: 'Abidjan, Treichville', date: 'Il y a 3h', category: 'Mode' }
-            ];
-            
-            grid.innerHTML = annonces.map(annonce => `
-                <div class="featured-card">
-                    <div class="featured-badge">À la une</div>
-                    <div class="featured-image"><i class="fas fa-image"></i></div>
-                    <div class="featured-content">
-                        <h3>${annonce.title}</h3>
-                        <div class="featured-price">${annonce.price} FCFA</div>
-                        <div class="featured-location"><i class="fas fa-map-marker-alt"></i> ${annonce.location}</div>
-                        <div class="featured-meta">
-                            <span class="featured-date"><i class="far fa-clock"></i> ${annonce.date}</span>
-                            <button class="btn-like"><i class="far fa-heart"></i></button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Gestion des likes
-            document.querySelectorAll('.btn-like').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const icon = this.querySelector('i');
-                    icon.classList.toggle('far');
-                    icon.classList.toggle('fas');
-                    this.classList.toggle('active');
-                });
-            });
-        }
-
-        // Menu mobile
-        function initMobileMenu() {
-            const menuBtn = document.querySelector('.mobile-menu');
-            if (!menuBtn) return;
-            
-            menuBtn.addEventListener('click', function() {
-                alert('Menu mobile - Version complète bientôt disponible !');
-            });
-        }
-
-        // Barre de recherche
-        function initSearch() {
-            const searchInput = document.getElementById('searchInput');
-            if (!searchInput) return;
-            
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    const query = this.value.trim();
-                    if (query) {
-                        window.location.href = `recherche.html?q=${encodeURIComponent(query)}`;
-                    }
-                }
-            });
-        }
-
-        // Compteurs animés
-        function initCounters() {
-            const counters = [
-                { element: 'statAnnonces', target: 50000, suffix: '+' },
-                { element: 'statUtilisateurs', target: 100000, suffix: '+' },
-                { element: 'statVentes', target: 10000, suffix: '+' }
-            ];
-            
-            counters.forEach(counter => {
-                const element = document.getElementById(counter.element);
-                if (!element) return;
-                
-                let current = 0;
-                const increment = counter.target / 50;
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= counter.target) {
-                        element.innerText = counter.target.toLocaleString() + counter.suffix;
-                        clearInterval(timer);
-                    } else {
-                        element.innerText = Math.floor(current).toLocaleString() + counter.suffix;
-                    }
-                }, 30);
-            });
-        }
     </script>
+    
+    <!-- Script Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription - Afrimarket</title>
+    <title>Afrimarket - Inscription</title>
     <meta name="description" content="Créez votre compte Afrimarket gratuitement">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -33,9 +33,6 @@
             --gradient-primary: linear-gradient(135deg, var(--bleu), var(--orange));
             --radius: 12px;
             --radius-full: 9999px;
-            --spacing-sm: 1rem;
-            --spacing-md: 1.5rem;
-            --spacing-lg: 2rem;
         }
 
         body {
@@ -88,6 +85,18 @@
             opacity: 0.9;
         }
 
+        .header .logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .header .logo span:first-child {
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
         .form {
             padding: 2rem;
         }
@@ -123,10 +132,6 @@
             border-color: var(--bleu);
             outline: none;
             box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
-        }
-
-        .form-group input.error {
-            border-color: var(--rouge);
         }
 
         .row {
@@ -233,6 +238,13 @@
             border: 1px solid #f5c6cb;
         }
 
+        .message.info {
+            display: block;
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
         @media (max-width: 480px) {
             .row {
                 grid-template-columns: 1fr;
@@ -252,8 +264,11 @@
     <div class="container">
         <div class="card">
             <div class="header">
-                <h1>Créer un compte</h1>
-                <p>Rejoignez la communauté Afrimarket</p>
+                <div class="logo">
+                    <span>Afri</span><span>Market</span>
+                </div>
+                <h1>Bienvenue !</h1>
+                <p>Créez votre compte gratuitement</p>
             </div>
 
             <div class="form">
@@ -361,15 +376,13 @@
 
     <!-- Script Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
     
     <script>
         // ============================================
-        // CONFIGURATION SUPABASE
+        // CONFIGURATION
         // ============================================
-        const SUPABASE_URL = 'https://kfbstzlauxdwezgtzdsx.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmYnN0emxhdXhkd2V6Z3R6ZHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODYzMDQsImV4cCI6MjA4NjU2MjMwNH0.a43ze2_uKyaEgodntEvMRFEH7mNgByyfUHfzQpEKDFM';
-
-        // Initialisation de Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         console.log('✅ Supabase client initialisé');
 
@@ -403,6 +416,10 @@
             messageDiv.className = 'message ' + type;
             messageDiv.innerHTML = text;
             messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
         }
 
         // ============================================
@@ -419,37 +436,31 @@
             const confirm = document.getElementById('confirmPassword').value;
             const terms = document.getElementById('terms').checked;
 
-            // Vérification des champs obligatoires
             if (!fullname || !email || !phone || !country || !city || !username || !password || !confirm) {
                 showMessage('Veuillez remplir tous les champs obligatoires', 'error');
                 return false;
             }
 
-            // Vérification de l'email
             if (!email.includes('@') || !email.includes('.')) {
                 showMessage('Email invalide', 'error');
                 return false;
             }
 
-            // Vérification du téléphone (8 chiffres)
             if (phone.length !== 8) {
                 showMessage('Le numéro de téléphone doit contenir 8 chiffres', 'error');
                 return false;
             }
 
-            // Vérification du mot de passe
             if (password.length < 6) {
                 showMessage('Le mot de passe doit contenir au moins 6 caractères', 'error');
                 return false;
             }
 
-            // Vérification de la confirmation
             if (password !== confirm) {
                 showMessage('Les mots de passe ne correspondent pas', 'error');
                 return false;
             }
 
-            // Vérification des conditions
             if (!terms) {
                 showMessage('Vous devez accepter les conditions d\'utilisation', 'error');
                 return false;
@@ -459,17 +470,13 @@
         }
 
         // ============================================
-        // INSCRIPTION AVEC REDIRECTION
+        // INSCRIPTION
         // ============================================
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Validation
-            if (!validateForm()) {
-                return;
-            }
+            if (!validateForm()) return;
 
-            // Récupération des valeurs
             const fullname = document.getElementById('fullname').value.trim();
             const email = document.getElementById('email').value.trim();
             const countryCode = document.getElementById('countryCode').value;
@@ -480,18 +487,12 @@
             const password = document.getElementById('password').value;
             const referral = document.getElementById('referral').value.trim();
             const newsletter = document.getElementById('newsletter').checked;
-
-            // Numéro complet
             const fullPhone = countryCode + phone;
 
-            // Désactiver le bouton
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inscription...';
 
             try {
-                console.log('📝 Tentative d\'inscription pour:', email);
-
-                // 1. Création de l'utilisateur dans Auth
                 const { data: authData, error: authError } = await supabase.auth.signUp({
                     email: email,
                     password: password,
@@ -508,7 +509,6 @@
 
                 if (authError) throw authError;
 
-                // 2. Ajout des informations dans la table users
                 try {
                     await supabase
                         .from('users')
@@ -526,13 +526,10 @@
                         }]);
                 } catch (dbError) {
                     console.warn('Erreur table users:', dbError);
-                    // Non bloquant
                 }
 
-                // 3. Message de succès
                 showMessage('✅ Inscription réussie ! Redirection...', 'success');
 
-                // 4. REDIRECTION APRÈS 2 SECONDES
                 setTimeout(() => {
                     window.location.href = 'connexion.html';
                 }, 2000);
@@ -540,7 +537,6 @@
             } catch (error) {
                 console.error('❌ Erreur:', error);
                 
-                // Message d'erreur adapté
                 let errorMessage = error.message;
                 if (error.message.includes('User already registered')) {
                     errorMessage = 'Cet email est déjà utilisé';
@@ -552,20 +548,10 @@
                 
                 showMessage('❌ ' + errorMessage, 'error');
 
-                // Réactiver le bouton
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> S\'inscrire';
             }
         });
-
-        // ============================================
-        // REDIRECTION MANUELLE (SI BESOIN)
-        // ============================================
-        // Vous pouvez aussi ajouter un bouton de redirection manuelle
-        function redirectToConnexion() {
-            window.location.href = 'connexion.html';
-        }
-
     </script>
 </body>
 </html>

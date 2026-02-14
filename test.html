@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Supabase</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f2f5; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+        input, button { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #0066cc; color: white; border: none; }
+        .result { margin-top: 20px; padding: 10px; border-radius: 5px; background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🔧 TEST SUPABASE</h2>
+        
+        <input type="email" id="email" placeholder="Email test" value="test@test.com">
+        <input type="password" id="password" placeholder="Mot de passe" value="123456">
+        
+        <button onclick="testConnection()">Tester la connexion</button>
+        <button onclick="testInscription()">Tester l'inscription</button>
+        
+        <div class="result" id="result">Prêt à tester...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // VOS CLÉS
+        const supabase = window.supabase.createClient(
+            'https://kfbstzlauxdwezgtzdsx.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmYnN0emxhdXhkd2V6Z3R6ZHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODYzMDQsImV4cCI6MjA4NjU2MjMwNH0.a43ze2_uKyaEgodntEvMRFEH7mNgByyfUHfzQpEKDFM'
+        );
+
+        const resultDiv = document.getElementById('result');
+
+        async function testConnection() {
+            resultDiv.innerHTML = '⏳ Test en cours...';
+            try {
+                const { error } = await supabase.from('users').select('count', { count: 'exact', head: true });
+                if (error) throw error;
+                resultDiv.innerHTML = '✅✅✅ CONNEXION RÉUSSIE ! Supabase répond.';
+            } catch (error) {
+                resultDiv.innerHTML = '❌❌❌ ERREUR: ' + error.message;
+            }
+        }
+
+        async function testInscription() {
+            resultDiv.innerHTML = '⏳ Inscription en cours...';
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) throw error;
+                
+                resultDiv.innerHTML = '✅✅✅ INSCRIPTION RÉUSSIE !\n\n' + 
+                                     JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultDiv.innerHTML = '❌❌❌ ERREUR: ' + error.message;
+            }
+        }
+
+        // Test auto au chargement
+        setTimeout(testConnection, 1000);
+    </script>
+</body>
+</html>

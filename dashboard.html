@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Afrimarket</title>
+    <meta name="description" content="Gérez vos annonces et votre activité sur Afrimarket">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- CSS INTÉGRÉ -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bleu: #0066cc;
+            --bleu-fonce: #004999;
+            --bleu-clair: #e6f0ff;
+            --rouge: #ff3333;
+            --rouge-fonce: #cc0000;
+            --rouge-clair: #ffe6e6;
+            --orange: #ff9933;
+            --orange-fonce: #e68a00;
+            --orange-clair: #fff0e6;
+            --vert: #33cc33;
+            --vert-fonce: #28a428;
+            --vert-clair: #e6ffe6;
+            --blanc: #ffffff;
+            --blanc-casse: #f8f9fa;
+            --clair: #f0f2f5;
+            --gris: #6c757d;
+            --gris-clair: #e9ecef;
+            --gris-fonce: #343a40;
+            --noir: #1a1a1a;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-md: 0 6px 12px rgba(0,0,0,0.15);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.2);
+            --gradient-primary: linear-gradient(135deg, var(--bleu), var(--orange));
+            --gradient-secondary: linear-gradient(135deg, var(--rouge), var(--vert));
+            --gradient-rainbow: linear-gradient(90deg, var(--bleu), var(--orange), var(--rouge), var(--vert));
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --radius: 12px;
+            --radius-full: 9999px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--blanc-casse);
+            color: var(--noir);
+            line-height: 1.6;
+            padding-bottom: 80px; /* Espace pour la navigation en bas */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: var(--blanc);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .logo-afri {
+            background: linear-gradient(135deg, var(--bleu), var(--orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-market {
+            background: linear-gradient(135deg, var(--rouge), var(--vert));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            color: var(--gris);
+        }
+
+        .welcome-text span {
+            color: var(--bleu);
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-notification {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--gris);
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--rouge);
+            color: var(--blanc);
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .header-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bleu), var(--orange));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--blanc);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Dashboard Main */
+        .dashboard-main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Stats Cards */
+        .stats-section {
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--blanc);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--blanc);
+        }
+
+        .stat-icon.blue { background: linear-gradient(135deg, var(--bleu), #0099ff); }
+        .stat-icon.green { background: linear-gradient(135deg, var(--vert), #66ff66); }
+        .stat-icon.orange { background: linear-gradient(135deg, var(--orange), #ffb366); }
+        .stat-icon.purple { background: linear-gradient(135deg, #9933ff, #b366ff); }
+
+        .stat-details { flex: 1; }
+
+        .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--noir);
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            color: var(--gris);
+            font-size: 0.9rem;
+        }
+
+        /* Section Annonces */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: var(--noir);
+        }
+
+        .btn-add-annonce {
+            background: var(--gradient-primary);
+            color: var(--blanc);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--radius-full);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-annonce:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Filtres */
+        .annonces-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid var(--clair);
+            background: var(--blanc);
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gris);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: var(--gradient-primary);
+            border-color: transparent;
+            color: var(--blanc);
+        }
+
+        .filter-btn:hover:not(.active) {
+            border-color: var(--bleu);
+            color: var(--bleu);
+        }
+
+        /* Grille des annonces */
+        .annonces-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Carte d'annonce */
+        .annonce-card {
+            background: var(--blanc);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .annonce-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--clair);
+        }
+
+        .card-badge {
+            padding: 0.3rem 1rem;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-badge.active {
+            background: var(--vert-clair);
+            color: var(--vert-fonce);
+        }
+
+        .card-badge.pending {
+            background: var(--orange-clair);
+            color: var(--orange-fonce);
+        }
+
+        .card-badge.sold {
+            background: var(--rouge-clair);
+            color: var(--rouge-fonce);
+        }
+
+        .card-date {
+            font-size: 0.8rem;
+            color: var(--gris);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-image {
+            height: 160px;
+            background: linear-gradient(135deg, var(--bleu-clair), var(--orange-clair));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .card-image i {
+            font-size: 3rem;
+            color: var(--bleu);
+            opacity: 0.5;
+        }
+
+        .image-count {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.5);
+            color: var(--blanc);
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-content {
+            padding: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--noir);
+        }
+
+        .card-description {
+            color: var(--gris);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .card-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--bleu);
+            margin-bottom: 1rem;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+            border-top: 1px solid var(--clair);
+            border-bottom: 1px solid var(--clair);
+        }
+
+        .card-stats .stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--gris);
+            font-size: 0.9rem;
+        }
+
+        .card-stats .stat i {
+            color: var(--bleu);
+        }
+
+        /* Actions des cartes */
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-details, .btn-contact {
+            flex: 1;
+            padding: 0.7rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-details {
+            background: var(--clair);
+            color: var(--noir);
+        }
+
+        .btn-details:hover {
+            background: var(--gris-clair);
+        }
+
+        .btn-contact {
+            background: #25D366;
+            color: var(--blanc);
+        }
+
+        .btn-contact:hover {
+            background: #128C7E;
+            transform: scale(1.02);
+        }
+
+        /* Navigation en bas (5 options) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--blanc);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0.5rem;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            border-top: 2px solid var(--clair);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--gris);
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+            position: relative;
+            flex: 1;
+            max-width: 70px;
+            padding: 0.3rem 0;
+            border-radius: var(--radius);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--bleu);
+            background: var(--bleu-clair);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-2px);
+        }
+
+        .nav-badge {
+            position: absolute;
+            top: -2px;
+            right: 15px;
+            background: var(--rouge);
+            color: var(--blanc);
+            font-size: 0.65rem;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--blanc);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+
+        .modal-content.large {
+            max-width: 700px;
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--clair);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gris);
+            cursor: pointer;
+        }
+
+        /* Détails annonce */
+        .details-container { padding: 0; }
+        .details-price { font-size: 2rem; font-weight: 700; color: var(--bleu); margin: 1rem 0; }
+        .details-section { margin: 1.5rem 0; }
+        .details-section h4 { margin-bottom: 0.5rem; color: var(--noir); }
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            background: var(--clair);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin: 1rem 0;
+        }
+        .detail-item { display: flex; flex-direction: column; }
+        .detail-label { font-size: 0.8rem; color: var(--gris); }
+        .detail-value { font-weight: 600; color: var(--noir); }
+        .details-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .stat-box {
+            background: var(--clair);
+            padding: 1rem;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+        .stat-box i { font-size: 1.5rem; color: var(--bleu); margin-bottom: 0.5rem; }
+        .stat-number { display: block; font-size: 1.2rem; font-weight: 700; color: var(--noir); }
+        .details-actions {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .btn-edit, .btn-contact-large {
+            padding: 1rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-edit { background: var(--clair); color: var(--noir); }
+        .btn-contact-large { background: #25D366; color: var(--blanc); }
+
+        /* Notifications */
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .notification-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--clair);
+            transition: background 0.3s ease;
+            cursor: pointer;
+        }
+        .notification-item:hover { background: var(--clair); }
+        .notification-item.unread { background: var(--bleu-clair); }
+        .notification-item i { font-size: 1.2rem; color: var(--bleu); }
+        .notification-item p { margin-bottom: 4px; color: var(--noir); }
+        .notification-item small { color: var(--gris); font-size: 0.8rem; }
+
+        /* État vide */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--blanc);
+            border-radius: var(--radius);
+            grid-column: 1 / -1;
+        }
+        .empty-state i { font-size: 4rem; color: var(--gris-clair); margin-bottom: 1rem; }
+        .empty-state h3 { margin-bottom: 0.5rem; color: var(--noir); }
+        .empty-state p { color: var(--gris); margin-bottom: 2rem; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-header { padding: 1rem; }
+            .header-left { gap: 1rem; }
+            .welcome-text { font-size: 0.9rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .annonces-grid { grid-template-columns: 1fr; }
+            .details-grid { grid-template-columns: 1fr; }
+            .details-actions { grid-template-columns: 1fr; }
+            .card-actions { flex-direction: column; }
+        }
+
+        @media (max-width: 480px) {
+            .nav-item span { font-size: 0.65rem; }
+            .nav-item i { font-size: 1.2rem; }
+            .nav-badge { right: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <a href="index.html" class="logo">
+                <span class="logo-afri">Afri</span><span class="logo-market">Market</span>
+            </a>
+            <span class="welcome-text">Bienvenue, <span id="userName">Jean</span> 👋</span>
+        </div>
+        <div class="header-right">
+            <button class="header-notification" onclick="showNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </button>
+            <div class="header-profile" id="profileAvatar" onclick="goToProfil()">
+                <span id="userInitials">JK</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="dashboard-main">
+        <!-- Section Stats -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-details">
+                        <span class="stat-value" id="totalViews">1,234</span>
+                        <span class="stat-label">Vues totales</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fas fa-mouse-pointer"></i></div>
+                    <div class="stat-details">
+                        <span class="stat-value" id="totalClicks">456</span>
+                        <span class="stat-label">Clics</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="fas fa-heart"></i></div>
+                    <div class="stat-details">
+                        <span class="stat-value" id="totalFavorites">89</span>
+                        <span class="stat-label">Favoris</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="fas fa-message"></i></div>
+                    <div class="stat-details">
+                        <span class="stat-value" id="totalMessages">23</span>
+                        <span class="stat-label">Messages</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Annonces -->
+        <section class="annonces-section">
+            <div class="section-header">
+                <h2>Mes annonces</h2>
+                <button class="btn-add-annonce" onclick="redirectToDeposer()">
+                    <i class="fas fa-plus"></i>
+                    Nouvelle annonce
+                </button>
+            </div>
+
+            <!-- Filtres -->
+            <div class="annonces-filters">
+                <button class="filter-btn active" data-filter="all">Toutes</button>
+                <button class="filter-btn" data-filter="active">Actives</button>
+                <button class="filter-btn" data-filter="pending">En attente</button>
+                <button class="filter-btn" data-filter="sold">Vendues</button>
+            </div>
+
+            <!-- Grille des annonces -->
+            <div class="annonces-grid" id="annoncesGrid">
+                <!-- Les annonces seront chargées dynamiquement -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Navigation en bas (5 options) -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="window.location.href='dashboard.html'">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </button>
+        <button class="nav-item" onclick="window.location.href='mes-annonces.html'">
+            <i class="fas fa-list"></i>
+            <span>Mes annonces</span>
+            <span class="nav-badge" id="annoncesCount">12</span>
+        </button>
+        <button class="nav-item" onclick="window.location.href='favoris.html'">
+            <i class="fas fa-heart"></i>
+            <span>Favoris</span>
+            <span class="nav-badge" id="favorisCount">5</span>
+        </button>
+        <button class="nav-item" onclick="window.location.href='messages.html'">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+            <span class="nav-badge" id="messagesCount">3</span>
+        </button>
+        <button class="nav-item" onclick="window.location.href='profil.html'">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+        </button>
+    </nav>
+
+    <!-- Modal détails annonce -->
+    <div class="modal" id="annonceModal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Détails de l'annonce</h2>
+                <button class="modal-close" onclick="closeModal('annonceModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Contenu dynamique -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal notifications -->
+    <div class="modal" id="notificationsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Notifications</h3>
+                <button class="modal-close" onclick="closeModal('notificationsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="notification-list">
+                    <div class="notification-item unread" onclick="markAsRead(this)">
+                        <i class="fas fa-eye"></i>
+                        <div>
+                            <p>Votre annonce "iPhone 14" a eu 50 nouvelles vues</p>
+                            <small>Il y a 2 heures</small>
+                        </div>
+                    </div>
+                    <div class="notification-item unread" onclick="markAsRead(this)">
+                        <i class="fas fa-heart"></i>
+                        <div>
+                            <p>Quelqu'un a ajouté votre annonce aux favoris</p>
+                            <small>Il y a 5 heures</small>
+                        </div>
+                    </div>
+                    <div class="notification-item" onclick="markAsRead(this)">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <p>Votre annonce a été approuvée</p>
+                            <small>Hier</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- JAVASCRIPT INTÉGRÉ -->
+    <script>
+        // ============================================
+        // CONFIGURATION SUPABASE
+        // ============================================
+        const SUPABASE_URL = 'https://kfbstzlauxdwezgtzdsx.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmYnN0emxhdXhkd2V6Z3R6ZHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODYzMDQsImV4cCI6MjA4NjU2MjMwNH0.a43ze2_uKyaEgodntEvMRFEH7mNgByyfUHfzQpEKDFM';
+        
+        let supabase;
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('✅ Supabase client initialized');
+        } catch (error) {
+            console.error('❌ Supabase initialization error:', error);
+        }
+
+        // ============================================
+        // VARIABLES GLOBALES
+        // ============================================
+        let allAnnonces = [];
+        let currentUser = null;
+
+        // ============================================
+        // INITIALISATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('📊 Dashboard chargé');
+            await checkAuth();
+            await loadUserData();
+            await loadAnnonces();
+            loadStats();
+            initFilters();
+        });
+
+        // ============================================
+        // AUTHENTIFICATION
+        // ============================================
+        async function checkAuth() {
+            try {
+                if (!supabase) return;
+                
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (!session) {
+                    // Non connecté → rediriger vers connexion
+                    window.location.href = 'connexion.html';
+                    return;
+                }
+                
+                currentUser = session.user;
+                console.log('✅ Utilisateur connecté:', currentUser.email);
+                
+            } catch (error) {
+                console.error('Erreur auth:', error);
+                window.location.href = 'connexion.html';
+            }
+        }
+
+        // ============================================
+        // CHARGEMENT DONNÉES UTILISATEUR
+        // ============================================
+        async function loadUserData() {
+            try {
+                if (!supabase || !currentUser) return;
+                
+                const { data: userData, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+                
+                if (error) throw error;
+                
+                // Mettre à jour l'interface
+                document.getElementById('userName').textContent = userData.fullname.split(' ')[0];
+                
+                // Initiales pour l'avatar
+                const initials = userData.fullname.split(' ').map(n => n[0]).join('').toUpperCase();
+                document.getElementById('userInitials').textContent = initials;
+                
+            } catch (error) {
+                console.error('Erreur chargement user:', error);
+            }
+        }
+
+        // ============================================
+        // CHARGEMENT DES ANNONCES
+        // ============================================
+        async function loadAnnonces() {
+            try {
+                if (!supabase || !currentUser) return;
+                
+                // Charger les annonces depuis Supabase
+                const { data: annonces, error } = await supabase
+                    .from('annonces')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                if (annonces && annonces.length > 0) {
+                    allAnnonces = annonces;
+                } else {
+                    // Données de démonstration
+                    allAnnonces = [
+                        {
+                            id: 1,
+                            title: 'iPhone 14 Pro Max 256GB',
+                            description: 'Comme neuf, état impeccable, vendu avec chargeur et coque',
+                            price: 450000,
+                            images: 3,
+                            views: 234,
+                            clicks: 45,
+                            favorites: 12,
+                            status: 'active',
+                            date: '2025-02-10',
+                            category: 'Multimédia',
+                            seller: {
+                                name: 'Jean Kouadio',
+                                phone: '+225 01 23 45 67',
+                                verified: true
+                            }
+                        },
+                        {
+                            id: 2,
+                            title: 'Toyota Camry 2020 - Très bon état',
+                            description: 'Voiture bien entretenue, vidange faite, climatisation froide',
+                            price: 12500000,
+                            images: 8,
+                            views: 567,
+                            clicks: 89,
+                            favorites: 23,
+                            status: 'active',
+                            date: '2025-02-08',
+                            category: 'Véhicules',
+                            seller: {
+                                name: 'Marie Bamba',
+                                phone: '+225 07 89 01 23',
+                                verified: true
+                            }
+                        },
+                        {
+                            id: 3,
+                            title: 'Appartement 3 pièces Marcory',
+                            description: 'Appartement lumineux, salon, 2 chambres, cuisine équipée',
+                            price: 85000000,
+                            images: 12,
+                            views: 892,
+                            clicks: 156,
+                            favorites: 34,
+                            status: 'pending',
+                            date: '2025-02-05',
+                            category: 'Immobilier',
+                            seller: {
+                                name: 'Pierre Aka',
+                                phone: '+225 05 55 44 33',
+                                verified: true
+                            }
+                        },
+                        {
+                            id: 4,
+                            title: 'Tenue traditionnelle homme Bazin',
+                            description: 'Grand boubou en bazin riche, broderie fine, plusieurs coloris',
+                            price: 25000,
+                            images: 5,
+                            views: 123,
+                            clicks: 23,
+                            favorites: 5,
+                            status: 'sold',
+                            date: '2025-02-12',
+                            category: 'Mode',
+                            seller: {
+                                name: 'Aminata Diallo',
+                                phone: '+225 01 98 76 54',
+                                verified: false
+                            }
+                        }
+                    ];
+                }
+                
+                displayAnnonces('all');
+                
+            } catch (error) {
+                console.error('Erreur chargement annonces:', error);
+                showNotification('Erreur de chargement des annonces', 'error');
+            }
+        }
+
+        // ============================================
+        // AFFICHAGE DES ANNONCES
+        // ============================================
+        function displayAnnonces(filter = 'all') {
+            const grid = document.getElementById('annoncesGrid');
+            if (!grid) return;
+            
+            let filteredAnnonces = allAnnonces;
+            
+            if (filter !== 'all') {
+                filteredAnnonces = allAnnonces.filter(a => a.status === filter);
+            }
+            
+            if (filteredAnnonces.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h3>Aucune annonce</h3>
+                        <p>Commencez par publier votre première annonce</p>
+                        <button onclick="redirectToDeposer()" class="btn-add-annonce" style="display: inline-flex;">
+                            <i class="fas fa-plus"></i>
+                            Déposer une annonce
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = filteredAnnonces.map(annonce => `
+                <div class="annonce-card" data-id="${annonce.id}">
+                    <div class="card-header">
+                        <div class="card-badge ${annonce.status}">
+                            ${getStatusLabel(annonce.status)}
+                        </div>
+                        <div class="card-date">
+                            <i class="far fa-calendar"></i>
+                            ${formatDate(annonce.date)}
+                        </div>
+                    </div>
+                    
+                    <div class="card-image">
+                        <i class="fas fa-image"></i>
+                        <span class="image-count">
+                            <i class="fas fa-camera"></i> ${annonce.images || 0}
+                        </span>
+                    </div>
+                    
+                    <div class="card-content">
+                        <h3 class="card-title">${annonce.title}</h3>
+                        <p class="card-description">${annonce.description.substring(0, 60)}...</p>
+                        
+                        <div class="card-price">
+                            ${formatPrice(annonce.price)} FCFA
+                        </div>
+                        
+                        <div class="card-stats">
+                            <div class="stat">
+                                <i class="fas fa-eye"></i>
+                                <span>${annonce.views} vues</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-mouse-pointer"></i>
+                                <span>${annonce.clicks} clics</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-heart"></i>
+                                <span>${annonce.favorites}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-actions">
+                            <button class="btn-details" onclick="showDetails(${annonce.id})">
+                                <i class="fas fa-info-circle"></i>
+                                Détails
+                            </button>
+                            <button class="btn-contact" onclick="contactSeller('${annonce.seller.phone}', '${annonce.title}')">
+                                <i class="fab fa-whatsapp"></i>
+                                Contact
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Mettre à jour le compteur
+            document.getElementById('annoncesCount').textContent = filteredAnnonces.length;
+        }
+
+        // ============================================
+        // FONCTIONS UTILITAIRES
+        // ============================================
+        function getStatusLabel(status) {
+            const labels = {
+                'active': 'Active',
+                'pending': 'En attente',
+                'sold': 'Vendue'
+            };
+            return labels[status] || status;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return "Aujourd'hui";
+            if (diffDays === 1) return "Hier";
+            if (diffDays < 7) return `Il y a ${diffDays} jours`;
+            return date.toLocaleDateString('fr-FR');
+        }
+
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        }
+
+        // ============================================
+        // STATISTIQUES
+        // ============================================
+        function loadStats() {
+            const totalViews = allAnnonces.reduce((sum, a) => sum + (a.views || 0), 0);
+            const totalClicks = allAnnonces.reduce((sum, a) => sum + (a.clicks || 0), 0);
+            const totalFavorites = allAnnonces.reduce((sum, a) => sum + (a.favorites || 0), 0);
+            
+            document.getElementById('totalViews').textContent = formatPrice(totalViews);
+            document.getElementById('totalClicks').textContent = formatPrice(totalClicks);
+            document.getElementById('totalFavorites').textContent = formatPrice(totalFavorites);
+            document.getElementById('totalMessages').textContent = '23';
+        }
+
+        // ============================================
+        // FILTRES
+        // ============================================
+        function initFilters() {
+            const filters = document.querySelectorAll('.filter-btn');
+            
+            filters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    filters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filterValue = this.dataset.filter;
+                    displayAnnonces(filterValue);
+                });
+            });
+        }
+
+        // ============================================
+        // DÉTAILS DE L'ANNONCE
+        // ============================================
+        window.showDetails = function(annonceId) {
+            const annonce = allAnnonces.find(a => a.id == annonceId);
+            if (!annonce) return;
+            
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="details-container">
+                    <h2>${annonce.title}</h2>
+                    <div class="details-price">${formatPrice(annonce.price)} FCFA</div>
+                    
+                    <div class="details-section">
+                        <h4>Description</h4>
+                        <p>${annonce.description}</p>
+                    </div>
+                    
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Catégorie</span>
+                            <span class="detail-value">${annonce.category}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Date</span>
+                            <span class="detail-value">${new Date(annonce.date).toLocaleDateString('fr-FR')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Statut</span>
+                            <span class="detail-value">${getStatusLabel(annonce.status)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Vendeur</span>
+                            <span class="detail-value">
+                                ${annonce.seller.name}
+                                ${annonce.seller.verified ? '✓' : ''}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="details-stats">
+                        <div class="stat-box">
+                            <i class="fas fa-eye"></i>
+                            <span class="stat-number">${annonce.views}</span>
+                            <span>Vues</span>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <span class="stat-number">${annonce.clicks}</span>
+                            <span>Clics</span>
+                        </div>
+                        <div class="stat-box">
+                            <i class="fas fa-heart"></i>
+                            <span class="stat-number">${annonce.favorites}</span>
+                            <span>Favoris</span>
+                        </div>
+                    </div>
+                    
+                    <div class="details-actions">
+                        <button class="btn-edit" onclick="editAnnonce(${annonce.id})">
+                            <i class="fas fa-edit"></i> Modifier
+                        </button>
+                        <button class="btn-contact-large" onclick="contactSeller('${annonce.seller.phone}', '${annonce.title}')">
+                            <i class="fab fa-whatsapp"></i> Contacter le vendeur
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('annonceModal').classList.add('active');
+        };
+
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        };
+
+        window.editAnnonce = function(id) {
+            window.location.href = `modifier-annonce.html?id=${id}`;
+        };
+
+        // ============================================
+        // CONTACT WHATSAPP
+        // ============================================
+        window.contactSeller = function(phone, annonceTitle) {
+            const cleanPhone = phone.replace(/\s/g, '');
+            const message = `Bonjour ! 👋\n\nJe suis intéressé(e) par votre annonce *"${annonceTitle}"* sur *AFRIMARKET*.\n\nEst-ce toujours disponible ?`;
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, '_blank');
+            
+            showNotification('Contact démarré sur WhatsApp', 'success');
+        };
+
+        // ============================================
+        // NOTIFICATIONS
+        // ============================================
+        window.showNotifications = function() {
+            document.getElementById('notificationsModal').classList.add('active');
+        };
+
+        window.markAsRead = function(element) {
+            element.classList.remove('unread');
+        };
+
+        // ============================================
+        // REDIRECTIONS
+        // ============================================
+        window.redirectToDeposer = function() {
+            window.location.href = 'deposer-annonce.html';
+        };
+
+        window.goToProfil = function() {
+            window.location.href = 'profil.html';
+        };
+
+        // ============================================
+        // NOTIFICATION FLOTTANTE
+        // ============================================
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                background: var(--blanc);
+                border-radius: var(--radius);
+                box-shadow: var(--shadow-lg);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 3000;
+                border-left: 4px solid ${type === 'success' ? 'var(--vert)' : 'var(--rouge)'};
+                transform: translateX(120%);
+                transition: transform 0.3s ease;
+            `;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" style="color: ${type === 'success' ? 'var(--vert)' : 'var(--rouge)'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.style.transform = 'translateX(0)', 100);
+            setTimeout(() => {
+                notification.style.transform = 'translateX(120%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Fermer les modals en cliquant dehors
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        };
+    </script>
+</body>
+</html>

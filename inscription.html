@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Afrimarket</title>
+    <meta name="description" content="Créez votre compte Afrimarket gratuitement et commencez à acheter et vendre en toute sécurité">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- CSS INTÉGRÉ -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bleu: #0066cc;
+            --bleu-fonce: #004999;
+            --bleu-clair: #e6f0ff;
+            --rouge: #ff3333;
+            --rouge-fonce: #cc0000;
+            --rouge-clair: #ffe6e6;
+            --orange: #ff9933;
+            --orange-fonce: #e68a00;
+            --orange-clair: #fff0e6;
+            --vert: #33cc33;
+            --vert-fonce: #28a428;
+            --vert-clair: #e6ffe6;
+            --blanc: #ffffff;
+            --blanc-casse: #f8f9fa;
+            --clair: #f0f2f5;
+            --gris: #6c757d;
+            --gris-clair: #e9ecef;
+            --gris-fonce: #343a40;
+            --noir: #1a1a1a;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-md: 0 6px 12px rgba(0,0,0,0.15);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.2);
+            --gradient-primary: linear-gradient(135deg, var(--bleu), var(--orange));
+            --gradient-rainbow: linear-gradient(90deg, var(--bleu), var(--orange), var(--rouge), var(--vert));
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --radius: 12px;
+            --radius-full: 9999px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bleu-clair), var(--orange-clair));
+            min-height: 100vh;
+        }
+
+        /* Navigation simplifiée */
+        .navbar {
+            background: var(--blanc);
+            box-shadow: var(--shadow);
+            padding: var(--spacing-sm) 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .logo-afri {
+            background: linear-gradient(135deg, var(--bleu), var(--orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-market {
+            background: linear-gradient(135deg, var(--rouge), var(--vert));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-full);
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:not(.btn-primary) {
+            color: var(--noir);
+        }
+
+        .nav-links a:not(.btn-primary):hover {
+            color: var(--bleu);
+            background: var(--bleu-clair);
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: var(--blanc) !important;
+            box-shadow: var(--shadow);
+        }
+
+        /* Conteneur principal */
+        .auth-wrapper {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-md);
+        }
+
+        .auth-container {
+            max-width: 500px;
+            width: 100%;
+            background: var(--blanc);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* En-tête */
+        .auth-header {
+            background: linear-gradient(135deg, var(--bleu), var(--rouge));
+            color: var(--blanc);
+            padding: var(--spacing-xl);
+            text-align: center;
+        }
+
+        .auth-header h1 {
+            font-size: 2rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .auth-header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        /* Progression */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-lg) var(--spacing-lg) 0;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            right: 80px;
+            height: 2px;
+            background: var(--clair);
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--blanc);
+            border: 2px solid var(--clair);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto var(--spacing-xs);
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-number {
+            background: var(--gradient-primary);
+            border-color: transparent;
+            color: var(--blanc);
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            color: var(--gris);
+        }
+
+        .step.active .step-label {
+            color: var(--noir);
+            font-weight: 600;
+        }
+
+        /* Formulaire */
+        .auth-form {
+            padding: var(--spacing-lg);
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--noir);
+        }
+
+        .form-group label i {
+            color: var(--bleu);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--clair);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--bleu);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0,102,204,0.1);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 4px;
+            color: var(--gris);
+            font-size: 0.8rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+        }
+
+        /* Téléphone */
+        .phone-input {
+            display: flex;
+            gap: 8px;
+        }
+
+        .phone-input select {
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        /* Mot de passe */
+        .password-input {
+            position: relative;
+        }
+
+        .password-input input {
+            padding-right: 3rem;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gris);
+            cursor: pointer;
+        }
+
+        .password-strength {
+            height: 4px;
+            background: var(--clair);
+            border-radius: var(--radius-full);
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        .password-requirements {
+            list-style: none;
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+
+        .password-requirements li {
+            color: var(--gris);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .password-requirements li.valid {
+            color: var(--vert);
+        }
+
+        .password-match {
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        /* Checkbox */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .checkbox-container input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-container a {
+            color: var(--bleu);
+            text-decoration: none;
+        }
+
+        /* Boutons */
+        .form-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+
+        .btn-next, .btn-prev, .btn-submit {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-next, .btn-submit {
+            background: var(--gradient-primary);
+            color: var(--blanc);
+        }
+
+        .btn-next:hover, .btn-submit:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-prev {
+            background: var(--clair);
+            color: var(--noir);
+        }
+
+        .btn-prev:hover {
+            transform: translateX(-5px);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Footer */
+        .auth-footer {
+            text-align: center;
+            padding: 0 var(--spacing-lg) var(--spacing-lg);
+            border-top: 2px solid var(--clair);
+            margin-top: var(--spacing-md);
+        }
+
+        .auth-footer a {
+            color: var(--bleu);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--blanc);
+            padding: var(--spacing-xl);
+            border-radius: 24px;
+            max-width: 400px;
+            text-align: center;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            color: var(--vert);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+
+        .modal-actions a {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn-outline {
+            border: 2px solid var(--bleu);
+            color: var(--bleu);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: var(--blanc);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+            border-left: 4px solid;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: var(--vert);
+        }
+
+        .notification.error {
+            border-left-color: var(--rouge);
+        }
+
+        .notification i {
+            font-size: 1.2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .phone-input {
+                flex-direction: column;
+            }
+            
+            .phone-input select {
+                width: 100%;
+            }
+            
+            .progress-steps::before {
+                left: 40px;
+                right: 40px;
+            }
+            
+            .auth-header {
+                padding: var(--spacing-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-afri">Afri</span><span class="logo-market">Market</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="connexion.html">Connexion</a>
+                <a href="inscriptions.html" class="btn-primary">S'inscrire</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>Créer un compte</h1>
+                <p>Rejoignez la communauté Afrimarket</p>
+            </div>
+
+            <!-- Barre de progression -->
+            <div class="progress-steps">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Infos</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Contact</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Sécurité</div>
+                </div>
+            </div>
+
+            <!-- Formulaire -->
+            <form id="signupForm" class="auth-form">
+                <!-- ÉTAPE 1 : Informations personnelles -->
+                <div class="form-step active" id="step1">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Nom complet</label>
+                        <input type="text" id="fullname" required placeholder="Ex: Jean Kouadio">
+                        <small>Votre nom public sur la plateforme</small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-globe"></i> Pays</label>
+                            <select id="country" required>
+                                <option value="">Sélectionnez</option>
+                                <option value="CI">Côte d'Ivoire 🇨🇮</option>
+                                <option value="SN">Sénégal 🇸🇳</option>
+                                <option value="CM">Cameroun 🇨🇲</option>
+                                <option value="BF">Burkina Faso 🇧🇫</option>
+                                <option value="ML">Mali 🇲🇱</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-city"></i> Ville</label>
+                            <input type="text" id="city" required placeholder="Ex: Abidjan">
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-next" onclick="nextStep(2)">
+                        Continuer <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- ÉTAPE 2 : Contact -->
+                <div class="form-step" id="step2">
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="email" required placeholder="exemple@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fab fa-whatsapp"></i> WhatsApp</label>
+                        <div class="phone-input">
+                            <select id="countryCode">
+                                <option value="+225">+225 (CI)</option>
+                                <option value="+221">+221 (SN)</option>
+                                <option value="+237">+237 (CM)</option>
+                                <option value="+226">+226 (BF)</option>
+                            </select>
+                            <input type="tel" id="whatsapp" required placeholder="XX XX XX XX">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-gift"></i> Code de parrainage (optionnel)</label>
+                        <input type="text" id="referral" placeholder="Ex: AFRI2024">
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="button" class="btn-prev" onclick="prevStep(1)">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </button>
+                        <button type="button" class="btn-next" onclick="nextStep(3)">
+                            Continuer <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ÉTAPE 3 : Sécurité -->
+                <div class="form-step" id="step3">
+                    <div class="form-group">
+                        <label><i class="fas fa-user-tag"></i> Nom d'utilisateur</label>
+                        <input type="text" id="username" required placeholder="Ex: jean123">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Mot de passe</label>
+                        <div class="password-input">
+                            <input type="password" id="password" required placeholder="Minimum 8 caractères">
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword(this)"></i>
+                        </div>
+                        <div class="password-strength">
+                            <div class="strength-bar" id="strengthBar"></div>
+                        </div>
+                        <ul class="password-requirements" id="passwordRequirements">
+                            <li id="req-length"><i class="far fa-circle"></i> 8 caractères minimum</li>
+                            <li id="req-number"><i class="far fa-circle"></i> Au moins 1 chiffre</li>
+                            <li id="req-uppercase"><i class="far fa-circle"></i> Au moins 1 majuscule</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Confirmer</label>
+                        <div class="password-input">
+                            <input type="password" id="confirmPassword" required placeholder="Confirmez">
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword(this)"></i>
+                        </div>
+                        <div class="password-match" id="passwordMatch"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="terms" required>
+                            <span>J'accepte les <a href="#">conditions d'utilisation</a></span>
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="newsletter" checked>
+                            <span>Recevoir les offres et actualités</span>
+                        </label>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="button" class="btn-prev" onclick="prevStep(2)">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </button>
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <i class="fas fa-user-plus"></i> Créer mon compte
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="auth-footer">
+                <p>Déjà membre ? <a href="connexion.html">Connectez-vous</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de succès -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon"><i class="fas fa-check-circle"></i></div>
+            <h2>Inscription réussie !</h2>
+            <p>Un email de confirmation a été envoyé à <strong id="confirmEmail">votre@email.com</strong></p>
+            <div class="modal-actions">
+                <a href="index.html" class="btn-primary">Accueil</a>
+                <a href="connexion.html" class="btn-outline">Connexion</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT INTÉGRÉ -->
+    <script>
+        // ============================================
+        // SCRIPT D'INSCRIPTION
+        // ============================================
+        
+        let currentStep = 1;
+        const formData = {};
+
+        // Navigation entre les étapes
+        window.nextStep = function(step) {
+            if (!validateStep(currentStep)) return;
+            
+            saveStepData(currentStep);
+            
+            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            document.querySelectorAll('.step').forEach((el, index) => {
+                if (index + 1 <= step) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+            
+            currentStep = step;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.prevStep = function(step) {
+            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            document.querySelectorAll('.step').forEach((el, index) => {
+                if (index + 1 <= step) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+            
+            currentStep = step;
+            restoreStepData(step);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        function saveStepData(step) {
+            const inputs = document.querySelectorAll(`#step${step} input, #step${step} select`);
+            inputs.forEach(input => {
+                if (input.type === 'checkbox') {
+                    formData[input.id] = input.checked;
+                } else {
+                    formData[input.id] = input.value;
+                }
+            });
+        }
+
+        function restoreStepData(step) {
+            const inputs = document.querySelectorAll(`#step${step} input, #step${step} select`);
+            inputs.forEach(input => {
+                if (formData[input.id] !== undefined) {
+                    if (input.type === 'checkbox') {
+                        input.checked = formData[input.id];
+                    } else {
+                        input.value = formData[input.id];
+                    }
+                }
+            });
+        }
+
+        function validateStep(step) {
+            const inputs = document.querySelectorAll(`#step${step} input[required], #step${step} select[required]`);
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.style.borderColor = 'var(--rouge)';
+                    isValid = false;
+                    
+                    setTimeout(() => {
+                        input.style.borderColor = 'var(--clair)';
+                    }, 2000);
+                } else {
+                    input.style.borderColor = 'var(--clair)';
+                }
+            });
+            
+            if (!isValid) {
+                showNotification('Veuillez remplir tous les champs obligatoires', 'error');
+            }
+            
+            return isValid;
+        }
+
+        // Gestion du mot de passe
+        const password = document.getElementById('password');
+        const confirm = document.getElementById('confirmPassword');
+        
+        if (password) {
+            password.addEventListener('input', function() {
+                const value = this.value;
+                const strength = calculateStrength(value);
+                updateStrengthBar(strength);
+                updateRequirements(value);
+                checkPasswordMatch();
+            });
+        }
+        
+        if (confirm) {
+            confirm.addEventListener('input', checkPasswordMatch);
+        }
+
+        function calculateStrength(password) {
+            let score = 0;
+            if (password.length >= 8) score += 33;
+            if (/[0-9]/.test(password)) score += 33;
+            if (/[A-Z]/.test(password)) score += 34;
+            return score;
+        }
+
+        function updateStrengthBar(strength) {
+            const bar = document.getElementById('strengthBar');
+            bar.style.width = strength + '%';
+            
+            if (strength < 40) {
+                bar.style.background = 'linear-gradient(90deg, var(--rouge), var(--orange))';
+            } else if (strength < 70) {
+                bar.style.background = 'linear-gradient(90deg, var(--orange), #ffcc00)';
+            } else {
+                bar.style.background = 'linear-gradient(90deg, var(--vert), #00ff00)';
+            }
+        }
+
+        function updateRequirements(password) {
+            document.getElementById('req-length').innerHTML = password.length >= 8 
+                ? '<i class="fas fa-check-circle"></i> 8 caractères minimum'
+                : '<i class="far fa-circle"></i> 8 caractères minimum';
+            
+            document.getElementById('req-number').innerHTML = /[0-9]/.test(password)
+                ? '<i class="fas fa-check-circle"></i> Au moins 1 chiffre'
+                : '<i class="far fa-circle"></i> Au moins 1 chiffre';
+            
+            document.getElementById('req-uppercase').innerHTML = /[A-Z]/.test(password)
+                ? '<i class="fas fa-check-circle"></i> Au moins 1 majuscule'
+                : '<i class="far fa-circle"></i> Au moins 1 majuscule';
+        }
+
+        function checkPasswordMatch() {
+            const matchDiv = document.getElementById('passwordMatch');
+            if (!matchDiv) return;
+            
+            if (confirm.value) {
+                if (password.value === confirm.value) {
+                    matchDiv.innerHTML = '<i class="fas fa-check-circle" style="color: var(--vert);"></i> Les mots de passe correspondent';
+                } else {
+                    matchDiv.innerHTML = '<i class="fas fa-exclamation-circle" style="color: var(--rouge);"></i> Les mots de passe ne correspondent pas';
+                }
+            } else {
+                matchDiv.innerHTML = '';
+            }
+        }
+
+        // Afficher/masquer mot de passe
+        window.togglePassword = function(icon) {
+            const input = icon.previousElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        };
+
+        // Formatage téléphone
+        const phoneInput = document.getElementById('whatsapp');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 8) value = value.slice(0, 8);
+                
+                const parts = [];
+                for (let i = 0; i < value.length; i += 2) {
+                    parts.push(value.slice(i, i + 2));
+                }
+                
+                e.target.value = parts.join(' ');
+            });
+        }
+
+        // Soumission du formulaire
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!validateStep(3)) return;
+            
+            if (password.value !== confirm.value) {
+                showNotification('Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+            
+            if (!document.getElementById('terms').checked) {
+                showNotification('Vous devez accepter les conditions', 'error');
+                return;
+            }
+            
+            const email = document.getElementById('email').value;
+            document.getElementById('confirmEmail').textContent = email;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inscription...';
+            
+            // Simuler une inscription (à remplacer par Supabase)
+            setTimeout(() => {
+                document.getElementById('successModal').classList.add('active');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Créer mon compte';
+                
+                // Réinitialiser le formulaire
+                this.reset();
+                currentStep = 1;
+                document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+                document.getElementById('step1').classList.add('active');
+                document.querySelectorAll('.step').forEach((el, index) => {
+                    if (index === 0) el.classList.add('active');
+                    else el.classList.remove('active');
+                });
+            }, 2000);
+        });
+
+        // Notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Fermer le modal
+        window.onclick = function(event) {
+            const modal = document.getElementById('successModal');
+            if (event.target === modal) {
+                modal.classList.remove('active');
+            }
+        };
+
+        // Auto-complétion ville selon pays
+        document.getElementById('country')?.addEventListener('change', function() {
+            const cities = {
+                'CI': ['Abidjan', 'Bouaké', 'Yamoussoukro'],
+                'SN': ['Dakar', 'Thiès', 'Saint-Louis'],
+                'CM': ['Douala', 'Yaoundé', 'Garoua'],
+                'BF': ['Ouagadougou', 'Bobo-Dioulasso']
+            };
+            
+            const cityInput = document.getElementById('city');
+            if (this.value && cities[this.value]) {
+                cityInput.placeholder = `Ex: ${cities[this.value][0]}`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -8,7 +8,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const APP_CONFIG = {
     name: 'Afrimarket',
     currency: 'FCFA',
-    countries: ['CI', 'SN', 'CM', 'BF', 'ML'],
+    countries: ['CI', 'SN', 'CM', 'BF', 'ML', 'TG', 'BJ', 'GN'],
     categories: [
         'Véhicules',
         'Immobilier',

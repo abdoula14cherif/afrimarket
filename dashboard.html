@@ -7,7 +7,6 @@
     <meta name="description" content="Gérez vos annonces et votre activité sur Afrimarket">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- CSS INTÉGRÉ -->
     <style>
         * {
             margin: 0;
@@ -40,7 +39,6 @@
             --shadow-lg: 0 10px 25px rgba(0,0,0,0.2);
             --gradient-primary: linear-gradient(135deg, var(--bleu), var(--orange));
             --gradient-secondary: linear-gradient(135deg, var(--rouge), var(--vert));
-            --gradient-rainbow: linear-gradient(90deg, var(--bleu), var(--orange), var(--rouge), var(--vert));
             --spacing-xs: 0.5rem;
             --spacing-sm: 1rem;
             --spacing-md: 1.5rem;
@@ -51,17 +49,11 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             background: var(--blanc-casse);
             color: var(--noir);
             line-height: 1.6;
-            padding-bottom: 80px; /* Espace pour la navigation en bas */
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 var(--spacing-md);
+            padding-bottom: 80px;
         }
 
         /* Header */
@@ -689,7 +681,7 @@
                 <i class="fas fa-bell"></i>
                 <span class="notification-badge">3</span>
             </button>
-            <div class="header-profile" id="profileAvatar" onclick="goToProfil()">
+            <div class="header-profile" id="profileAvatar" onclick="window.location.href='profil.html'">
                 <span id="userInitials">JK</span>
             </div>
         </div>
@@ -735,7 +727,7 @@
         <section class="annonces-section">
             <div class="section-header">
                 <h2>Mes annonces</h2>
-                <button class="btn-add-annonce" onclick="redirectToDeposer()">
+                <button class="btn-add-annonce" onclick="window.location.href='deposer-annonce.html'">
                     <i class="fas fa-plus"></i>
                     Nouvelle annonce
                 </button>
@@ -831,363 +823,214 @@
         </div>
     </div>
 
-    <!-- Script Supabase -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
     
-    <!-- JAVASCRIPT INTÉGRÉ -->
     <script>
         // ============================================
-        // CONFIGURATION SUPABASE
+        // CONFIGURATION
         // ============================================
-        const SUPABASE_URL = 'https://kfbstzlauxdwezgtzdsx.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmYnN0emxhdXhkd2V6Z3R6ZHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODYzMDQsImV4cCI6MjA4NjU2MjMwNH0.a43ze2_uKyaEgodntEvMRFEH7mNgByyfUHfzQpEKDFM';
-        
-        let supabase;
-        try {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            console.log('✅ Supabase client initialized');
-        } catch (error) {
-            console.error('❌ Supabase initialization error:', error);
-        }
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase client initialisé');
 
         // ============================================
-        // VARIABLES GLOBALES
+        // DONNÉES DE DÉMONSTRATION
         // ============================================
-        let allAnnonces = [];
-        let currentUser = null;
-
-        // ============================================
-        // INITIALISATION
-        // ============================================
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('📊 Dashboard chargé');
-            await checkAuth();
-            await loadUserData();
-            await loadAnnonces();
-            loadStats();
-            initFilters();
-        });
-
-        // ============================================
-        // AUTHENTIFICATION
-        // ============================================
-        async function checkAuth() {
-            try {
-                if (!supabase) return;
-                
-                const { data: { session }, error } = await supabase.auth.getSession();
-                
-                if (!session) {
-                    // Non connecté → rediriger vers connexion
-                    window.location.href = 'connexion.html';
-                    return;
+        const demoAnnonces = [
+            {
+                id: 1,
+                title: 'iPhone 14 Pro Max 256GB',
+                description: 'Comme neuf, état impeccable, vendu avec chargeur et coque',
+                price: 450000,
+                images: 3,
+                views: 234,
+                clicks: 45,
+                favorites: 12,
+                status: 'active',
+                date: '2025-02-10',
+                category: 'Multimédia',
+                seller: {
+                    name: 'Jean Kouadio',
+                    phone: '+22501234567',
+                    verified: true
                 }
-                
-                currentUser = session.user;
-                console.log('✅ Utilisateur connecté:', currentUser.email);
-                
-            } catch (error) {
-                console.error('Erreur auth:', error);
-                window.location.href = 'connexion.html';
+            },
+            {
+                id: 2,
+                title: 'Toyota Camry 2020',
+                description: 'Voiture bien entretenue, vidange faite, climatisation froide',
+                price: 12500000,
+                images: 8,
+                views: 567,
+                clicks: 89,
+                favorites: 23,
+                status: 'active',
+                date: '2025-02-08',
+                category: 'Véhicules',
+                seller: {
+                    name: 'Marie Bamba',
+                    phone: '+22507890123',
+                    verified: true
+                }
+            },
+            {
+                id: 3,
+                title: 'Appartement 3 pièces Marcory',
+                description: 'Appartement lumineux, salon, 2 chambres, cuisine équipée',
+                price: 85000000,
+                images: 12,
+                views: 892,
+                clicks: 156,
+                favorites: 34,
+                status: 'pending',
+                date: '2025-02-05',
+                category: 'Immobilier',
+                seller: {
+                    name: 'Pierre Aka',
+                    phone: '+22505554433',
+                    verified: true
+                }
+            },
+            {
+                id: 4,
+                title: 'Tenue traditionnelle homme Bazin',
+                description: 'Grand boubou en bazin riche, broderie fine, plusieurs coloris',
+                price: 25000,
+                images: 5,
+                views: 123,
+                clicks: 23,
+                favorites: 5,
+                status: 'sold',
+                date: '2025-02-12',
+                category: 'Mode',
+                seller: {
+                    name: 'Aminata Diallo',
+                    phone: '+22501987654',
+                    verified: false
+                }
             }
-        }
-
-        // ============================================
-        // CHARGEMENT DONNÉES UTILISATEUR
-        // ============================================
-        async function loadUserData() {
-            try {
-                if (!supabase || !currentUser) return;
-                
-                const { data: userData, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .single();
-                
-                if (error) throw error;
-                
-                // Mettre à jour l'interface
-                document.getElementById('userName').textContent = userData.fullname.split(' ')[0];
-                
-                // Initiales pour l'avatar
-                const initials = userData.fullname.split(' ').map(n => n[0]).join('').toUpperCase();
-                document.getElementById('userInitials').textContent = initials;
-                
-            } catch (error) {
-                console.error('Erreur chargement user:', error);
-            }
-        }
+        ];
 
         // ============================================
         // CHARGEMENT DES ANNONCES
         // ============================================
-        async function loadAnnonces() {
-            try {
-                if (!supabase || !currentUser) return;
-                
-                // Charger les annonces depuis Supabase
-                const { data: annonces, error } = await supabase
-                    .from('annonces')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                if (annonces && annonces.length > 0) {
-                    allAnnonces = annonces;
-                } else {
-                    // Données de démonstration
-                    allAnnonces = [
-                        {
-                            id: 1,
-                            title: 'iPhone 14 Pro Max 256GB',
-                            description: 'Comme neuf, état impeccable, vendu avec chargeur et coque',
-                            price: 450000,
-                            images: 3,
-                            views: 234,
-                            clicks: 45,
-                            favorites: 12,
-                            status: 'active',
-                            date: '2025-02-10',
-                            category: 'Multimédia',
-                            seller: {
-                                name: 'Jean Kouadio',
-                                phone: '+225 01 23 45 67',
-                                verified: true
-                            }
-                        },
-                        {
-                            id: 2,
-                            title: 'Toyota Camry 2020 - Très bon état',
-                            description: 'Voiture bien entretenue, vidange faite, climatisation froide',
-                            price: 12500000,
-                            images: 8,
-                            views: 567,
-                            clicks: 89,
-                            favorites: 23,
-                            status: 'active',
-                            date: '2025-02-08',
-                            category: 'Véhicules',
-                            seller: {
-                                name: 'Marie Bamba',
-                                phone: '+225 07 89 01 23',
-                                verified: true
-                            }
-                        },
-                        {
-                            id: 3,
-                            title: 'Appartement 3 pièces Marcory',
-                            description: 'Appartement lumineux, salon, 2 chambres, cuisine équipée',
-                            price: 85000000,
-                            images: 12,
-                            views: 892,
-                            clicks: 156,
-                            favorites: 34,
-                            status: 'pending',
-                            date: '2025-02-05',
-                            category: 'Immobilier',
-                            seller: {
-                                name: 'Pierre Aka',
-                                phone: '+225 05 55 44 33',
-                                verified: true
-                            }
-                        },
-                        {
-                            id: 4,
-                            title: 'Tenue traditionnelle homme Bazin',
-                            description: 'Grand boubou en bazin riche, broderie fine, plusieurs coloris',
-                            price: 25000,
-                            images: 5,
-                            views: 123,
-                            clicks: 23,
-                            favorites: 5,
-                            status: 'sold',
-                            date: '2025-02-12',
-                            category: 'Mode',
-                            seller: {
-                                name: 'Aminata Diallo',
-                                phone: '+225 01 98 76 54',
-                                verified: false
-                            }
-                        }
-                    ];
-                }
-                
-                displayAnnonces('all');
-                
-            } catch (error) {
-                console.error('Erreur chargement annonces:', error);
-                showNotification('Erreur de chargement des annonces', 'error');
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAnnonces();
+            loadStats();
+            initFilters();
+            checkAuth();
+        });
+
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                // Rediriger vers connexion si non connecté
+                window.location.href = 'connexion.html';
+            } else {
+                document.getElementById('userName').textContent = session.user.email?.split('@')[0] || 'Utilisateur';
+                const initials = session.user.email?.charAt(0).toUpperCase() || 'U';
+                document.getElementById('userInitials').textContent = initials;
             }
         }
 
-        // ============================================
-        // AFFICHAGE DES ANNONCES
-        // ============================================
-        function displayAnnonces(filter = 'all') {
+        function loadAnnonces(filter = 'all') {
             const grid = document.getElementById('annoncesGrid');
-            if (!grid) return;
             
-            let filteredAnnonces = allAnnonces;
-            
+            let filtered = demoAnnonces;
             if (filter !== 'all') {
-                filteredAnnonces = allAnnonces.filter(a => a.status === filter);
+                filtered = demoAnnonces.filter(a => a.status === filter);
             }
-            
-            if (filteredAnnonces.length === 0) {
+
+            if (filtered.length === 0) {
                 grid.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-box-open"></i>
                         <h3>Aucune annonce</h3>
                         <p>Commencez par publier votre première annonce</p>
-                        <button onclick="redirectToDeposer()" class="btn-add-annonce" style="display: inline-flex;">
-                            <i class="fas fa-plus"></i>
-                            Déposer une annonce
+                        <button onclick="window.location.href='deposer-annonce.html'" class="btn-add-annonce">
+                            <i class="fas fa-plus"></i> Déposer une annonce
                         </button>
                     </div>
                 `;
                 return;
             }
-            
-            grid.innerHTML = filteredAnnonces.map(annonce => `
+
+            grid.innerHTML = filtered.map(annonce => `
                 <div class="annonce-card" data-id="${annonce.id}">
                     <div class="card-header">
                         <div class="card-badge ${annonce.status}">
-                            ${getStatusLabel(annonce.status)}
+                            ${annonce.status === 'active' ? 'Active' : annonce.status === 'pending' ? 'En attente' : 'Vendue'}
                         </div>
                         <div class="card-date">
-                            <i class="far fa-calendar"></i>
-                            ${formatDate(annonce.date)}
+                            <i class="far fa-calendar"></i> ${annonce.date}
                         </div>
                     </div>
-                    
                     <div class="card-image">
                         <i class="fas fa-image"></i>
-                        <span class="image-count">
-                            <i class="fas fa-camera"></i> ${annonce.images || 0}
-                        </span>
+                        <span class="image-count"><i class="fas fa-camera"></i> ${annonce.images}</span>
                     </div>
-                    
                     <div class="card-content">
                         <h3 class="card-title">${annonce.title}</h3>
                         <p class="card-description">${annonce.description.substring(0, 60)}...</p>
-                        
-                        <div class="card-price">
-                            ${formatPrice(annonce.price)} FCFA
-                        </div>
-                        
+                        <div class="card-price">${formatPrice(annonce.price)} FCFA</div>
                         <div class="card-stats">
-                            <div class="stat">
-                                <i class="fas fa-eye"></i>
-                                <span>${annonce.views} vues</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-mouse-pointer"></i>
-                                <span>${annonce.clicks} clics</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-heart"></i>
-                                <span>${annonce.favorites}</span>
-                            </div>
+                            <div class="stat"><i class="fas fa-eye"></i> ${annonce.views}</div>
+                            <div class="stat"><i class="fas fa-mouse-pointer"></i> ${annonce.clicks}</div>
+                            <div class="stat"><i class="fas fa-heart"></i> ${annonce.favorites}</div>
                         </div>
-                        
                         <div class="card-actions">
                             <button class="btn-details" onclick="showDetails(${annonce.id})">
-                                <i class="fas fa-info-circle"></i>
-                                Détails
+                                <i class="fas fa-info-circle"></i> Détails
                             </button>
                             <button class="btn-contact" onclick="contactSeller('${annonce.seller.phone}', '${annonce.title}')">
-                                <i class="fab fa-whatsapp"></i>
-                                Contact
+                                <i class="fab fa-whatsapp"></i> Contact
                             </button>
                         </div>
                     </div>
                 </div>
             `).join('');
-            
-            // Mettre à jour le compteur
-            document.getElementById('annoncesCount').textContent = filteredAnnonces.length;
-        }
 
-        // ============================================
-        // FONCTIONS UTILITAIRES
-        // ============================================
-        function getStatusLabel(status) {
-            const labels = {
-                'active': 'Active',
-                'pending': 'En attente',
-                'sold': 'Vendue'
-            };
-            return labels[status] || status;
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffTime = Math.abs(now - date);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 0) return "Aujourd'hui";
-            if (diffDays === 1) return "Hier";
-            if (diffDays < 7) return `Il y a ${diffDays} jours`;
-            return date.toLocaleDateString('fr-FR');
+            document.getElementById('annoncesCount').textContent = filtered.length;
         }
 
         function formatPrice(price) {
             return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         }
 
-        // ============================================
-        // STATISTIQUES
-        // ============================================
         function loadStats() {
-            const totalViews = allAnnonces.reduce((sum, a) => sum + (a.views || 0), 0);
-            const totalClicks = allAnnonces.reduce((sum, a) => sum + (a.clicks || 0), 0);
-            const totalFavorites = allAnnonces.reduce((sum, a) => sum + (a.favorites || 0), 0);
+            const totalViews = demoAnnonces.reduce((sum, a) => sum + a.views, 0);
+            const totalClicks = demoAnnonces.reduce((sum, a) => sum + a.clicks, 0);
+            const totalFavorites = demoAnnonces.reduce((sum, a) => sum + a.favorites, 0);
             
             document.getElementById('totalViews').textContent = formatPrice(totalViews);
             document.getElementById('totalClicks').textContent = formatPrice(totalClicks);
             document.getElementById('totalFavorites').textContent = formatPrice(totalFavorites);
-            document.getElementById('totalMessages').textContent = '23';
         }
 
-        // ============================================
-        // FILTRES
-        // ============================================
         function initFilters() {
             const filters = document.querySelectorAll('.filter-btn');
-            
             filters.forEach(filter => {
                 filter.addEventListener('click', function() {
                     filters.forEach(f => f.classList.remove('active'));
                     this.classList.add('active');
-                    
-                    const filterValue = this.dataset.filter;
-                    displayAnnonces(filterValue);
+                    loadAnnonces(this.dataset.filter);
                 });
             });
         }
 
-        // ============================================
-        // DÉTAILS DE L'ANNONCE
-        // ============================================
-        window.showDetails = function(annonceId) {
-            const annonce = allAnnonces.find(a => a.id == annonceId);
-            if (!annonce) return;
-            
+        window.showDetails = function(id) {
+            const annonce = demoAnnonces.find(a => a.id === id);
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
                 <div class="details-container">
                     <h2>${annonce.title}</h2>
                     <div class="details-price">${formatPrice(annonce.price)} FCFA</div>
-                    
                     <div class="details-section">
                         <h4>Description</h4>
                         <p>${annonce.description}</p>
                     </div>
-                    
                     <div class="details-grid">
                         <div class="detail-item">
                             <span class="detail-label">Catégorie</span>
@@ -1195,50 +1038,27 @@
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Date</span>
-                            <span class="detail-value">${new Date(annonce.date).toLocaleDateString('fr-FR')}</span>
+                            <span class="detail-value">${annonce.date}</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Statut</span>
-                            <span class="detail-value">${getStatusLabel(annonce.status)}</span>
+                            <span class="detail-value">${annonce.status}</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Vendeur</span>
-                            <span class="detail-value">
-                                ${annonce.seller.name}
-                                ${annonce.seller.verified ? '✓' : ''}
-                            </span>
+                            <span class="detail-value">${annonce.seller.name}</span>
                         </div>
                     </div>
-                    
-                    <div class="details-stats">
-                        <div class="stat-box">
-                            <i class="fas fa-eye"></i>
-                            <span class="stat-number">${annonce.views}</span>
-                            <span>Vues</span>
-                        </div>
-                        <div class="stat-box">
-                            <i class="fas fa-mouse-pointer"></i>
-                            <span class="stat-number">${annonce.clicks}</span>
-                            <span>Clics</span>
-                        </div>
-                        <div class="stat-box">
-                            <i class="fas fa-heart"></i>
-                            <span class="stat-number">${annonce.favorites}</span>
-                            <span>Favoris</span>
-                        </div>
-                    </div>
-                    
                     <div class="details-actions">
                         <button class="btn-edit" onclick="editAnnonce(${annonce.id})">
                             <i class="fas fa-edit"></i> Modifier
                         </button>
                         <button class="btn-contact-large" onclick="contactSeller('${annonce.seller.phone}', '${annonce.title}')">
-                            <i class="fab fa-whatsapp"></i> Contacter le vendeur
+                            <i class="fab fa-whatsapp"></i> Contacter
                         </button>
                     </div>
                 </div>
             `;
-            
             document.getElementById('annonceModal').classList.add('active');
         };
 
@@ -1250,21 +1070,11 @@
             window.location.href = `modifier-annonce.html?id=${id}`;
         };
 
-        // ============================================
-        // CONTACT WHATSAPP
-        // ============================================
-        window.contactSeller = function(phone, annonceTitle) {
-            const cleanPhone = phone.replace(/\s/g, '');
-            const message = `Bonjour ! 👋\n\nJe suis intéressé(e) par votre annonce *"${annonceTitle}"* sur *AFRIMARKET*.\n\nEst-ce toujours disponible ?`;
-            const encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, '_blank');
-            
-            showNotification('Contact démarré sur WhatsApp', 'success');
+        window.contactSeller = function(phone, title) {
+            const message = `Bonjour ! Intéressé(e) par votre annonce "${title}" sur AFRIMARKET.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
         };
 
-        // ============================================
-        // NOTIFICATIONS
-        // ============================================
         window.showNotifications = function() {
             document.getElementById('notificationsModal').classList.add('active');
         };
@@ -1273,53 +1083,6 @@
             element.classList.remove('unread');
         };
 
-        // ============================================
-        // REDIRECTIONS
-        // ============================================
-        window.redirectToDeposer = function() {
-            window.location.href = 'deposer-annonce.html';
-        };
-
-        window.goToProfil = function() {
-            window.location.href = 'profil.html';
-        };
-
-        // ============================================
-        // NOTIFICATION FLOTTANTE
-        // ============================================
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 1rem 1.5rem;
-                background: var(--blanc);
-                border-radius: var(--radius);
-                box-shadow: var(--shadow-lg);
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                z-index: 3000;
-                border-left: 4px solid ${type === 'success' ? 'var(--vert)' : 'var(--rouge)'};
-                transform: translateX(120%);
-                transition: transform 0.3s ease;
-            `;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" style="color: ${type === 'success' ? 'var(--vert)' : 'var(--rouge)'}"></i>
-                <span>${message}</span>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => notification.style.transform = 'translateX(0)', 100);
-            setTimeout(() => {
-                notification.style.transform = 'translateX(120%)';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // Fermer les modals en cliquant dehors
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.classList.remove('active');

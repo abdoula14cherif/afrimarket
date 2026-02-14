@@ -3,34 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Afrimarket - Plateforme d'annonces</title>
+    <title>Afrimarket - N°1 des annonces en Afrique</title>
+    <meta name="description" content="Afrimarket est la plus grande plateforme d'annonces en Afrique. Achetez et vendez facilement vos produits.">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="logo">
                 <span class="logo-afri">Afri</span><span class="logo-market">Market</span>
+                <span class="logo-badge">.CM</span>
             </a>
-            <div class="nav-links">
-                <a href="index.html">Accueil</a>
-                <a href="inscription.html">S'inscrire</a>
-                <a href="#">Connexion</a>
+            
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Rechercher des annonces...">
+                <button class="btn-search">Rechercher</button>
             </div>
+
+            <div class="nav-links">
+                <a href="categories.html"><i class="fas fa-th-large"></i> Catégories</a>
+                <a href="connexion.html" class="btn-outline">Connexion</a>
+                <a href="inscriptions.html" class="btn-primary">Déposer une annonce</a>
+            </div>
+            
+            <button class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </nav>
 
-    <main>
-        <section class="hero">
-            <div class="hero-content">
-                <h1>Bienvenue sur <span class="highlight">Afrimarket</span></h1>
-                <p>La plateforme d'annonces numéro 1 en Afrique</p>
-                <div class="hero-buttons">
-                    <a href="inscription.html" class="btn btn-primary">Commencer maintenant</a>
-                    <a href="#" class="btn btn-secondary">Découvrir</a>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Achetez et vendez <span class="gradient-text">en toute simplicité</span></h1>
+            <p>La plus grande plateforme d'annonces en Afrique. Des milliers d'offres près de chez vous.</p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">50K+</span>
+                    <span class="stat-label">Annonces</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100K+</span>
+                    <span class="stat-label">Utilisateurs</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">10K+</span>
+                    <span class="stat-label">Ventes/jour</span>
                 </div>
             </div>
-        </section>
-    </main>
+
+            <div class="hero-buttons">
+                <a href="inscriptions.html" class="btn-hero-primary">
+                    <i class="fas fa-plus-circle"></i>
+                    Déposer une annonce
+                </a>
+                <a href="recherche.html" class="btn-hero-secondary">
+                    <i class="fas fa-search"></i>
+                    Explorer les annonces
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Catégories Populaires -->
+    <section class="categories-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Catégories <span class="highlight">populaires</span></h2>
+                <p>Découvrez les catégories les plus recherchées</p>
+            </div>
+
+            <div class="categories-grid" id="categoriesGrid">
+                <!-- Généré par JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Annonces à la une -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Annonces à la <span class="highlight">une</span></h2>
+                <p>Les meilleures offres du moment</p>
+            </div>
+
+            <div class="featured-grid" id="featuredAnnonces">
+                <!-- Généré par JavaScript -->
+            </div>
+
+            <div class="text-center">
+                <a href="recherche.html" class="btn-load-more">
+                    Voir toutes les annonces
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comment ça marche -->
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>Comment ça <span class="highlight">marche ?</span></h2>
+                <p>Vendez ou achetez en 3 étapes simples</p>
+            </div>
+
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3>1. Créez un compte</h3>
+                    <p>Inscrivez-vous gratuitement en quelques secondes</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>2. Publiez votre annonce</h3>
+                    <p>Ajoutez des photos et une description détaillée</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>3. Vendez et gagnez</h3>
+                    <p>Contactez les acheteurs et réalisez vos ventes</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Mobile -->
+    <section class="app-section">
+        <div class="container">
+            <div class="app-content">
+                <div class="app-text">
+                    <h2>Téléchargez l'application Afrimarket</h2>
+                    <p>Restez connecté et gérez vos annonces où que vous soyez</p>
+                    
+                    <div class="app-badges">
+                        <a href="#" class="app-badge">
+                            <i class="fab fa-google-play"></i>
+                            Google Play
+                        </a>
+                        <a href="#" class="app-badge">
+                            <i class="fab fa-apple"></i>
+                            App Store
+                        </a>
+                    </div>
+                </div>
+                <div class="app-image">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <span class="logo-afri">Afri</span><span class="logo-market">Market</span>
+                    </div>
+                    <p>La plateforme d'annonces n°1 en Afrique</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Liens rapides</h4>
+                    <ul>
+                        <li><a href="categories.html">Catégories</a></li>
+                        <li><a href="deposer-annonce.html">Déposer une annonce</a></li>
+                        <li><a href="recherche.html">Rechercher</a></li>
+                        <li><a href="#">Aide</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Informations</h4>
+                    <ul>
+                        <li><a href="#">À propos</a></li>
+                        <li><a href="#">Conditions d'utilisation</a></li>
+                        <li><a href="#">Politique de confidentialité</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +237 658 03 36 90</li>
+                        <li><i class="fas fa-envelope"></i> contact@afrimarket.ci</li>
+                        <li><i class="fas fa-map-marker-alt"></i> yaounde, cameroun</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Afrimarket. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html>

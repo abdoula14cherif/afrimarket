@@ -1,36 +1,286 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>TEST</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afrimarket - Inscription</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bleu: #0066cc; --orange: #ff9933; --rouge: #ff3333; --vert: #33cc33;
+            --blanc: #ffffff; --clair: #f0f2f5; --gris: #6c757d; --noir: #1a1a1a;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --gradient: linear-gradient(135deg, var(--bleu), var(--orange));
+            --radius: 12px;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .container { width: 100%; max-width: 450px; }
+        .card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: var(--gradient);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .form { padding: 2rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #f0f2f5;
+            border-radius: var(--radius);
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            border-color: var(--bleu);
+            outline: none;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .phone-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .phone-group select { width: 100px; }
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 1rem 0;
+        }
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 2px solid #f0f2f5;
+        }
+        .footer a { color: var(--bleu); text-decoration: none; }
+        .message {
+            margin: 1rem 0;
+            padding: 0.8rem;
+            border-radius: var(--radius);
+            display: none;
+        }
+        .message.success { 
+            display: block; 
+            background: #d4edda; 
+            color: #155724; 
+        }
+        .message.error { 
+            display: block; 
+            background: #f8d7da; 
+            color: #721c24; 
+        }
+        @media (max-width: 480px) {
+            .row { grid-template-columns: 1fr; }
+            .phone-group { flex-direction: column; }
+            .phone-group select { width: 100%; }
+        }
+    </style>
 </head>
 <body>
-    <h2>Test Simple</h2>
-    <input id="email" placeholder="Email">
-    <input id="password" placeholder="Mot de passe">
-    <button onclick="test()">CLIQUE ICI</button>
-    <p id="result"></p>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>Bienvenue !</h1>
+                <p>Créez votre compte gratuitement</p>
+            </div>
+
+            <div class="form">
+                <div id="message" class="message"></div>
+
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label>Nom complet</label>
+                        <input type="text" id="fullname" required placeholder="Jean Kouadio">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" required placeholder="exemple@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>WhatsApp</label>
+                        <div class="phone-group">
+                            <select id="countryCode">
+                                <option value="+225">+225 (CI)</option>
+                                <option value="+221">+221 (SN)</option>
+                                <option value="+237">+237 (CM)</option>
+                                <option value="+226">+226 (BF)</option>
+                            </select>
+                            <input type="tel" id="phone" required placeholder="XX XX XX XX">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Pays</label>
+                            <select id="country" required>
+                                <option value="">Sélectionnez</option>
+                                <option value="CI">Côte d'Ivoire</option>
+                                <option value="SN">Sénégal</option>
+                                <option value="CM">Cameroun</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ville</label>
+                            <input type="text" id="city" required placeholder="Abidjan">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nom d'utilisateur</label>
+                        <input type="text" id="username" required placeholder="jean123">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" id="password" required placeholder="6 caractères minimum">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Confirmer</label>
+                        <input type="password" id="confirmPassword" required placeholder="Confirmez">
+                    </div>
+                    
+                    <div style="margin: 1rem 0;">
+                        <label>
+                            <input type="checkbox" id="terms" required> 
+                            J'accepte les conditions
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        S'inscrire
+                    </button>
+                </form>
+                
+                <div class="footer">
+                    <a href="connexion.html">Déjà un compte ?</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // ===== CONFIGURATION =====
         const supabase = window.supabase.createClient(
             'https://kfbstzlauxdwezgtzdsx.supabase.co',
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmYnN0emxhdXhkd2V6Z3R6ZHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODYzMDQsImV4cCI6MjA4NjU2MjMwNH0.a43ze2_uKyaEgodntEvMRFEH7mNgByyfUHfzQpEKDFM'
         );
 
-        async function test() {
-            document.getElementById('result').innerHTML = 'Chargement...';
-            
-            try {
-                const { error } = await supabase.auth.getSession();
-                if (error) {
-                    document.getElementById('result').innerHTML = 'ERREUR: ' + error.message;
-                } else {
-                    document.getElementById('result').innerHTML = 'SUCCÈS: Connexion OK';
-                }
-            } catch (e) {
-                document.getElementById('result').innerHTML = 'EXCEPTION: ' + e.message;
+        // ===== ÉLÉMENTS =====
+        const form = document.getElementById('signupForm');
+        const message = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // ===== FORMATAGE TÉLÉPHONE =====
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 8) value = value.slice(0, 8);
+            const parts = [];
+            for (let i = 0; i < value.length; i += 2) {
+                parts.push(value.slice(i, i + 2));
             }
-        }
+            e.target.value = parts.join(' ');
+        });
+
+        // ===== INSCRIPTION =====
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validation simple
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirm) {
+                message.className = 'message error';
+                message.innerHTML = '❌ Les mots de passe ne correspondent pas';
+                return;
+            }
+
+            // Désactiver le bouton
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Inscription...';
+            message.style.display = 'none';
+
+            try {
+                // Inscription Supabase
+                const { data, error } = await supabase.auth.signUp({
+                    email: document.getElementById('email').value,
+                    password: password,
+                    options: {
+                        data: {
+                            fullname: document.getElementById('fullname').value,
+                            phone: document.getElementById('countryCode').value + 
+                                   document.getElementById('phone').value.replace(/\s/g, ''),
+                            country: document.getElementById('country').value,
+                            city: document.getElementById('city').value,
+                            username: document.getElementById('username').value
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                // Succès
+                message.className = 'message success';
+                message.innerHTML = '✅ Inscription réussie ! Vérifiez vos emails.';
+                
+                setTimeout(() => {
+                    window.location.href = 'connexion.html';
+                }, 3000);
+
+            } catch (error) {
+                let errorMessage = error.message;
+                if (error.message.includes('User already registered')) {
+                    errorMessage = 'Cet email est déjà utilisé';
+                }
+                
+                message.className = 'message error';
+                message.innerHTML = '❌ ' + errorMessage;
+                
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'S\'inscrire';
+            }
+        });
     </script>
 </body>
 </html>

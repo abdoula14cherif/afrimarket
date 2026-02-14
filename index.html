@@ -3,401 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Afrimarket - Inscription</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <title>Inscription SIMPLE</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --bleu: #0066cc; --orange: #ff9933; --rouge: #ff3333; --vert: #33cc33;
-            --blanc: #ffffff; --clair: #f0f2f5; --gris: #6c757d; --noir: #1a1a1a;
-            --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --gradient: linear-gradient(135deg, var(--bleu), var(--orange));
-            --radius: 12px;
-        }
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-        .container { width: 100%; max-width: 450px; }
-        .card {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-        .header {
-            background: var(--gradient);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-        }
-        .form { padding: 2rem; }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid #f0f2f5;
-            border-radius: var(--radius);
-            font-size: 1rem;
-        }
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        .phone-group {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .phone-group select { width: 100px; }
-        .btn-submit {
-            width: 100%;
-            padding: 1rem;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            border-radius: var(--radius);
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 1rem 0;
-        }
-        .btn-submit:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-        .footer {
-            text-align: center;
-            padding-top: 1.5rem;
-            border-top: 2px solid #f0f2f5;
-        }
-        .message {
-            margin: 1rem 0;
-            padding: 0.8rem;
-            border-radius: var(--radius);
-            display: none;
-        }
-        .message.success { 
-            display: block; 
-            background: #d4edda; 
-            color: #155724; 
-            border: 1px solid #c3e6cb;
-        }
-        .message.error { 
-            display: block; 
-            background: #f8d7da; 
-            color: #721c24; 
-            border: 1px solid #f5c6cb;
-        }
-        .debug-box {
-            margin-top: 20px;
-            padding: 10px;
-            background: #f0f0f0;
-            border-radius: 5px;
-            font-size: 12px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            display: none;
-        }
-        .debug-btn {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-        @media (max-width: 480px) {
-            .row { grid-template-columns: 1fr; }
-            .phone-group { flex-direction: column; }
-            .phone-group select { width: 100%; }
-        }
+        body { font-family: Arial; padding: 20px; background: #f0f2f5; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+        input, button { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #0066cc; color: white; border: none; font-size: 16px; }
+        .message { padding: 10px; margin: 10px 0; border-radius: 5px; display: none; }
+        .success { background: #d4edda; color: #155724; display: block; }
+        .error { background: #f8d7da; color: #721c24; display: block; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <div class="header">
-                <h1>Inscription</h1>
-                <p>Créez votre compte</p>
-            </div>
-
-            <div class="form">
-                <!-- Messages visibles -->
-                <div id="message" class="message"></div>
-                <div id="debug" class="debug-box"></div>
-                <button class="debug-btn" onclick="toggleDebug()">Afficher/Masquer Debug</button>
-
-                <form id="signupForm">
-                    <div class="form-group">
-                        <label>Nom complet</label>
-                        <input type="text" id="fullname" required placeholder="Jean Kouadio">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="email" required placeholder="exemple@email.com">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Téléphone</label>
-                        <div class="phone-group">
-                            <select id="countryCode">
-                                <option value="+225">+225</option>
-                                <option value="+221">+221</option>
-                            </select>
-                            <input type="tel" id="phone" required placeholder="XX XX XX XX">
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="form-group">
-                            <label>Pays</label>
-                            <select id="country" required>
-                                <option value="CI">Côte d'Ivoire</option>
-                                <option value="SN">Sénégal</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Ville</label>
-                            <input type="text" id="city" required placeholder="Abidjan">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Nom d'utilisateur</label>
-                        <input type="text" id="username" required placeholder="jean123">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Mot de passe</label>
-                        <input type="password" id="password" required placeholder="Minimum 6 caractères">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Confirmer</label>
-                        <input type="password" id="confirmPassword" required placeholder="Confirmez">
-                    </div>
-                    
-                    <div style="margin: 1rem 0;">
-                        <label>
-                            <input type="checkbox" id="terms" required> 
-                            J'accepte les conditions
-                        </label>
-                    </div>
-                    
-                    <button type="submit" class="btn-submit" id="submitBtn">
-                        S'inscrire
-                    </button>
-                </form>
-                
-                <div class="footer">
-                    <a href="connexion.html">Déjà un compte ?</a>
-                </div>
-            </div>
-        </div>
+        <h2 style="text-align:center;">Inscription</h2>
+        
+        <div id="message" class="message"></div>
+        
+        <input type="email" id="email" placeholder="Email" value="test@test.com">
+        <input type="password" id="password" placeholder="Mot de passe" value="123456">
+        
+        <button onclick="tester()">TEST RAPIDE</button>
+        <button onclick="inscrire()">S'INSCRIRE</button>
+        
+        <p style="text-align:center; margin-top:20px;">
+            <a href="connexion.html">Connexion</a>
+        </p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ================== CONFIGURATION ==================
+        // TES CLAIRES ICI - À VÉRIFIER ABSOLUMENT
         const SUPABASE_URL = 'https://kfbstzlauxdwezgtzdsx.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmYnN0emxhdXhkd2V6Z3R6ZHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODYzMDQsImV4cCI6MjA4NjU2MjMwNH0.a43ze2_uKyaEgodntEvMRFEH7mNgByyfUHfzQpEKDFM';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmYnN0emxhdXhkd2V6Z3R6ZHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODYzMDQsImV4cCI6MjA4NjU2MjMwNH0.a43ze2_uKyaEgodntEvMRFEH7mNgByyfUHfzQpEKDFM';
 
-        // ================== VARIABLES GLOBALES ==================
-        const debugBox = document.getElementById('debug');
-        const messageDiv = document.getElementById('message');
-        let supabase = null;
+        // Initialisation
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const message = document.getElementById('message');
 
-        // ================== FONCTION DE DEBUG ==================
-        function addDebug(message) {
-            console.log(message);
-            debugBox.innerHTML += message + '\n';
+        function showMessage(text, type) {
+            message.className = 'message ' + type;
+            message.innerHTML = text;
         }
 
-        function showError(text) {
-            console.error('❌', text);
-            messageDiv.className = 'message error';
-            messageDiv.innerHTML = '❌ ' + text;
-            addDebug('❌ ERREUR: ' + text);
-        }
-
-        function showSuccess(text) {
-            console.log('✅', text);
-            messageDiv.className = 'message success';
-            messageDiv.innerHTML = '✅ ' + text;
-            addDebug('✅ SUCCÈS: ' + text);
-        }
-
-        function toggleDebug() {
-            debugBox.style.display = debugBox.style.display === 'none' ? 'block' : 'none';
-        }
-
-        // ================== INITIALISATION ==================
-        addDebug('🚀 Démarrage...');
-
-        try {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            addDebug('✅ Client Supabase créé');
-        } catch (e) {
-            showError('Erreur création client: ' + e.message);
-        }
-
-        // ================== FORMATAGE TÉLÉPHONE ==================
-        document.getElementById('phone').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 8) value = value.slice(0, 8);
-            const parts = [];
-            for (let i = 0; i < value.length; i += 2) {
-                parts.push(value.slice(i, i + 2));
-            }
-            e.target.value = parts.join(' ');
-        });
-
-        // ================== TEST DE CONNEXION ==================
-        async function testConnection() {
-            addDebug('🔄 Test de connexion Supabase...');
+        // TEST 1 : Vérifier la connexion
+        async function tester() {
+            showMessage('Test en cours...', 'success');
+            
             try {
-                const { error } = await supabase.from('users').select('count', { count: 'exact', head: true });
-                if (error) {
-                    addDebug('⚠️ Table users non accessible: ' + error.message);
-                    addDebug('ℹ️ Ce n\'est pas bloquant pour l\'inscription');
-                } else {
-                    addDebug('✅ Connexion Supabase OK');
-                }
-            } catch (e) {
-                addDebug('ℹ️ Test connexion: ' + e.message);
+                const { error } = await supabase.auth.getSession();
+                if (error) throw error;
+                showMessage('✅ Connexion Supabase OK !', 'success');
+            } catch (error) {
+                showMessage('❌ ERREUR: ' + error.message, 'error');
             }
         }
-        testConnection();
 
-        // ================== GESTION DU FORMULAIRE ==================
-        document.getElementById('signupForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            addDebug('\n📝 NOUVELLE TENTATIVE D\'INSCRIPTION');
-            
-            const submitBtn = document.getElementById('submitBtn');
-            
-            // ===== RÉCUPÉRATION DES DONNÉES =====
-            const fullname = document.getElementById('fullname').value.trim();
-            const email = document.getElementById('email').value.trim();
+        // TEST 2 : Inscription
+        async function inscrire() {
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const confirm = document.getElementById('confirmPassword').value;
             
-            addDebug('Email: ' + email);
-            addDebug('Nom: ' + fullname);
-
-            // ===== VALIDATIONS =====
-            if (!fullname || !email || !password) {
-                showError('Tous les champs sont requis');
-                return;
-            }
-
-            if (password !== confirm) {
-                showError('Les mots de passe ne correspondent pas');
-                return;
-            }
-
-            if (password.length < 6) {
-                showError('Mot de passe trop court (6 caractères minimum)');
-                return;
-            }
-
-            // ===== PRÉPARATION DES DONNÉES =====
-            const phone = document.getElementById('countryCode').value + 
-                         document.getElementById('phone').value.replace(/\s/g, '');
+            showMessage('Inscription en cours...', 'success');
             
-            addDebug('📞 Téléphone: ' + phone);
-
-            // ===== DÉSACTIVATION BOUTON =====
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Inscription...';
-            messageDiv.style.display = 'none';
-
-            // ===== TENTATIVE D'INSCRIPTION =====
             try {
-                addDebug('🔄 Appel à supabase.auth.signUp...');
-                
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            fullname: fullname,
-                            phone: phone,
-                            country: document.getElementById('country').value,
-                            city: document.getElementById('city').value,
-                            username: document.getElementById('username').value
-                        }
-                    }
+                    password: password
                 });
-
-                if (error) {
-                    addDebug('❌ Erreur retournée: ' + JSON.stringify(error));
-                    throw error;
-                }
-
-                addDebug('✅ Réponse reçue: ' + JSON.stringify(data));
                 
-                if (data.user) {
-                    addDebug('✅ Utilisateur créé avec ID: ' + data.user.id);
-                    
-                    // Tentative d'insertion dans users (non bloquante)
-                    try {
-                        addDebug('🔄 Tentative insertion dans table users...');
-                        await supabase.from('users').insert([{
-                            user_id: data.user.id,
-                            fullname: fullname,
-                            email: email,
-                            phone: phone,
-                            created_at: new Date()
-                        }]);
-                        addDebug('✅ Insertion réussie');
-                    } catch (dbError) {
-                        addDebug('⚠️ Erreur insertion (ignorée): ' + dbError.message);
-                    }
-                    
-                    showSuccess('Inscription réussie ! Vérifiez vos emails.');
-                    
-                    setTimeout(() => {
-                        window.location.href = 'connexion.html';
-                    }, 3000);
-                } else {
-                    showError('Pas de données utilisateur reçues');
-                }
-
+                if (error) throw error;
+                
+                showMessage('✅ INSCRIPTION RÉUSSIE ! Vérifie tes emails', 'success');
+                console.log('Succès:', data);
+                
             } catch (error) {
-                addDebug('❌ CATCH - Erreur: ' + error.message);
-                addDebug('📋 Détails: ' + JSON.stringify(error));
-                
-                let message = error.message;
-                if (error.message.includes('User already registered')) {
-                    message = 'Cet email est déjà utilisé';
-                } else if (error.message.includes('Failed to fetch')) {
-                    message = 'Problème de connexion internet';
-                } else if (error.message.includes('NetworkError')) {
-                    message = 'Erreur réseau';
-                }
-                
-                showError(message);
-                
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'S\'inscrire';
+                showMessage('❌ ERREUR: ' + error.message, 'error');
+                console.error('Erreur:', error);
             }
-        });
+        }
+
+        // Test auto au chargement
+        setTimeout(tester, 1000);
     </script>
 </body>
 </html>

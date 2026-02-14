@@ -233,27 +233,6 @@
             border: 1px solid #f5c6cb;
         }
 
-        .message.info {
-            display: block;
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
-        .password-strength {
-            height: 4px;
-            background: var(--clair);
-            border-radius: var(--radius-full);
-            margin: 0.5rem 0;
-            overflow: hidden;
-        }
-
-        .strength-bar {
-            height: 100%;
-            width: 0;
-            transition: width 0.3s ease;
-        }
-
         @media (max-width: 480px) {
             .row {
                 grid-template-columns: 1fr;
@@ -339,9 +318,6 @@
                     <div class="form-group">
                         <label><i class="fas fa-lock"></i> Mot de passe</label>
                         <input type="password" id="password" required placeholder="Minimum 6 caractères">
-                        <div class="password-strength">
-                            <div class="strength-bar" id="strengthBar"></div>
-                        </div>
                     </div>
 
                     <!-- Confirmation -->
@@ -388,7 +364,7 @@
     
     <script>
         // ============================================
-        // CONFIGURATION SUPABASE (VOS CLÉS)
+        // CONFIGURATION SUPABASE
         // ============================================
         const SUPABASE_URL = 'https://kfbstzlauxdwezgtzdsx.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmYnN0emxhdXhkd2V6Z3R6ZHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODYzMDQsImV4cCI6MjA4NjU2MjMwNH0.a43ze2_uKyaEgodntEvMRFEH7mNgByyfUHfzQpEKDFM';
@@ -403,8 +379,6 @@
         const form = document.getElementById('signupForm');
         const messageDiv = document.getElementById('message');
         const submitBtn = document.getElementById('submitBtn');
-        const passwordInput = document.getElementById('password');
-        const confirmInput = document.getElementById('confirmPassword');
         const phoneInput = document.getElementById('phone');
 
         // ============================================
@@ -423,47 +397,12 @@
         });
 
         // ============================================
-        // FORCE DU MOT DE PASSE
-        // ============================================
-        passwordInput.addEventListener('input', function() {
-            const password = this.value;
-            const strength = calculateStrength(password);
-            updateStrengthBar(strength);
-        });
-
-        function calculateStrength(password) {
-            let score = 0;
-            if (password.length >= 6) score += 25;
-            if (password.length >= 8) score += 25;
-            if (/[0-9]/.test(password)) score += 25;
-            if (/[A-Z]/.test(password)) score += 25;
-            return Math.min(score, 100);
-        }
-
-        function updateStrengthBar(strength) {
-            const bar = document.getElementById('strengthBar');
-            bar.style.width = strength + '%';
-            
-            if (strength < 40) {
-                bar.style.background = 'linear-gradient(90deg, #ff4444, #ff9933)';
-            } else if (strength < 70) {
-                bar.style.background = 'linear-gradient(90deg, #ff9933, #ffcc00)';
-            } else {
-                bar.style.background = 'linear-gradient(90deg, #33cc33, #00ff00)';
-            }
-        }
-
-        // ============================================
         // AFFICHAGE DES MESSAGES
         // ============================================
         function showMessage(text, type) {
             messageDiv.className = 'message ' + type;
             messageDiv.innerHTML = text;
-            
-            // Disparaît après 5 secondes
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 5000);
+            messageDiv.style.display = 'block';
         }
 
         // ============================================
@@ -520,7 +459,7 @@
         }
 
         // ============================================
-        // INSCRIPTION AVEC SUPABASE
+        // INSCRIPTION AVEC REDIRECTION
         // ============================================
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -567,53 +506,42 @@
                     }
                 });
 
-                if (authError) {
-                    console.error('❌ Erreur Auth:', authError);
-                    throw authError;
-                }
-
-                console.log('✅ Utilisateur créé dans Auth:', authData);
+                if (authError) throw authError;
 
                 // 2. Ajout des informations dans la table users
-                const { error: dbError } = await supabase
-                    .from('users')
-                    .insert([{
-                        user_id: authData.user.id,
-                        fullname: fullname,
-                        username: username,
-                        email: email,
-                        phone: fullPhone,
-                        country: country,
-                        city: city,
-                        referral_code: referral || null,
-                        newsletter: newsletter,
-                        created_at: new Date()
-                    }]);
-
-                if (dbError) {
-                    console.error('⚠️ Erreur table users (non bloquante):', dbError);
-                    // On continue même si l'insertion échoue
-                } else {
-                    console.log('✅ Profil sauvegardé dans users');
+                try {
+                    await supabase
+                        .from('users')
+                        .insert([{
+                            user_id: authData.user.id,
+                            fullname: fullname,
+                            username: username,
+                            email: email,
+                            phone: fullPhone,
+                            country: country,
+                            city: city,
+                            referral_code: referral || null,
+                            newsletter: newsletter,
+                            created_at: new Date()
+                        }]);
+                } catch (dbError) {
+                    console.warn('Erreur table users:', dbError);
+                    // Non bloquant
                 }
 
                 // 3. Message de succès
-                showMessage('✅ Inscription réussie ! Vérifiez votre email pour confirmer votre compte.', 'success');
-                
-                // 4. Réinitialisation du formulaire
-                form.reset();
+                showMessage('✅ Inscription réussie ! Redirection...', 'success');
 
-                // 5. Redirection après 3 secondes
+                // 4. REDIRECTION APRÈS 2 SECONDES
                 setTimeout(() => {
                     window.location.href = 'connexion.html';
-                }, 3000);
+                }, 2000);
 
             } catch (error) {
-                console.error('❌ Erreur complète:', error);
+                console.error('❌ Erreur:', error);
                 
                 // Message d'erreur adapté
                 let errorMessage = error.message;
-                
                 if (error.message.includes('User already registered')) {
                     errorMessage = 'Cet email est déjà utilisé';
                 } else if (error.message.includes('Password should be')) {
@@ -624,7 +552,6 @@
                 
                 showMessage('❌ ' + errorMessage, 'error');
 
-            } finally {
                 // Réactiver le bouton
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> S\'inscrire';
@@ -632,20 +559,12 @@
         });
 
         // ============================================
-        // TEST DE CONNEXION AU DÉMARRAGE
+        // REDIRECTION MANUELLE (SI BESOIN)
         // ============================================
-        (async function testConnection() {
-            try {
-                const { error } = await supabase.from('users').select('count', { count: 'exact', head: true });
-                if (error) {
-                    console.warn('⚠️ Table "users" non accessible:', error.message);
-                } else {
-                    console.log('✅ Connexion à Supabase OK');
-                }
-            } catch (e) {
-                console.warn('⚠️ Erreur de connexion:', e.message);
-            }
-        })();
+        // Vous pouvez aussi ajouter un bouton de redirection manuelle
+        function redirectToConnexion() {
+            window.location.href = 'connexion.html';
+        }
 
     </script>
 </body>

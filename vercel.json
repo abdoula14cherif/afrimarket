@@ -5,8 +5,8 @@
   "installCommand": null,
   "routes": [
     {
-      "src": "/.*",
-      "dest": "/"
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }
